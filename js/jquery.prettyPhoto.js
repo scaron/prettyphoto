@@ -172,6 +172,8 @@
 					};
 				});
 			});
+			
+			doresize = true;
 		};
 	
 		function _checkPosition(){
@@ -234,34 +236,26 @@
 			imageWidth = width;
 			imageHeight = height;
 
-			if($.browser.opera) {
-				windowHeight = window.innerHeight;
-				windowWidth = window.innerWidth;
-			}else{
-				windowHeight = $(window).height();
-				windowWidth = $(window).width();
-			};
+			windowHeight = $(window).height();
+			windowWidth = $(window).width();
 		
 			if( ((containerWidth > windowWidth) || (containerHeight > windowHeight)) && doresize && settings.allowresize) {
 				hasBeenResized = true;
+				notFitting = true;
 			
-				if((containerWidth > windowWidth) && (containerHeight > windowHeight)){
-					// Get the original geometry and calculate scales
-					var xscale =  (containerWidth + 200) / windowWidth;
-					var yscale = (containerHeight + 200) / windowHeight;
-				}else{
-					// Get the original geometry and calculate scales
-					var xscale = windowWidth / containerWidth;
-					var yscale = windowHeight / containerHeight;
-				}
+				while (notFitting){
+					if((containerWidth > windowWidth)){
+						imageWidth = (windowWidth - 200);
+						imageHeight = (height/width) * imageWidth;
+					}else if((containerHeight > windowHeight)){
+						imageHeight = (windowHeight - 200);
+						imageWidth = (width/height) * imageHeight;
+					}else{
+						notFitting = false;
+					};
 
-				// Recalculate new size with default ratio
-				if (yscale<xscale){
-					imageWidth = Math.round(width * yscale * 0.9);
-					imageHeight = Math.round(height * yscale * 0.9);
-				} else {
-					imageWidth = Math.round(width * xscale * 0.9);
-					imageHeight = Math.round(height * xscale * 0.9);
+					containerHeight = imageHeight;
+					containerWidth = imageWidth;
 				};
 			
 				// Define the new dimensions

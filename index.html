@@ -23,8 +23,10 @@
 			
 			body {
 				font: 62.5%/1.2 Arial, Verdana, Sans-Serif;
-				padding: 20px;
+				padding: 0 20px;
 			}
+			
+			h4 { margin: 15px 0 5px 0; }
 			
 			h4, p { font-size: 1.2em; }
 			
@@ -60,6 +62,14 @@
 		<ul class="gallery clearfix">
 			<li><a href="images/fullscreen/2.jpg" rel="prettyPhoto" title="&lt;a href=&#x27;http://www.google.ca&#x27; target=&#x27;_blank&#x27; &gt;This will open Google.com in a new window&lt;/a&gt;"><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="Picture alone 1" /></a></li>
 		</ul>
+		
+		<h4>Unusual sizes</h4>
+		<ul class="gallery clearfix">
+			<li><a href="images/fullscreen/wide.gif" rel="prettyPhoto[unusual]">Wide image (3000 x 1500)</a></li>
+			<li><a href="images/fullscreen/high.gif" rel="prettyPhoto[unusual]">High image (1500 x 3000)</a></li>
+			<li><a href="images/fullscreen/huge.gif" rel="prettyPhoto[unusual]">Huge image (3000 x 3000)</a></li>
+		</ul>
+		
 		<script type="text/javascript" charset="utf-8">
 		$(document).ready(function(){
 			$(".gallery:eq(0) a[rel^='prettyPhoto']").prettyPhoto();
@@ -69,6 +79,8 @@
 			$(".gallery:eq(2) a[rel^='prettyPhoto']").prettyPhoto({theme: 'dark_square'});
 			
 			$(".gallery:eq(3) a[rel^='prettyPhoto']").prettyPhoto({theme: 'light_square'});
+			
+			$(".gallery:eq(4) a[rel^='prettyPhoto']").prettyPhoto({theme: 'light_square'});
 		});
 		</script>
 	</body>

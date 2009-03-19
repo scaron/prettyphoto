@@ -372,7 +372,6 @@
 			};
 		
 			(isSet) ? imgPreloader.src = $(imagesArray[arrayPosition]).attr('href') : imgPreloader.src = $caller.attr('href');
-			console.log(imgPreloader.src);
 		};
 	
 		function _getScroll(){
@@ -389,46 +388,46 @@
 		};
 	
 		function _buildOverlay(){
-			console.profile();
+			toInject = "";
 			
 			// Build the background overlay div
-			backgroundDiv = "<div class='pp_overlay'></div>";
-			$('body').append(backgroundDiv);
+			toInject += "<div class='pp_overlay'></div>";
+			
+			// Basic HTML for the picture holder
+			toInject += '<div class="pp_pic_holder"><div class="pp_top"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div><div class="pp_content"><a href="#" class="pp_expand" title="Expand the image">Expand</a><div class="pp_loaderIcon"></div><div class="hoverContainer"><a class="pp_next" href="#">next</a><a class="pp_previous" href="#">previous</a></div><div id="full_res"><img id="fullResImage" src="" /></div><div class="pp_details clearfix"><a class="pp_close" href="#">Close</a><p class="pp_description"></p><div class="pp_nav"><a href="#" class="pp_arrow_previous">Previous</a><p class="currentTextHolder">0'+settings.counter_separator_label+'0</p><a href="#" class="pp_arrow_next">Next</a></div></div></div><div class="pp_bottom"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div></div>';
+			
+			// Basic html for the title holder
+			toInject += '<div class="ppt"><div class="ppt_left"></div><div class="ppt_content"></div><div class="ppt_right"></div></div>';
+			
+			$('body').append(toInject);
+			
 			$('div.pp_overlay').css('height',$(document).height()).bind('click',function(){
 				close();
 			});
-		
-			// Basic HTML for the picture holder
-			pictureHolder = '<div class="pp_pic_holder"><div class="pp_top"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div><div class="pp_content"><a href="#" class="pp_expand" title="Expand the image">Expand</a><div class="pp_loaderIcon"></div><div class="hoverContainer"><a class="pp_next" href="#">next</a><a class="pp_previous" href="#">previous</a></div><div id="full_res"><img id="fullResImage" src="" /></div><div class="pp_details clearfix"><a class="pp_close" href="#">Close</a><p class="pp_description"></p><div class="pp_nav"><a href="#" class="pp_arrow_previous">Previous</a><p class="currentTextHolder">0'+settings.counter_separator_label+'0</p><a href="#" class="pp_arrow_next">Next</a></div></div></div><div class="pp_bottom"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div></div>';
-		
-			// Basic html for the title holder
-			titleHolder = '<div class="ppt"><div class="ppt_left"></div><div class="ppt_content"></div><div class="ppt_right"></div></div>';
 
-			$('body').append(pictureHolder).append(titleHolder);
+			$('.pp_pic_holder,.ppt').css({'opacity': 0}).addClass(settings.theme);
 
-			console.profileEnd();
-
-			$('.pp_pic_holder,.titleHolder').css({'opacity': 0});
-			$('.pp_pic_holder,.ppt').addClass(settings.theme);
 			$('a.pp_close').bind('click',function(){ close(); return false; });
-			$('a.pp_expand').bind('click',function(){
-			
+
+			$('a.pp_expand').bind('click',function(){				
+				$this = $(this);
+				
 				// Expand the image
-				if($(this).hasClass('pp_expand')){
-					$(this).removeClass('pp_expand').addClass('pp_contract');
+				if($this.hasClass('pp_expand')){
+					$this.removeClass('pp_expand').addClass('pp_contract');
 					doresize = false;
 				}else{
-					$(this).removeClass('pp_contract').addClass('pp_expand');
+					$this.removeClass('pp_contract').addClass('pp_expand');
 					doresize = true;
 				};
 			
 				_hideTitle();
-				$('div.pp_pic_holder .hoverContainer,div.pp_pic_holder #full_res').fadeOut(settings.animationSpeed);
-				$('div.pp_pic_holder .pp_details').fadeOut(settings.animationSpeed,function(){
+				
+				$('div.pp_pic_holder .hoverContainer,div.pp_pic_holder #full_res ,div.pp_pic_holder .pp_details').fadeOut(settings.animationSpeed,function(){
 					_preload();
 				});
-			
-				return false;
+		
+				return false;	
 			});
 		
 			$('.pp_pic_holder .pp_previous,.pp_pic_holder .pp_arrow_previous').bind('click',function(){

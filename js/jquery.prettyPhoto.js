@@ -78,7 +78,7 @@
 				};
 			};
 		
-			_buildOverlay(isSet);
+			_buildOverlay();
 
 			// Display the current position
 			$('div.pp_pic_holder p.currentTextHolder').text(setPosition + settings.counter_separator_label + setCount);
@@ -280,33 +280,34 @@
 		};
 	
 		function _centerPicture(){
-			//Make sure the gallery is open
-			if($('div.pp_pic_holder').size() > 0){
+			$picHolder = $('div.pp_pic_holder');
+			$titleHolder = $('div.ppt');
 			
-				var scrollPos = _getScroll();
+			if ($picHolder.size() == 0) return; //Make sure the gallery is open
 			
-				if($.browser.opera) {
-					windowHeight = window.innerHeight;
-					windowWidth = window.innerWidth;
-				}else{
-					windowHeight = $(window).height();
-					windowWidth = $(window).width();
-				};
-			
-				if(doresize) {
-					projectedTop = (windowHeight/2) + scrollPos['scrollTop'] - ($('div.pp_pic_holder').height()/2);
-					if(projectedTop < 0) projectedTop = 0 + $('div.ppt').height();
-					
-					$('div.pp_pic_holder').css({
-						'top': projectedTop,
-						'left': (windowWidth/2) + scrollPos['scrollLeft'] - ($('div.pp_pic_holder').width()/2)
-					});
-			
-					$('div.ppt').css({
-						'top' : $('div.pp_pic_holder').offset().top - $('div.ppt').height(),
-						'left' : $('div.pp_pic_holder').offset().left + (settings.padding/2)
-					});
-				};
+			var scrollPos = _getScroll();
+		
+			if($.browser.opera) {
+				windowHeight = window.innerHeight;
+				windowWidth = window.innerWidth;
+			}else{
+				windowHeight = $(window).height();
+				windowWidth = $(window).width();
+			};
+		
+			if(doresize) {
+				projectedTop = (windowHeight/2) + scrollPos['scrollTop'] - ($picHolder.height()/2);
+				if(projectedTop < 0) projectedTop = 0 + $titleHolder.height();
+				
+				$picHolder.css({
+					'top': projectedTop,
+					'left': (windowWidth/2) + scrollPos['scrollLeft'] - ($picHolder.width()/2)
+				});
+		
+				$titleHolder.css({
+					'top' : $picHolder.offset().top - $picHolder.height(),
+					'left' : $picHolder.offset().left + (settings.padding/2)
+				});
 			};
 		};
 	

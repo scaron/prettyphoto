@@ -66,7 +66,6 @@
 			// Calculate the number of items in the set, and the position of the clicked picture.
 			isSet = false;
 			setCount = 0;
-			console.profile('Open');
 			for (i = 0; i < imagesArray.length; i++){
 				if($(imagesArray[i]).attr('rel').indexOf(theGallery) != -1){
 					setCount++;
@@ -205,7 +204,7 @@
 			// Change the current picture text
 			$('div.pp_pic_holder p.currentTextHolder').text(setPosition + settings.counter_separator_label + setCount);
 		
-			var $c = (isSet) ? $(imagesArray[arrayPosition]) : $(caller);
+			var $c = (isSet) ? $(imagesArray[arrayPosition]) : $caller;
 
 			if($c.attr('title')){
 				$('div.pp_pic_holder .pp_description').show().html(unescape($c.attr('title')));
@@ -360,7 +359,7 @@
 			if(isSet) {
 				$('div.pp_pic_holder #fullResImage').attr('src',$(imagesArray[arrayPosition]).attr('href'));
 			}else{
-				$('div.pp_pic_holder #fullResImage').attr('src',$(caller).attr('href'));
+				$('div.pp_pic_holder #fullResImage').attr('src',$caller.attr('href'));
 			};
 
 			imgPreloader.onload = function(){
@@ -372,7 +371,8 @@
 				setTimeout('showimage(imgPreloader.width,imgPreloader.height,'+correctSizes["containerWidth"]+','+correctSizes["containerHeight"]+','+correctSizes["contentHeight"]+','+correctSizes["contentWidth"]+','+correctSizes["resized"]+')',500);
 			};
 		
-			(isSet) ? imgPreloader.src = $(imagesArray[arrayPosition]).attr('href') : imgPreloader.src = $(caller).attr('href');
+			(isSet) ? imgPreloader.src = $(imagesArray[arrayPosition]).attr('href') : imgPreloader.src = $caller.attr('href');
+			console.log(imgPreloader.src);
 		};
 	
 		function _getScroll(){
@@ -389,6 +389,8 @@
 		};
 	
 		function _buildOverlay(){
+			console.profile();
+			
 			// Build the background overlay div
 			backgroundDiv = "<div class='pp_overlay'></div>";
 			$('body').append(backgroundDiv);
@@ -403,6 +405,8 @@
 			titleHolder = '<div class="ppt"><div class="ppt_left"></div><div class="ppt_content"></div><div class="ppt_right"></div></div>';
 
 			$('body').append(pictureHolder).append(titleHolder);
+
+			console.profileEnd();
 
 			$('.pp_pic_holder,.titleHolder').css({'opacity': 0});
 			$('.pp_pic_holder,.ppt').addClass(settings.theme);

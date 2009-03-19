@@ -2,7 +2,7 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 2.2.5
+	Version: 2.2.7
 ------------------------------------------------------------------------- */
 
 (function($) {
@@ -56,22 +56,23 @@
 		});
 	
 		function open(el) {
-			caller = $(el);
+			$caller = $(el);
 		
 			// Find out if the picture is part of a set
-			theRel = $(caller).attr('rel');
+			theRel = $caller.attr('rel');
 			galleryRegExp = /\[(?:.*)\]/;
 			theGallery = galleryRegExp.exec(theRel);
 		
 			// Calculate the number of items in the set, and the position of the clicked picture.
 			isSet = false;
 			setCount = 0;
+			console.profile('Open');
 			for (i = 0; i < imagesArray.length; i++){
 				if($(imagesArray[i]).attr('rel').indexOf(theGallery) != -1){
 					setCount++;
 					if(setCount > 1) isSet = true;
 
-					if($(imagesArray[i]).attr('href') == $(el).attr('href')){
+					if($(imagesArray[i]).attr('href') == $caller.attr('href')){
 						setPosition = setCount;
 						arrayPosition = i;
 					};
@@ -388,7 +389,6 @@
 		};
 	
 		function _buildOverlay(){
-		
 			// Build the background overlay div
 			backgroundDiv = "<div class='pp_overlay'></div>";
 			$('body').append(backgroundDiv);

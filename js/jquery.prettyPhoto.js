@@ -5,15 +5,22 @@
 	Version: 2.2.7
 ------------------------------------------------------------------------- */
 
+var $pp_pic_holder;
+var $ppt;
+
 (function($) {
 	$.fn.prettyPhoto = function(settings) {
 		// global Variables
-		var caller = 0;
 		var doresize = true;
 		var imagesArray = [];
 		var setPosition = 0; /* Position in the set */
 	
-		$(window).scroll(function(){ _centerPicture(); });
+		// Global elements
+		var $caller;
+		
+		var $scrollPos = _getScroll();
+	
+		$(window).scroll(function(){ _centerPicture(); $scrollPos = _getScroll(); });
 		$(window).resize(function(){ _centerPicture(); _resizeOverlay(); });
 		$(document).keyup(function(e){
 			switch(e.keyCode){
@@ -56,6 +63,8 @@
 		});
 	
 		function open(el) {
+			$pp_pic_holder = 'lol';
+			
 			$caller = $(el);
 		
 			// Find out if the picture is part of a set
@@ -81,20 +90,17 @@
 			_buildOverlay();
 
 			// Display the current position
-			$('div.pp_pic_holder p.currentTextHolder').text(setPosition + settings.counter_separator_label + setCount);
+			$pp_pic_holder.find('p.currentTextHolder').text(setPosition + settings.counter_separator_label + setCount);
 
 			// Position the picture in the center of the viewing area
 			_centerPicture();
 		
-			$('div.pp_pic_holder #full_res').hide();
-			$('.pp_loaderIcon').show();
-			
-			_preload();
+			$('#pp_full_res').hide();
+			$pp_pic_holder.find('.pp_loaderIcon').show();
 		};
 	
 		showimage = function(width,height,containerWidth,containerHeight,contentHeight,contentWidth,resized){
 			$('.pp_loaderIcon').hide();
-			var scrollPos = _getScroll();
 
 			if($.browser.opera) {
 				windowHeight = window.innerHeight;
@@ -104,30 +110,25 @@
 				windowWidth = $(window).width();
 			};
 
-			$('div.pp_pic_holder .pp_content').animate({'height':contentHeight,'width':containerWidth},settings.animationSpeed);
+			$pp_pic_holder.find('.pp_content').animate({'height':contentHeight,'width':containerWidth},settings.animationSpeed);
 
-			projectedTop = scrollPos['scrollTop'] + ((windowHeight/2) - (containerHeight/2));
+			projectedTop = $scrollPos['scrollTop'] + ((windowHeight/2) - (containerHeight/2));
 			if(projectedTop < 0) projectedTop = 0 + $('div.ppt').height();
 
 			// Resize the holder
-			$('div.pp_pic_holder').animate({
+			$pp_pic_holder.animate({
 				'top': projectedTop,
 				'left': ((windowWidth/2) - (containerWidth/2)),
 				'width': containerWidth
 			},settings.animationSpeed,function(){
-				$('#fullResImage').attr({
-					'width':width,
-					'height':height
-				});
-
-				$('div.pp_pic_holder').width(containerWidth);
-				$('div.pp_pic_holder .hoverContainer').height(height).width(width);
+				$pp_pic_holder.width(containerWidth);
+				$pp_pic_holder.find('.pp_hoverContainer,#fullResImage').height(height).width(width);
 
 				// Fade the new image
-				$('div.pp_pic_holder #full_res').fadeIn(settings.animationSpeed);
+				$pp_pic_holder.find('#pp_full_res').fadeIn(settings.animationSpeed);
 
 				// Show the nav elements
-				_shownav();
+				_shownav($pp_pic_holder,$ppt);
 			
 				// Fade the resizing link if the image is resized
 				if(resized) $('a.pp_expand,a.pp_contract').fadeIn(settings.animationSpeed);
@@ -147,8 +148,8 @@
 			if(!doresize) doresize = true;
 
 			// Fade out the current picture
-			$('div.pp_pic_holder .hoverContainer,div.pp_pic_holder .pp_details').fadeOut(settings.animationSpeed);
-			$('div.pp_pic_holder #full_res').fadeOut(settings.animationSpeed,function(){
+			$pp_pic_holder.find('.pp_hoverContainer,.pp_details').fadeOut(settings.animationSpeed);
+			$pp_pic_holder.find('#pp_full_res').fadeOut(settings.animationSpeed,function(){
 				$('.pp_loaderIcon').show();
 			
 				// Preload the image
@@ -179,11 +180,11 @@
 		function _checkPosition(){
 			// If at the end, hide the next link
 			if(setPosition == setCount) {
-				$('div.pp_pic_holder a.pp_next').css('visibility','hidden');
-				$('div.pp_pic_holder a.pp_arrow_next').addClass('disabled').unbind('click');
+				$pp_pic_holder.find('a.pp_next').css('visibility','hidden');
+				$pp_pic_holder.find('a.pp_arrow_next').addClass('disabled').unbind('click');
 			}else{ 
-				$('div.pp_pic_holder a.pp_next').css('visibility','visible');
-				$('div.pp_pic_holder a.pp_arrow_next.disabled').removeClass('disabled').bind('click',function(){
+				$pp_pic_holder.find('a.pp_next').css('visibility','visible');
+				$pp_pic_holder.find('a.pp_arrow_next.disabled').removeClass('disabled').bind('click',function(){
 					changePicture('next');
 					return false;
 				});
@@ -191,30 +192,30 @@
 		
 			// If at the beginning, hide the previous link
 			if(setPosition == 1) {
-				$('div.pp_pic_holder a.pp_previous').css('visibility','hidden');
-				$('div.pp_pic_holder a.pp_arrow_previous').addClass('disabled').unbind('click');
+				$pp_pic_holder.find('a.pp_previous').css('visibility','hidden');
+				$pp_pic_holder.find('a.pp_arrow_previous').addClass('disabled').unbind('click');
 			}else{
-				$('div.pp_pic_holder a.pp_previous').css('visibility','visible');
-				$('div.pp_pic_holder a.pp_arrow_previous.disabled').removeClass('disabled').bind('click',function(){
+				$pp_pic_holder.find('a.pp_previous').css('visibility','visible');
+				$pp_pic_holder.find('a.pp_arrow_previous.disabled').removeClass('disabled').bind('click',function(){
 					changePicture('previous');
 					return false;
 				});
 			};
 		
 			// Change the current picture text
-			$('div.pp_pic_holder p.currentTextHolder').text(setPosition + settings.counter_separator_label + setCount);
+			$pp_pic_holder.find('p.currentTextHolder').text(setPosition + settings.counter_separator_label + setCount);
 		
-			var $c = (isSet) ? $(imagesArray[arrayPosition]) : $caller;
+			$caller = (isSet) ? $(imagesArray[arrayPosition]) : $caller;
 
-			if($c.attr('title')){
-				$('div.pp_pic_holder .pp_description').show().html(unescape($c.attr('title')));
+			if($caller.attr('title')){
+				$pp_pic_holder.find('.pp_description').show().html(unescape($caller.attr('title')));
 			}else{
-				$('div.pp_pic_holder .pp_description').hide().text('');
+				$pp_pic_holder.find('.pp_description').hide().text('');
 			};
 		
-			if($c.find('img').attr('alt') && settings.showTitle){
+			if($caller.find('img').attr('alt') && settings.showTitle){
 				hasTitle = true;
-				$('div.ppt .ppt_content').html(unescape($c.find('img').attr('alt')));
+				$ppt.find('.ppt_content').html(unescape($caller.find('img').attr('alt')));
 			}else{
 				hasTitle = false;
 			};
@@ -280,13 +281,8 @@
 		};
 	
 		function _centerPicture(){
-			$picHolder = $('div.pp_pic_holder');
-			$titleHolder = $('div.ppt');
-			
-			if ($picHolder.size() == 0) return; //Make sure the gallery is open
-			
-			var scrollPos = _getScroll();
-		
+			if ($pp_pic_holder.size() == 0) return; //Make sure the gallery is open
+
 			if($.browser.opera) {
 				windowHeight = window.innerHeight;
 				windowWidth = window.innerWidth;
@@ -296,50 +292,54 @@
 			};
 		
 			if(doresize) {
-				projectedTop = (windowHeight/2) + scrollPos['scrollTop'] - ($picHolder.height()/2);
-				if(projectedTop < 0) projectedTop = 0 + $titleHolder.height();
+				$pHeight = $pp_pic_holder.height();
+				$pWidth = $pp_pic_holder.width();
+				$tHeight = $ppt.height();
+				$offset = $pp_pic_holder.offset();
 				
-				$picHolder.css({
+				projectedTop = (windowHeight/2) + $scrollPos['scrollTop'] - ($pHeight/2);
+				if(projectedTop < 0) projectedTop = 0 + $tHeight;
+				
+				$pp_pic_holder.css({
 					'top': projectedTop,
-					'left': (windowWidth/2) + scrollPos['scrollLeft'] - ($picHolder.width()/2)
+					'left': (windowWidth/2) + $scrollPos['scrollLeft'] - ($pWidth/2)
 				});
 		
-				$titleHolder.css({
-					'top' : $picHolder.offset().top - $picHolder.height(),
-					'left' : $picHolder.offset().left + (settings.padding/2)
+				$ppt.css({
+					'top' : $offset.top - $tHeight,
+					'left' : $offset.left + (settings.padding/2)
 				});
 			};
 		};
 	
 		function _shownav(){
-			if(isSet) $('div.pp_pic_holder .hoverContainer').fadeIn(settings.animationSpeed);
-			$('div.pp_pic_holder .pp_details').fadeIn(settings.animationSpeed);
-
-			_showTitle();
+			if(isSet) $pp_pic_holder.find('.pp_hoverContainer').fadeIn(settings.animationSpeed);
+			$pp_pic_holder.find('.pp_details').fadeIn(settings.animationSpeed);
+			_showTitle($pp_pic_holder,$ppt);
 		};
 	
 		function _showTitle(){
 			if(settings.showTitle && hasTitle){
-				$('div.ppt').css({
-					'top' : $('div.pp_pic_holder').offset().top - 22,
-					'left' : $('div.pp_pic_holder').offset().left + (settings.padding/2),
+				$ppt.css({
+					'top' : $pp_pic_holder.offset().top - 22,
+					'left' : $pp_pic_holder.offset().left + (settings.padding/2),
 					'display' : 'none'
 				});
 			
-				$('div.ppt div.ppt_content').css('width','auto');
+				$ppt.find('div.ppt_content').css('width','auto');
 			
-				if($('div.ppt').width() > $('div.pp_pic_holder').width()){
-					$('div.ppt div.ppt_content').css('width',$('div.pp_pic_holder').width() - (settings.padding * 2));
+				if($ppt.width() > $pp_pic_holder.width()){
+					$ppt.find('div.ppt_content').css('width',$pp_pic_holder.width() - (settings.padding * 2));
 				}else{
-					$('div.ppt div.ppt_content').css('width','');
+					$ppt.find('div.ppt_content').css('width','');
 				};
 			
-				$('div.ppt').fadeIn(settings.animationSpeed);
+				$ppt.fadeIn(settings.animationSpeed);
 			};
 		};
 	
 		function _hideTitle() {
-			$('div.ppt').fadeOut(settings.animationSpeed);
+			$ppt.fadeOut(settings.animationSpeed);
 		};
 	
 		function _preload(){
@@ -355,24 +355,17 @@
 			prevImage = new Image();
 			if(isSet && imagesArray[arrayPosition - 1]) prevImage.src = $(imagesArray[arrayPosition - 1]).attr('href');
 
-			$('div.pp_pic_holder .pp_content').css('overflow','hidden');
-		
-			if(isSet) {
-				$('div.pp_pic_holder #fullResImage').attr('src',$(imagesArray[arrayPosition]).attr('href'));
-			}else{
-				$('div.pp_pic_holder #fullResImage').attr('src',$caller.attr('href'));
-			};
+			$pp_pic_holder.find('.pp_content').css('overflow','hidden');
+			$pp_pic_holder.find('#fullResImage').attr('src',$caller.attr('href'));
 
 			imgPreloader.onload = function(){
 				var correctSizes = _fitToViewport(imgPreloader.width,imgPreloader.height);
 				imgPreloader.width = correctSizes['width'];
 				imgPreloader.height = correctSizes['height'];
-			
-				// Need that small delay for the anim to be nice
-				setTimeout('showimage(imgPreloader.width,imgPreloader.height,'+correctSizes["containerWidth"]+','+correctSizes["containerHeight"]+','+correctSizes["contentHeight"]+','+correctSizes["contentWidth"]+','+correctSizes["resized"]+')',500);
+				showimage(imgPreloader.width,imgPreloader.height,correctSizes["containerWidth"],correctSizes["containerHeight"],correctSizes["contentHeight"],correctSizes["contentWidth"],correctSizes["resized"]);
 			};
 		
-			(isSet) ? imgPreloader.src = $(imagesArray[arrayPosition]).attr('href') : imgPreloader.src = $caller.attr('href');
+			imgPreloader.src = $caller.attr('href');
 		};
 	
 		function _getScroll(){
@@ -395,18 +388,22 @@
 			toInject += "<div class='pp_overlay'></div>";
 			
 			// Basic HTML for the picture holder
-			toInject += '<div class="pp_pic_holder"><div class="pp_top"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div><div class="pp_content"><a href="#" class="pp_expand" title="Expand the image">Expand</a><div class="pp_loaderIcon"></div><div class="hoverContainer"><a class="pp_next" href="#">next</a><a class="pp_previous" href="#">previous</a></div><div id="full_res"><img id="fullResImage" src="" /></div><div class="pp_details clearfix"><a class="pp_close" href="#">Close</a><p class="pp_description"></p><div class="pp_nav"><a href="#" class="pp_arrow_previous">Previous</a><p class="currentTextHolder">0'+settings.counter_separator_label+'0</p><a href="#" class="pp_arrow_next">Next</a></div></div></div><div class="pp_bottom"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div></div>';
+			toInject += '<div class="pp_pic_holder"><div class="pp_top"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div><div class="pp_content"><a href="#" class="pp_expand" title="Expand the image">Expand</a><div class="pp_loaderIcon"></div><div class="pp_hoverContainer"><a class="pp_next" href="#">next</a><a class="pp_previous" href="#">previous</a></div><div id="pp_full_res"><img id="fullResImage" src="" /></div><div class="pp_details clearfix"><a class="pp_close" href="#">Close</a><p class="pp_description"></p><div class="pp_nav"><a href="#" class="pp_arrow_previous">Previous</a><p class="currentTextHolder">0'+settings.counter_separator_label+'0</p><a href="#" class="pp_arrow_next">Next</a></div></div></div><div class="pp_bottom"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div></div>';
 			
 			// Basic html for the title holder
 			toInject += '<div class="ppt"><div class="ppt_left"></div><div class="ppt_content"></div><div class="ppt_right"></div></div>';
 			
 			$('body').append(toInject);
 			
+			// Set my global selectors
+			$pp_pic_holder = $('.pp_pic_holder');
+			$ppt = $('.ppt');
+			
 			$('div.pp_overlay').css('height',$(document).height()).bind('click',function(){
 				close();
 			});
 
-			$('.pp_pic_holder,.ppt').css({'opacity': 0}).addClass(settings.theme);
+			$pp_pic_holder.css({'opacity': 0}).addClass(settings.theme);
 
 			$('a.pp_close').bind('click',function(){ close(); return false; });
 
@@ -424,30 +421,30 @@
 			
 				_hideTitle();
 				
-				$('div.pp_pic_holder .hoverContainer,div.pp_pic_holder #full_res ,div.pp_pic_holder .pp_details').fadeOut(settings.animationSpeed,function(){
+				$pp_pic_holder.find('.pp_hoverContainer, #pp_full_res, .pp_details').fadeOut(settings.animationSpeed,function(){
 					_preload();
 				});
 		
 				return false;	
 			});
 		
-			$('.pp_pic_holder .pp_previous,.pp_pic_holder .pp_arrow_previous').bind('click',function(){
+			$pp_pic_holder.find('.pp_previous, .pp_arrow_previous').bind('click',function(){
 				changePicture('previous');
 				return false;
 			});
 		
-			$('.pp_pic_holder .pp_next,.pp_pic_holder .pp_arrow_next').bind('click',function(){
+			$pp_pic_holder.find('.pp_next, .pp_arrow_next').bind('click',function(){
 				changePicture('next');
 				return false;
 			});
 
-			$('.hoverContainer').css({
+			$pp_pic_holder.find('.pp_hoverContainer').css({
 				'margin-left': settings.padding/2
 			});
 		
 			// If it's not a set, hide the links
 			if(!isSet) {
-				$('.hoverContainer,.pp_nav').hide();
+				$pp_pic_holder.find('.pp_hoverContainer,.pp_nav').hide();
 			};
 
 
@@ -459,9 +456,9 @@
 
 			// Then fade it in
 			$('div.pp_overlay').css('opacity',0).fadeTo(settings.animationSpeed,settings.opacity, function(){
-				$('div.pp_pic_holder').css('opacity',0).fadeIn(settings.animationSpeed,function(){
-					// To fix an IE bug
-					$('div.pp_pic_holder').attr('style','left:'+$('div.pp_pic_holder').css('left')+';top:'+$('div.pp_pic_holder').css('top')+';');
+				$pp_pic_holder.css('opacity',0).fadeIn(settings.animationSpeed,function(){
+					$pp_pic_holder.attr('style','left:'+$pp_pic_holder.css('left')+';top:'+$pp_pic_holder.css('top')+';');
+					_preload();
 				});
 			});
 		};

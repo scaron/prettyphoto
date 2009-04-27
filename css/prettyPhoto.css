@@ -154,7 +154,7 @@
 					
 					div.pp_pic_holder .pp_content .pp_details .pp_nav a.disabled { background-position: 0 -16px; cursor: default; }
 		
-		div.pp_pic_holder .pp_content div.hoverContainer {
+		div.pp_pic_holder .pp_content div.pp_hoverContainer {
 			position: absolute; z-index: 2000;
 			top: 0; left: 0;
 			width: 100%;
@@ -222,8 +222,8 @@
 			width: 24px; height: 24px;
 		}
 		
-		div.pp_pic_holder #full_res { width: 100%; text-align: center; }
-			div.pp_pic_holder #full_res { display: block; margin: 0 auto; }
+		div.pp_pic_holder #pp_full_res { width: 100%; text-align: center; }
+			div.pp_pic_holder #pp_full_res { display: block; margin: 0 auto; }
 	
 		div.ppt {
 			display: none;

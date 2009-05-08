@@ -23,10 +23,6 @@
 	div.pp_pic_holder .pp_bottom .pp_right { background: url(../images/prettyPhoto/light_rounded/br.gif) top left no-repeat; } /* Bottom right corner */
 
 	div.pp_pic_holder .pp_loaderIcon { background: url(../images/prettyPhoto/light_rounded/loader.gif) center center no-repeat; } /* Loader icon */
-
-	div.ppt div.ppt_left { background: url(../images/prettyPhoto/light_rounded/ttl.gif) top left no-repeat; }
-	div.ppt div.ppt_right { background: url(../images/prettyPhoto/light_rounded/ttr.gif) top left no-repeat; }
-	div.ppt div.ppt_content { background: url(../images/prettyPhoto/light_rounded/ttp.gif) top left repeat-x; }
 	
 	/* ----------------------------------
 		Dark Rounded Theme
@@ -40,9 +36,7 @@
 	div.dark_rounded .pp_bottom .pp_right { background: url(../images/prettyPhoto/dark_rounded/br.png) top left no-repeat; } /* Bottom right corner */
 	div.dark_rounded .pp_content { background: url(../images/prettyPhoto/dark_rounded/contentPattern.png) top left repeat; } /* Content background */
 	div.dark_rounded .currentTextHolder { color: #c4c4c4; }
-	div.dark_rounded div.ppt_left { background: url(../images/prettyPhoto/dark_rounded/tl.png) top left no-repeat; }
-	div.dark_rounded div.ppt_right { background: url(../images/prettyPhoto/dark_rounded/tr.png) top right no-repeat; }
-	div.dark_rounded div.ppt_content { background: url(../images/prettyPhoto/dark_rounded/contentPattern.png) top left repeat; }
+	div.dark_rounded  p.pp_description { color: #fff; }
 	div.dark_rounded .pp_loaderIcon { background: url(../images/prettyPhoto/dark_rounded/loader.gif) center center no-repeat; } /* Loader icon */
 	
 	
@@ -56,11 +50,9 @@
 	div.dark_square .pp_bottom .pp_left,
 	div.dark_square .pp_bottom .pp_middle,
 	div.dark_square .pp_bottom .pp_right,
-	div.dark_square .pp_content,
-	div.dark_square div.ppt_left,
-	div.dark_square div.ppt_right,
-	div.dark_square div.ppt_content { background: url(../images/prettyPhoto/dark_square/contentPattern.png) top left repeat; }
+	div.dark_square .pp_content { background: url(../images/prettyPhoto/dark_square/contentPattern.png) top left repeat; }
 	div.dark_square .currentTextHolder { color: #c4c4c4; }
+	div.dark_square  p.pp_description { color: #fff; }
 	div.dark_square .pp_loaderIcon { background: url(../images/prettyPhoto/dark_rounded/loader.gif) center center no-repeat; } /* Loader icon */
 
 
@@ -74,11 +66,7 @@
 	div.light_square .pp_bottom .pp_left,
 	div.light_square .pp_bottom .pp_middle,
 	div.light_square .pp_bottom .pp_right,
-	div.light_square .pp_content,
-	div.light_square div.ppt_left,
-	div.light_square div.ppt_right,
-	div.light_square div.ppt_content { background: #fff; }
-	div.light_square div.ppt_content { color: #666666; }
+	div.light_square .pp_content { background: #fff; }
 
 
 /* ------------------------------------------------------------------------
@@ -222,21 +210,18 @@
 			width: 24px; height: 24px;
 		}
 		
-		div.pp_pic_holder #pp_full_res { width: 100%; text-align: center; }
-			div.pp_pic_holder #pp_full_res { display: block; margin: 0 auto; }
+		div.pp_pic_holder #pp_full_res { display: block; margin: 0 auto; width: 100%; text-align: center; }
+		div.pp_pic_holder #pp_full_res object,
+		div.pp_pic_holder #pp_full_res embed { visibility: hidden; }
 	
 		div.ppt {
 			display: none;
 			position: absolute;
 			top: 0; left: 0;
 			z-index: 9999;
-			color: #fff; font-size: 13px;
+			color: #fff;
+			font-size: 17px;
 		}
-		
-			div.ppt div.ppt_left,
-			div.ppt div.ppt_right { float: left; width: 19px; height: 23px; overflow: hidden; }
-			
-			div.ppt div.ppt_content { float: left; line-height: 23px; }
 
 /* ------------------------------------------------------------------------
 	Miscellaneous

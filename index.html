@@ -34,7 +34,7 @@
 		</style>
 	</head>
 	<body>
-		<h4>Gallery (Light rounded theme, Titles)</h4>
+		<h4>Gallery</h4>
 		<ul class="gallery clearfix">
 			<li><a href="images/fullscreen/1.jpg" rel="prettyPhoto[gallery1]" title="You can add caption to pictures."><img src="images/thumbnails/t_1.jpg" width="60" height="60" alt="Red round shape" /></a></li>
 			<li><a href="images/fullscreen/2.jpg" rel="prettyPhoto[gallery1]"><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="Nice building" /></a></li>
@@ -43,7 +43,7 @@
 			<li><a href="images/fullscreen/5.jpg" rel="prettyPhoto[gallery1]"><img src="images/thumbnails/t_5.jpg" width="60" height="60" alt="Fly kite, fly!" /></a></li>
 		</ul>
 
-		<h4>Gallery 2 (Dark rounded theme, no title)</h4>
+		<h4>Gallery 2</h4>
 		<ul class="gallery clearfix">
 			<li><a href="images/fullscreen/3.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_3.jpg" width="60" height="60" alt="Lol" /></a></li>
 			<li><a href="images/fullscreen/4.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_4.jpg" width="60" height="60" alt="" /></a></li>
@@ -52,15 +52,23 @@
 			<li><a href="images/fullscreen/2.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="" /></a></li>
 		</ul>
 
-		<h4>Gallery 3 (Dark square theme, no title)</h4>
-		<ul class="gallery clearfix">
-			<li><a href="images/fullscreen/3.jpg" rel="prettyPhoto[photos]"><img src="images/thumbnails/t_3.jpg" width="60" height="60" alt="" /></a></li>
-			<li><a href="images/fullscreen/4.jpg" rel="prettyPhoto[photos]"><img src="images/thumbnails/t_4.jpg" width="60" height="60" alt="" /></a></li>
-		</ul>
-
-		<h4>Picture alone (Light square theme, no title)</h4>
+		<h4>Picture alone</h4>
 		<ul class="gallery clearfix">
 			<li><a href="images/fullscreen/2.jpg" rel="prettyPhoto" title="&lt;a href=&#x27;http://www.google.ca&#x27; target=&#x27;_blank&#x27; &gt;This will open Google.com in a new window&lt;/a&gt;"><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="Picture alone 1" /></a></li>
+		</ul>
+		
+		<h4>Flash</h4>
+		<ul class="gallery clearfix">
+			<li><a href="http://www.adobe.com/products/flashplayer/include/marquee/design.swf?width=792&amp;height=294" rel="prettyPhoto[flash]" title="Flash 10 demo"><img src="http://images.apple.com/trailers/wb/images/terminatorsalvation_200903131052.jpg" alt="Flash 10 demo" /></a></li>
+			<li><a href="http://vimeo.com/moogaloop.swf?width=580&amp;height=326&amp;flashvars=clip_id=4321799&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1" rel="prettyPhoto[flash]" title="Vimeo Movie"><img src="http://images.apple.com/trailers/wb/images/terminatorsalvation_200903131052.jpg" alt="Vimeo movie" /></a></li>
+			</object>
+		</ul>
+		
+		<h4>Movies (.mov)</h4>
+		<ul class="gallery clearfix">
+			<li><a href="http://movies.apple.com/movies/wb/terminatorsalvation/terminatorsalvation-tlr3_h.480.mov?width=480&amp;height=204" rel="prettyPhoto[movies]" title="Terminator!"><img src="http://images.apple.com/trailers/wb/images/terminatorsalvation_200903131052.jpg" alt="Terminator Salvation" /></a></li>
+			<li><a href="http://movies.apple.com/movies/sony_pictures/angelsanddemons/angelsanddemons-video_h.480.mov?width=480&amp;height=260" rel="prettyPhoto[movies]" title="Angels &amp; Demons"><img src="http://images.apple.com/trailers/sony_pictures/images/angelsdemons_200903261218.jpg" alt="Angels &amp; Demons" /></a></li>
+			<li><a href="http://movies.apple.com/movies/magnolia_pictures/foodinc/foodinc_h.480.mov?width=480&amp;height=260" rel="prettyPhoto[movies]" title="Food, Inc."><img src="http://images.apple.com/trailers/magnolia/images/foodinc_200904171457.jpg" alt="Food, Inc." /></a></li>
 		</ul>
 		
 		<h4>Unusual sizes</h4>
@@ -72,16 +80,12 @@
 		
 		<script type="text/javascript" charset="utf-8">
 		$(document).ready(function(){
-			$(".gallery:eq(0) a[rel^='prettyPhoto']").prettyPhoto();
-			
-			$(".gallery:eq(1) a[rel^='prettyPhoto']").prettyPhoto({theme: 'dark_rounded'});
-			
-			$(".gallery:eq(2) a[rel^='prettyPhoto']").prettyPhoto({theme: 'dark_square'});
-			
-			$(".gallery:eq(3) a[rel^='prettyPhoto']").prettyPhoto({theme: 'light_square'});
-			
-			$(".gallery:eq(4) a[rel^='prettyPhoto']").prettyPhoto({theme: 'light_square'});
+			$(".gallery a[rel^='prettyPhoto']").prettyPhoto({theme:'dark_rounded'});
 		});
 		</script>
+		<script type="text/javascript" charset="utf-8">
+			movie = '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab" height="400" width="400"><param name="src" value="http://movies.apple.com/movies/wb/terminatorsalvation/terminatorsalvation-tlr3_h.480.mov"><param name="autoplay" value="true"><param name="type" value="video/quicktime"><embed src="http://movies.apple.com/movies/wb/terminatorsalvation/terminatorsalvation-tlr3_h.480.mov" height="400" width="400" autoplay="true" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"></embed></object>';
+		</script>
+		<a href="#" onclick="document.write(movie); return false;">Inject</a>
 	</body>
 </html>

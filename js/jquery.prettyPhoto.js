@@ -14,6 +14,11 @@ var $ppt;
 		var doresize = true;
 		var imagesArray = [];
 		var setPosition = 0; /* Position in the set */
+		var pp_contentHeight;
+		var pp_contentWidth;
+		var pp_containerHeight;
+		var pp_containerWidth;
+		var pp_type = 'image';
 	
 		// Global elements
 		var $caller;
@@ -22,7 +27,7 @@ var $ppt;
 	
 		$(window).scroll(function(){ _centerPicture(); $scrollPos = _getScroll(); });
 		$(window).resize(function(){ _centerPicture(); _resizeOverlay(); });
-		$(document).keyup(function(e){
+		$(document).keypress(function(e){
 			switch(e.keyCode){
 				case 37:
 					if (setPosition == 1) return;
@@ -42,7 +47,7 @@ var $ppt;
 		settings = jQuery.extend({
 			animationSpeed: 'normal', /* fast/slow/normal */
 			padding: 40, /* padding for each side of the picture */
-			opacity: 0.35, /* Value between 0 and 1 */
+			opacity: 0.80, /* Value between 0 and 1 */
 			showTitle: true, /* true/false */
 			allowresize: true, /* true/false */
 			counter_separator_label: '/', /* The separator for the gallery counter 1 "of" 2 */
@@ -63,8 +68,6 @@ var $ppt;
 		});
 	
 		function open(el) {
-			$pp_pic_holder = 'lol';
-			
 			$caller = $(el);
 		
 			// Find out if the picture is part of a set
@@ -77,6 +80,14 @@ var $ppt;
 			setCount = 0;
 			for (i = 0; i < imagesArray.length; i++){
 				if($(imagesArray[i]).attr('rel').indexOf(theGallery) != -1){
+					if($caller.attr('href').indexOf('.mov') != -1){ 
+						pp_type = 'quicktime';
+					}else if($caller.attr('href').indexOf('.swf') != -1){
+						pp_type = 'flash';
+					}else{
+						pp_type = 'image';
+					}
+					
 					setCount++;
 					if(setCount > 1) isSet = true;
 
@@ -110,10 +121,10 @@ var $ppt;
 				windowWidth = $(window).width();
 			};
 
-			$pp_pic_holder.find('.pp_content').animate({'height':contentHeight,'width':containerWidth},settings.animationSpeed);
+			$pp_pic_holder.find('.pp_content').animate({'height':contentHeight},settings.animationSpeed);
 
 			projectedTop = $scrollPos['scrollTop'] + ((windowHeight/2) - (containerHeight/2));
-			if(projectedTop < 0) projectedTop = 0 + $('div.ppt').height();
+			if(projectedTop < 0) projectedTop = 0 + $pp_pic_holder.find('.ppt').height();
 
 			// Resize the holder
 			$pp_pic_holder.animate({
@@ -125,15 +136,49 @@ var $ppt;
 				$pp_pic_holder.find('.pp_hoverContainer,#fullResImage').height(height).width(width);
 
 				// Fade the new image
-				$pp_pic_holder.find('#pp_full_res').fadeIn(settings.animationSpeed);
+				$pp_pic_holder.find('#pp_full_res').fadeIn(settings.animationSpeed,function(){
+					$(this).find('object,embed').css('visibility','visible');
+				});
 
 				// Show the nav elements
-				_shownav($pp_pic_holder,$ppt);
+				_showContent();
 			
 				// Fade the resizing link if the image is resized
 				if(resized) $('a.pp_expand,a.pp_contract').fadeIn(settings.animationSpeed);
 			});
 		};
+		
+		function _showContent(){
+			// Show the nav
+			if(isSet && pp_type=="image") { $pp_pic_holder.find('.pp_hoverContainer').fadeIn(settings.animationSpeed); }else{ $pp_pic_holder.find('.pp_hoverContainer').hide(); }
+			$pp_pic_holder.find('.pp_details').fadeIn(settings.animationSpeed);
+			
+			// Show the title
+			if(settings.showTitle && hasTitle){
+				$ppt.css({
+					'top' : $pp_pic_holder.offset().top - 22,
+					'left' : $pp_pic_holder.offset().left + (settings.padding/2),
+					'display' : 'none'
+				});
+			
+				$ppt.fadeIn(settings.animationSpeed);
+			};
+		}
+		
+		function _hideContent(){
+			// Fade out the current picture
+			$pp_pic_holder.find('.pp_hoverContainer,.pp_details').fadeOut(settings.animationSpeed);
+			$pp_pic_holder.find('#pp_full_res object,#pp_full_res embed').css('visibility','hidden');
+			$pp_pic_holder.find('#pp_full_res').fadeOut(settings.animationSpeed,function(){
+				$('.pp_loaderIcon').show();
+			
+				// Preload the image
+				_preload();
+			});
+			
+			// Hide the title
+			$ppt.fadeOut(settings.animationSpeed);
+		}
 	
 		function changePicture(direction){
 			if(direction == 'previous') {
@@ -147,22 +192,15 @@ var $ppt;
 			// Allow the resizing of the images
 			if(!doresize) doresize = true;
 
-			// Fade out the current picture
-			$pp_pic_holder.find('.pp_hoverContainer,.pp_details').fadeOut(settings.animationSpeed);
-			$pp_pic_holder.find('#pp_full_res').fadeOut(settings.animationSpeed,function(){
-				$('.pp_loaderIcon').show();
-			
-				// Preload the image
-				_preload();
-			});
-
-			_hideTitle();
+			_hideContent();
 			$('a.pp_expand,a.pp_contract').fadeOut(settings.animationSpeed,function(){
 				$(this).removeClass('pp_contract').addClass('pp_expand');
 			});
 		};
 	
 		function close(){
+			$pp_pic_holder.find('object,embed').css('visibility','hidden');
+			
 			$('div.pp_pic_holder,div.ppt').fadeOut(settings.animationSpeed, function(){
 				$('div.pp_overlay').fadeOut(settings.animationSpeed, function(){
 					$('div.pp_overlay,div.pp_pic_holder,div.ppt').remove();
@@ -215,7 +253,7 @@ var $ppt;
 		
 			if($caller.find('img').attr('alt') && settings.showTitle){
 				hasTitle = true;
-				$ppt.find('.ppt_content').html(unescape($caller.find('img').attr('alt')));
+				$ppt.html(unescape($caller.find('img').attr('alt')));
 			}else{
 				hasTitle = false;
 			};
@@ -224,15 +262,8 @@ var $ppt;
 		function _fitToViewport(width,height){
 			hasBeenResized = false;
 		
-			$('div.pp_pic_holder .pp_details').width(width); /* To have the correct height */
-			$('div.pp_pic_holder .pp_details p.pp_description').width(width - parseFloat($('div.pp_pic_holder a.pp_close').css('width'))); /* So it doesn't overlap the button */
-		
-			// Get the container size, to resize the holder to the right dimensions
-			contentHeight = height + parseFloat($('div.pp_pic_holder .pp_details').height()) + parseFloat($('div.pp_pic_holder .pp_details').css('margin-top')) + parseFloat($('div.pp_pic_holder .pp_details').css('margin-bottom'));
-			contentWidth = width;
-			containerHeight = height + parseFloat($('div.ppt').height()) + parseFloat($('div.pp_pic_holder .pp_top').height()) + parseFloat($('div.pp_pic_holder .pp_bottom').height());
-			containerWidth = width + settings.padding;
-		
+			_getDimensions(width,height);
+			
 			// Define them in case there's no resize needed
 			imageWidth = width;
 			imageHeight = height;
@@ -240,48 +271,51 @@ var $ppt;
 			windowHeight = $(window).height();
 			windowWidth = $(window).width();
 		
-			if( ((containerWidth > windowWidth) || (containerHeight > windowHeight)) && doresize && settings.allowresize) {
+			if( ((pp_containerWidth > windowWidth) || (pp_containerHeight > windowHeight)) && doresize && settings.allowresize) {
 				hasBeenResized = true;
 				notFitting = true;
 			
 				while (notFitting){
-					if((containerWidth > windowWidth)){
+					if((pp_containerWidth > windowWidth)){
 						imageWidth = (windowWidth - 200);
 						imageHeight = (height/width) * imageWidth;
-					}else if((containerHeight > windowHeight)){
+					}else if((pp_containerHeight > windowHeight)){
 						imageHeight = (windowHeight - 200);
 						imageWidth = (width/height) * imageHeight;
 					}else{
 						notFitting = false;
 					};
 
-					containerHeight = imageHeight;
-					containerWidth = imageWidth;
+					pp_containerHeight = imageHeight;
+					pp_containerWidth = imageWidth;
 				};
 			
-				// Define the new dimensions
-				contentHeight = imageHeight + parseFloat($('div.pp_pic_holder .pp_details').height()) + parseFloat($('div.pp_pic_holder .pp_details').css('margin-top')) + parseFloat($('div.pp_pic_holder .pp_details').css('margin-bottom'));
-				contentWidth = imageWidth;
-				containerHeight = imageHeight + parseFloat($('div.ppt').height()) + parseFloat($('div.pp_pic_holder .pp_top').height()) + parseFloat($('div.pp_pic_holder .pp_bottom').height());
-				containerWidth = imageWidth + settings.padding;
-			
-				$('div.pp_pic_holder .pp_details').width(contentWidth); /* To have the correct height */
-				$('div.pp_pic_holder .pp_details p.pp_description').width(contentWidth - parseFloat($('div.pp_pic_holder a.pp_close').css('width'))); /* So it doesn't overlap the button */
+				_getDimensions(imageWidth,imageHeight);
 			};
 
 			return {
 				width:imageWidth,
 				height:imageHeight,
-				containerHeight:containerHeight,
-				containerWidth:containerWidth,
-				contentHeight:contentHeight,
-				contentWidth:contentWidth,
+				containerHeight:pp_containerHeight,
+				containerWidth:pp_containerWidth,
+				contentHeight:pp_contentHeight,
+				contentWidth:pp_contentWidth,
 				resized:hasBeenResized
 			};
 		};
+		
+		function _getDimensions(width,height){
+			$pp_pic_holder.find('.pp_details').width(width).find('.pp_description').width(width - parseFloat($pp_pic_holder.find('a.pp_close').css('width'))); /* To have the correct height */
+			
+			// Get the container size, to resize the holder to the right dimensions
+			pp_contentHeight = height + $pp_pic_holder.find('.pp_details').height() + parseFloat($pp_pic_holder.find('.pp_details').css('marginTop')) + parseFloat($pp_pic_holder.find('.pp_details').css('marginBottom'));
+			pp_contentWidth = width;
+			pp_containerHeight = pp_contentHeight + $pp_pic_holder.find('.ppt').height() + $pp_pic_holder.find('.pp_top').height() + $pp_pic_holder.find('.pp_bottom').height();
+			pp_containerWidth = width + settings.padding;
+		}
 	
 		function _centerPicture(){
-			if ($pp_pic_holder.size() == 0) return; //Make sure the gallery is open
+			if ($pp_pic_holder){ if($pp_pic_holder.size() == 0){ return; }}else{ return; }; //Make sure the gallery is open
 
 			if($.browser.opera) {
 				windowHeight = window.innerHeight;
@@ -295,7 +329,6 @@ var $ppt;
 				$pHeight = $pp_pic_holder.height();
 				$pWidth = $pp_pic_holder.width();
 				$tHeight = $ppt.height();
-				$offset = $pp_pic_holder.offset();
 				
 				projectedTop = (windowHeight/2) + $scrollPos['scrollTop'] - ($pHeight/2);
 				if(projectedTop < 0) projectedTop = 0 + $tHeight;
@@ -306,71 +339,80 @@ var $ppt;
 				});
 		
 				$ppt.css({
-					'top' : $offset.top - $tHeight,
-					'left' : $offset.left + (settings.padding/2)
+					'top' : projectedTop - $tHeight,
+					'left' : (windowWidth/2) + $scrollPos['scrollLeft'] - ($pWidth/2) + (settings.padding/2)
 				});
 			};
-		};
-	
-		function _shownav(){
-			if(isSet) $pp_pic_holder.find('.pp_hoverContainer').fadeIn(settings.animationSpeed);
-			$pp_pic_holder.find('.pp_details').fadeIn(settings.animationSpeed);
-			_showTitle($pp_pic_holder,$ppt);
-		};
-	
-		function _showTitle(){
-			if(settings.showTitle && hasTitle){
-				$ppt.css({
-					'top' : $pp_pic_holder.offset().top - 22,
-					'left' : $pp_pic_holder.offset().left + (settings.padding/2),
-					'display' : 'none'
-				});
-			
-				$ppt.find('div.ppt_content').css('width','auto');
-			
-				if($ppt.width() > $pp_pic_holder.width()){
-					$ppt.find('div.ppt_content').css('width',$pp_pic_holder.width() - (settings.padding * 2));
-				}else{
-					$ppt.find('div.ppt_content').css('width','');
-				};
-			
-				$ppt.fadeIn(settings.animationSpeed);
-			};
-		};
-	
-		function _hideTitle() {
-			$ppt.fadeOut(settings.animationSpeed);
 		};
 	
 		function _preload(){
 			// Hide the next/previous links if on first or last images.
 			_checkPosition();
 		
-			// Set the new image
-			imgPreloader = new Image();
+			if(pp_type == 'image'){
+				// Set the new image
+				imgPreloader = new Image();
 		
-			// Preload the neighbour images
-			nextImage = new Image();
-			if(isSet && setPosition > setCount) nextImage.src = $(imagesArray[arrayPosition + 1]).attr('href');
-			prevImage = new Image();
-			if(isSet && imagesArray[arrayPosition - 1]) prevImage.src = $(imagesArray[arrayPosition - 1]).attr('href');
+				// Preload the neighbour images
+				nextImage = new Image();
+				if(isSet && setPosition > setCount) nextImage.src = $(imagesArray[arrayPosition + 1]).attr('href');
+				prevImage = new Image();
+				if(isSet && imagesArray[arrayPosition - 1]) prevImage.src = $(imagesArray[arrayPosition - 1]).attr('href');
 
-			$pp_pic_holder.find('.pp_content').css('overflow','hidden');
-			$pp_pic_holder.find('#fullResImage').attr('src',$caller.attr('href'));
+				$pp_pic_holder.find('.pp_content').css('overflow','hidden');
+				$pp_pic_holder.find('#fullResImage').attr('src',$caller.attr('href'));
 
-			imgPreloader.onload = function(){
-				var correctSizes = _fitToViewport(imgPreloader.width,imgPreloader.height);
-				imgPreloader.width = correctSizes['width'];
-				imgPreloader.height = correctSizes['height'];
-				showimage(imgPreloader.width,imgPreloader.height,correctSizes["containerWidth"],correctSizes["containerHeight"],correctSizes["contentHeight"],correctSizes["contentWidth"],correctSizes["resized"]);
-			};
+				imgPreloader.onload = function(){
+					var correctSizes = _fitToViewport(imgPreloader.width,imgPreloader.height);
+					imgPreloader.width = correctSizes['width'];
+					imgPreloader.height = correctSizes['height'];
+					showimage(imgPreloader.width,imgPreloader.height,correctSizes["containerWidth"],correctSizes["containerHeight"],correctSizes["contentHeight"],correctSizes["contentWidth"],correctSizes["resized"]);
+				};
 		
-			imgPreloader.src = $caller.attr('href');
+				imgPreloader.src = $caller.attr('href');
+			}else if(pp_type == 'quicktime'){
+				movie_width = parseFloat(grab_param('width',$caller.attr('href')));
+				movie_height = parseFloat(grab_param('height',$caller.attr('href')))+12;
+				
+				pp_typeMarkup = '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab" height="'+movie_height+'" width="'+movie_width+'"><param name="src" value="'+$caller.attr('href')+'"><param name="autoplay" value="true"><param name="type" value="video/quicktime"><embed src="'+$caller.attr('href')+'" height="'+movie_height+'" width="'+movie_width+'" autoplay="true" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"></embed></object>';
+				
+				$pp_pic_holder.find('#pp_full_res')[0].innerHTML = pp_typeMarkup;
+					
+				_getDimensions(movie_width,movie_height);
+					
+				showimage(movie_width,movie_height,pp_containerWidth,pp_containerHeight,pp_contentHeight,pp_contentWidth,false);
+			}else if(pp_type == 'flash'){
+				movie_width = parseFloat(grab_param('width',$caller.attr('href')));
+				movie_height = parseFloat(grab_param('height',$caller.attr('href')));
+
+				flash_vars = $caller.attr('href');
+				flash_vars = flash_vars.substring($caller.attr('href').indexOf('flashvars') + 10,$caller.attr('href').length);
+				
+				filename = $caller.attr('href');
+				filename = filename.substring(0,filename.indexOf('?'));
+				
+				pp_typeMarkup = '<object width="'+movie_width+'" height="'+movie_height+'"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="'+filename+'?'+flash_vars+'" /><embed src="'+filename+'?'+flash_vars+'" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="'+movie_width+'" height="'+movie_height+'"></embed></object>';
+				
+				$pp_pic_holder.find('#pp_full_res')[0].innerHTML = pp_typeMarkup;
+				
+				_getDimensions(movie_width,movie_height);
+					
+				showimage(movie_width,movie_height,pp_containerWidth,pp_containerHeight,pp_contentHeight,pp_contentWidth,false);
+			}
 		};
 	
 		function _getScroll(){
-			scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
-			scrollLeft = window.pageXOffset || document.documentElement.scrollLeft || 0;
+			if (self.pageYOffset) {
+				scrollTop = self.pageYOffset;
+				scrollLeft = self.pageXOffset;
+			} else if (document.documentElement && document.documentElement.scrollTop) {	 // Explorer 6 Strict
+				scrollTop = document.documentElement.scrollTop;
+				scrollLeft = document.documentElement.scrollLeft;
+			} else if (document.body) {// all other Explorers
+				scrollTop = document.body.scrollTop;
+				scrollLeft = document.body.scrollLeft;	
+			}
+			
 			return {scrollTop:scrollTop,scrollLeft:scrollLeft};
 		};
 	
@@ -387,11 +429,18 @@ var $ppt;
 			// Build the background overlay div
 			toInject += "<div class='pp_overlay'></div>";
 			
+			// Define the markup to append, depending on the content type.
+			if(pp_type == 'image'){
+				pp_typeMarkup = '<img id="fullResImage" src="" />';
+			}else{
+				pp_typeMarkup = '';
+			}
+			
 			// Basic HTML for the picture holder
-			toInject += '<div class="pp_pic_holder"><div class="pp_top"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div><div class="pp_content"><a href="#" class="pp_expand" title="Expand the image">Expand</a><div class="pp_loaderIcon"></div><div class="pp_hoverContainer"><a class="pp_next" href="#">next</a><a class="pp_previous" href="#">previous</a></div><div id="pp_full_res"><img id="fullResImage" src="" /></div><div class="pp_details clearfix"><a class="pp_close" href="#">Close</a><p class="pp_description"></p><div class="pp_nav"><a href="#" class="pp_arrow_previous">Previous</a><p class="currentTextHolder">0'+settings.counter_separator_label+'0</p><a href="#" class="pp_arrow_next">Next</a></div></div></div><div class="pp_bottom"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div></div>';
+			toInject += '<div class="pp_pic_holder"><div class="pp_top"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div><div class="pp_content"><a href="#" class="pp_expand" title="Expand the image">Expand</a><div class="pp_loaderIcon"></div><div class="pp_hoverContainer"><a class="pp_next" href="#">next</a><a class="pp_previous" href="#">previous</a></div><div id="pp_full_res">'+ pp_typeMarkup +'</div><div class="pp_details clearfix"><a class="pp_close" href="#">Close</a><p class="pp_description"></p><div class="pp_nav"><a href="#" class="pp_arrow_previous">Previous</a><p class="currentTextHolder">0'+settings.counter_separator_label+'0</p><a href="#" class="pp_arrow_next">Next</a></div></div></div><div class="pp_bottom"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div></div>';
 			
 			// Basic html for the title holder
-			toInject += '<div class="ppt"><div class="ppt_left"></div><div class="ppt_content"></div><div class="ppt_right"></div></div>';
+			toInject += '<div class="ppt"></div>';
 			
 			$('body').append(toInject);
 			
@@ -419,7 +468,7 @@ var $ppt;
 					doresize = true;
 				};
 			
-				_hideTitle();
+				_hideContent();
 				
 				$pp_pic_holder.find('.pp_hoverContainer, #pp_full_res, .pp_details').fadeOut(settings.animationSpeed,function(){
 					_preload();
@@ -463,4 +512,15 @@ var $ppt;
 			});
 		};
 	};
+	
+	function grab_param(name,url){
+	  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+	  var regexS = "[\\?&]"+name+"=([^&#]*)";
+	  var regex = new RegExp( regexS );
+	  var results = regex.exec( url );
+	  if( results == null )
+	    return "";
+	  else
+	    return results[1];
+	}
 })(jQuery);

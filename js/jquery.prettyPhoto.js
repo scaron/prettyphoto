@@ -2,7 +2,7 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 2.2.7
+	Version: 2.3.2
 ------------------------------------------------------------------------- */
 
 var $pp_pic_holder;
@@ -22,8 +22,12 @@ var $ppt;
 	
 		// Global elements
 		var $caller;
-		
 		var $scrollPos = _getScroll();
+		
+		// Fallback to a supported theme for IE6
+		if($.browser.msie && $.browser.version == 6 && (settings.theme == 'light_rounded' || settings.theme == 'dark_rounded' || settings.theme == 'dark_square')){
+			settings.theme = "light_square";
+		}
 	
 		$(window).scroll(function(){ _centerPicture(); $scrollPos = _getScroll(); });
 		$(window).resize(function(){ _centerPicture(); _resizeOverlay(); });
@@ -51,7 +55,8 @@ var $ppt;
 			showTitle: true, /* true/false */
 			allowresize: true, /* true/false */
 			counter_separator_label: '/', /* The separator for the gallery counter 1 "of" 2 */
-			theme: 'light_rounded' /* light_rounded / dark_rounded / light_square / dark_square */
+			theme: 'light_rounded', /* light_rounded / dark_rounded / light_square / dark_square */
+			callback: function(){}
 		}, settings);
 	
 		$(this).each(function(){
@@ -78,16 +83,17 @@ var $ppt;
 			// Calculate the number of items in the set, and the position of the clicked picture.
 			isSet = false;
 			setCount = 0;
+			
+			if($caller.attr('href').indexOf('.mov') != -1){ 
+				pp_type = 'quicktime';
+			}else if($caller.attr('href').indexOf('.swf') != -1){
+				pp_type = 'flash';
+			}else{
+				pp_type = 'image';
+			}
+			
 			for (i = 0; i < imagesArray.length; i++){
 				if($(imagesArray[i]).attr('rel').indexOf(theGallery) != -1){
-					if($caller.attr('href').indexOf('.mov') != -1){ 
-						pp_type = 'quicktime';
-					}else if($caller.attr('href').indexOf('.swf') != -1){
-						pp_type = 'flash';
-					}else{
-						pp_type = 'image';
-					}
-					
 					setCount++;
 					if(setCount > 1) isSet = true;
 
@@ -201,15 +207,17 @@ var $ppt;
 		function close(){
 			$pp_pic_holder.find('object,embed').css('visibility','hidden');
 			
-			$('div.pp_pic_holder,div.ppt').fadeOut(settings.animationSpeed, function(){
-				$('div.pp_overlay').fadeOut(settings.animationSpeed, function(){
-					$('div.pp_overlay,div.pp_pic_holder,div.ppt').remove();
+			$('div.pp_pic_holder,div.ppt').fadeOut(settings.animationSpeed);
+			
+			$('div.pp_overlay').fadeOut(settings.animationSpeed, function(){
+				$('div.pp_overlay,div.pp_pic_holder,div.ppt').remove();
+			
+				// To fix the bug with IE select boxes
+				if($.browser.msie && $.browser.version == 6){
+					$('select').css('visibility','visible');
+				};
 				
-					// To fix the bug with IE select boxes
-					if($.browser.msie && $.browser.version == 6){
-						$('select').css('visibility','visible');
-					};
-				});
+				settings.callback();
 			});
 			
 			doresize = true;
@@ -372,7 +380,7 @@ var $ppt;
 				imgPreloader.src = $caller.attr('href');
 			}else if(pp_type == 'quicktime'){
 				movie_width = parseFloat(grab_param('width',$caller.attr('href')));
-				movie_height = parseFloat(grab_param('height',$caller.attr('href')))+12;
+				movie_height = parseFloat(grab_param('height',$caller.attr('href')))+15;
 				
 				pp_typeMarkup = '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab" height="'+movie_height+'" width="'+movie_width+'"><param name="src" value="'+$caller.attr('href')+'"><param name="autoplay" value="true"><param name="type" value="video/quicktime"><embed src="'+$caller.attr('href')+'" height="'+movie_height+'" width="'+movie_width+'" autoplay="true" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"></embed></object>';
 				

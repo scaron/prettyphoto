@@ -2,7 +2,7 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 2.3.2
+	Version: 2.3.3
 ------------------------------------------------------------------------- */
 
 var $pp_pic_holder;

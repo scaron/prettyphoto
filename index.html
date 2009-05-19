@@ -11,13 +11,6 @@
 		<link rel="stylesheet" href="css/prettyPhoto.css" type="text/css" media="screen" title="prettyPhoto main stylesheet" charset="utf-8" />
 		<script src="js/jquery.prettyPhoto.js" type="text/javascript" charset="utf-8"></script>
 		
-		<!--[if IE 6]>
-			<script src="js/DD_belatedPNG_0.0.7a-min.js"></script>
-			<script>
-				DD_belatedPNG.fix('.pp_left,.pp_right,a.pp_close,a.pp_arrow_next,a.pp_arrow_previous,.pp_content,.pp_middle'); 
-			</script>
-		<![endif]--> 
-		
 		<style type="text/css" media="screen">
 			* { margin: 0; padding: 0; }
 			
@@ -61,7 +54,11 @@
 		<ul class="gallery clearfix">
 			<li><a href="http://www.adobe.com/products/flashplayer/include/marquee/design.swf?width=792&amp;height=294" rel="prettyPhoto[flash]" title="Flash 10 demo"><img src="http://images.apple.com/trailers/wb/images/terminatorsalvation_200903131052.jpg" alt="Flash 10 demo" /></a></li>
 			<li><a href="http://vimeo.com/moogaloop.swf?width=580&amp;height=326&amp;flashvars=clip_id=4321799&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1" rel="prettyPhoto[flash]" title="Vimeo Movie"><img src="http://images.apple.com/trailers/wb/images/terminatorsalvation_200903131052.jpg" alt="Vimeo movie" /></a></li>
-			</object>
+		</ul>
+		
+		<h4>Flash alone</h4>
+		<ul class="gallery clearfix">
+			<li><a href="http://www.adobe.com/products/flashplayer/include/marquee/design.swf?width=792&amp;height=294" rel="prettyPhoto" title="Flash 10 demo"><img src="http://images.apple.com/trailers/wb/images/terminatorsalvation_200903131052.jpg" alt="Flash 10 demo" /></a></li>
 		</ul>
 		
 		<h4>Movies (.mov)</h4>
@@ -69,6 +66,11 @@
 			<li><a href="http://movies.apple.com/movies/wb/terminatorsalvation/terminatorsalvation-tlr3_h.480.mov?width=480&amp;height=204" rel="prettyPhoto[movies]" title="Terminator!"><img src="http://images.apple.com/trailers/wb/images/terminatorsalvation_200903131052.jpg" alt="Terminator Salvation" /></a></li>
 			<li><a href="http://movies.apple.com/movies/sony_pictures/angelsanddemons/angelsanddemons-video_h.480.mov?width=480&amp;height=260" rel="prettyPhoto[movies]" title="Angels &amp; Demons"><img src="http://images.apple.com/trailers/sony_pictures/images/angelsdemons_200903261218.jpg" alt="Angels &amp; Demons" /></a></li>
 			<li><a href="http://movies.apple.com/movies/magnolia_pictures/foodinc/foodinc_h.480.mov?width=480&amp;height=260" rel="prettyPhoto[movies]" title="Food, Inc."><img src="http://images.apple.com/trailers/magnolia/images/foodinc_200904171457.jpg" alt="Food, Inc." /></a></li>
+		</ul>
+		
+		<h4>Movies (.mov) alone</h4>
+		<ul class="gallery clearfix">
+			<li><a href="http://movies.apple.com/movies/wb/terminatorsalvation/terminatorsalvation-tlr3_h.480.mov?width=480&amp;height=204" rel="prettyPhoto" title="Terminator!"><img src="http://images.apple.com/trailers/wb/images/terminatorsalvation_200903131052.jpg" alt="Terminator Salvation" /></a></li>
 		</ul>
 		
 		<h4>Unusual sizes</h4>
@@ -83,9 +85,5 @@
 			$(".gallery a[rel^='prettyPhoto']").prettyPhoto({theme:'dark_rounded'});
 		});
 		</script>
-		<script type="text/javascript" charset="utf-8">
-			movie = '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab" height="400" width="400"><param name="src" value="http://movies.apple.com/movies/wb/terminatorsalvation/terminatorsalvation-tlr3_h.480.mov"><param name="autoplay" value="true"><param name="type" value="video/quicktime"><embed src="http://movies.apple.com/movies/wb/terminatorsalvation/terminatorsalvation-tlr3_h.480.mov" height="400" width="400" autoplay="true" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"></embed></object>';
-		</script>
-		<a href="#" onclick="document.write(movie); return false;">Inject</a>
 	</body>
 </html>

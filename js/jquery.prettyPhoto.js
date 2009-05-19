@@ -399,7 +399,7 @@ var $ppt;
 				filename = $caller.attr('href');
 				filename = filename.substring(0,filename.indexOf('?'));
 				
-				pp_typeMarkup = '<object width="'+movie_width+'" height="'+movie_height+'"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="'+filename+'?'+flash_vars+'" /><embed src="'+filename+'?'+flash_vars+'" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="'+movie_width+'" height="'+movie_height+'"></embed></object>';
+				pp_typeMarkup = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="'+movie_width+'" height="'+movie_height+'"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="'+filename+'?'+flash_vars+'" /><embed src="'+filename+'?'+flash_vars+'" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="'+movie_width+'" height="'+movie_height+'"></embed></object>';
 				
 				$pp_pic_holder.find('#pp_full_res')[0].innerHTML = pp_typeMarkup;
 				

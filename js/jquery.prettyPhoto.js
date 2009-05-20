@@ -88,6 +88,8 @@ var $ppt;
 				pp_type = 'quicktime';
 			}else if($caller.attr('href').indexOf('.swf') != -1){
 				pp_type = 'flash';
+			}else if($caller.attr('href').indexOf('iframe') != -1){
+				pp_type = 'iframe'
 			}else{
 				pp_type = 'image';
 			}
@@ -406,6 +408,19 @@ var $ppt;
 				_getDimensions(movie_width,movie_height);
 					
 				showimage(movie_width,movie_height,pp_containerWidth,pp_containerHeight,pp_contentHeight,pp_contentWidth,false);
+			}else if(pp_type == 'iframe'){
+				movie_width = parseFloat(grab_param('width',$caller.attr('href')));
+				movie_height = parseFloat(grab_param('height',$caller.attr('href')));
+				movie_url = $caller.attr('href');
+				movie_url = movie_url.substr(0,movie_url.indexOf('?'));
+
+				correctSizes = _fitToViewport(movie_width,movie_height);
+
+				pp_typeMarkup = '<iframe src ="'+movie_url+'" width="'+(correctSizes['width']-10)+'" height="'+(correctSizes['height']-10)+'"></iframe>';
+
+				$pp_pic_holder.find('#pp_full_res')[0].innerHTML = pp_typeMarkup;
+
+				showimage(correctSizes['width'],correctSizes['height'],correctSizes["containerWidth"],correctSizes["containerHeight"],correctSizes["contentHeight"],correctSizes["contentWidth"],correctSizes["resized"]);
 			}
 		};
 	

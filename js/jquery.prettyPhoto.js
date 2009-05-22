@@ -2,7 +2,7 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 2.3.3
+	Version: 2.4.2
 ------------------------------------------------------------------------- */
 
 var $pp_pic_holder;
@@ -12,6 +12,7 @@ var $ppt;
 	$.fn.prettyPhoto = function(settings) {
 		// global Variables
 		var doresize = true;
+		var percentBased = false;
 		var imagesArray = [];
 		var setPosition = 0; /* Position in the set */
 		var pp_contentHeight;
@@ -29,7 +30,7 @@ var $ppt;
 			settings.theme = "light_square";
 		}
 	
-		$(window).scroll(function(){ _centerPicture(); $scrollPos = _getScroll(); });
+		$(window).scroll(function(){ $scrollPos = _getScroll(); _centerPicture(); });
 		$(window).resize(function(){ _centerPicture(); _resizeOverlay(); });
 		$(document).keypress(function(e){
 			switch(e.keyCode){
@@ -84,15 +85,7 @@ var $ppt;
 			isSet = false;
 			setCount = 0;
 			
-			if($caller.attr('href').indexOf('.mov') != -1){ 
-				pp_type = 'quicktime';
-			}else if($caller.attr('href').indexOf('.swf') != -1){
-				pp_type = 'flash';
-			}else if($caller.attr('href').indexOf('iframe') != -1){
-				pp_type = 'iframe'
-			}else{
-				pp_type = 'image';
-			}
+			_getFileType();
 			
 			for (i = 0; i < imagesArray.length; i++){
 				if($(imagesArray[i]).attr('rel').indexOf(theGallery) != -1){
@@ -254,6 +247,7 @@ var $ppt;
 			$pp_pic_holder.find('p.currentTextHolder').text(setPosition + settings.counter_separator_label + setCount);
 		
 			$caller = (isSet) ? $(imagesArray[arrayPosition]) : $caller;
+			_getFileType();
 
 			if($caller.attr('title')){
 				$pp_pic_holder.find('.pp_description').show().html(unescape($caller.attr('title')));
@@ -281,7 +275,7 @@ var $ppt;
 			windowHeight = $(window).height();
 			windowWidth = $(window).width();
 		
-			if( ((pp_containerWidth > windowWidth) || (pp_containerHeight > windowHeight)) && doresize && settings.allowresize) {
+			if( ((pp_containerWidth > windowWidth) || (pp_containerHeight > windowHeight)) && doresize && settings.allowresize && !percentBased) {
 				hasBeenResized = true;
 				notFitting = true;
 			
@@ -322,6 +316,20 @@ var $ppt;
 			pp_contentWidth = width;
 			pp_containerHeight = pp_contentHeight + $pp_pic_holder.find('.ppt').height() + $pp_pic_holder.find('.pp_top').height() + $pp_pic_holder.find('.pp_bottom').height();
 			pp_containerWidth = width + settings.padding;
+		}
+	
+		function _getFileType(){
+			if ($caller.attr('href').match(/youtube\.com\/watch/i)) {
+				pp_type = 'youtube';
+			}else if($caller.attr('href').indexOf('.mov') != -1){ 
+				pp_type = 'quicktime';
+			}else if($caller.attr('href').indexOf('.swf') != -1){
+				pp_type = 'flash';
+			}else if($caller.attr('href').indexOf('iframe') != -1){
+				pp_type = 'iframe'
+			}else{
+				pp_type = 'image';
+			}
 		}
 	
 		function _centerPicture(){
@@ -369,6 +377,9 @@ var $ppt;
 				prevImage = new Image();
 				if(isSet && imagesArray[arrayPosition - 1]) prevImage.src = $(imagesArray[arrayPosition - 1]).attr('href');
 
+				pp_typeMarkup = '<img id="fullResImage" src="" />';				
+				$pp_pic_holder.find('#pp_full_res')[0].innerHTML = pp_typeMarkup;
+
 				$pp_pic_holder.find('.pp_content').css('overflow','hidden');
 				$pp_pic_holder.find('#fullResImage').attr('src',$caller.attr('href'));
 
@@ -380,46 +391,48 @@ var $ppt;
 				};
 		
 				imgPreloader.src = $caller.attr('href');
-			}else if(pp_type == 'quicktime'){
-				movie_width = parseFloat(grab_param('width',$caller.attr('href')));
-				movie_height = parseFloat(grab_param('height',$caller.attr('href')))+15;
-				
-				pp_typeMarkup = '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab" height="'+movie_height+'" width="'+movie_width+'"><param name="src" value="'+$caller.attr('href')+'"><param name="autoplay" value="true"><param name="type" value="video/quicktime"><embed src="'+$caller.attr('href')+'" height="'+movie_height+'" width="'+movie_width+'" autoplay="true" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"></embed></object>';
-				
-				$pp_pic_holder.find('#pp_full_res')[0].innerHTML = pp_typeMarkup;
-					
-				_getDimensions(movie_width,movie_height);
-					
-				showimage(movie_width,movie_height,pp_containerWidth,pp_containerHeight,pp_contentHeight,pp_contentWidth,false);
-			}else if(pp_type == 'flash'){
-				movie_width = parseFloat(grab_param('width',$caller.attr('href')));
-				movie_height = parseFloat(grab_param('height',$caller.attr('href')));
+			}else{
+				// Get the dimensions
+				movie_width = ( parseFloat(grab_param('width',$caller.attr('href'))) ) ? grab_param('width',$caller.attr('href')) : "425";
+				movie_height = ( parseFloat(grab_param('height',$caller.attr('href'))) ) ? grab_param('height',$caller.attr('href')) : "344";
 
-				flash_vars = $caller.attr('href');
-				flash_vars = flash_vars.substring($caller.attr('href').indexOf('flashvars') + 10,$caller.attr('href').length);
+				// If the size is % based
+				if(movie_width.indexOf('%') != -1 || movie_height.indexOf('%') != -1){
+					movie_height = ($(window).height() * parseFloat(movie_height) / 100) - 100;
+					movie_width = ($(window).width() * parseFloat(movie_width) / 100) - 100;
+					parsentBased = true;
+				}else{
+					movie_height = parseFloat(movie_height);
+					movie_width = parseFloat(movie_width);
+				}
 				
-				filename = $caller.attr('href');
-				filename = filename.substring(0,filename.indexOf('?'));
+				if(pp_type == 'quicktime'){ movie_height+=13; }
 				
-				pp_typeMarkup = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="'+movie_width+'" height="'+movie_height+'"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="'+filename+'?'+flash_vars+'" /><embed src="'+filename+'?'+flash_vars+'" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="'+movie_width+'" height="'+movie_height+'"></embed></object>';
-				
-				$pp_pic_holder.find('#pp_full_res')[0].innerHTML = pp_typeMarkup;
-				
-				_getDimensions(movie_width,movie_height);
-					
-				showimage(movie_width,movie_height,pp_containerWidth,pp_containerHeight,pp_contentHeight,pp_contentWidth,false);
-			}else if(pp_type == 'iframe'){
-				movie_width = parseFloat(grab_param('width',$caller.attr('href')));
-				movie_height = parseFloat(grab_param('height',$caller.attr('href')));
-				movie_url = $caller.attr('href');
-				movie_url = movie_url.substr(0,movie_url.indexOf('?'));
-
+				// Fit them to viewport
 				correctSizes = _fitToViewport(movie_width,movie_height);
+				
+				if(pp_type == 'youtube'){
+					pp_typeMarkup = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="'+correctSizes['width']+'" height="'+correctSizes['height']+'"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="http://www.youtube.com/v/'+grab_param('v',$caller.attr('href'))+'" /><embed src="http://www.youtube.com/v/'+grab_param('v',$caller.attr('href'))+'" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="'+correctSizes['width']+'" height="'+correctSizes['height']+'"></embed></object>';
+				}else if(pp_type == 'quicktime'){
+					pp_typeMarkup = '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab" height="'+correctSizes['height']+'" width="'+correctSizes['width']+'"><param name="src" value="'+$caller.attr('href')+'"><param name="autoplay" value="true"><param name="type" value="video/quicktime"><embed src="'+$caller.attr('href')+'" height="'+correctSizes['height']+'" width="'+correctSizes['width']+'" autoplay="true" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"></embed></object>';
+				}else if(pp_type == 'flash'){
+					flash_vars = $caller.attr('href');
+					flash_vars = flash_vars.substring($caller.attr('href').indexOf('flashvars') + 10,$caller.attr('href').length);
 
-				pp_typeMarkup = '<iframe src ="'+movie_url+'" width="'+(correctSizes['width']-10)+'" height="'+(correctSizes['height']-10)+'"></iframe>';
+					filename = $caller.attr('href');
+					filename = filename.substring(0,filename.indexOf('?'));
 
+					pp_typeMarkup = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="'+correctSizes['width']+'" height="'+correctSizes['height']+'"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="'+filename+'?'+flash_vars+'" /><embed src="'+filename+'?'+flash_vars+'" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="'+correctSizes['width']+'" height="'+correctSizes['height']+'"></embed></object>';
+				}else if(pp_type == 'iframe'){
+					movie_url = $caller.attr('href');
+					movie_url = movie_url.substr(0,movie_url.indexOf('?'));
+
+					pp_typeMarkup = '<iframe src ="'+movie_url+'" width="'+(correctSizes['width']-10)+'" height="'+(correctSizes['height']-10)+'" frameborder="no"></iframe>';
+				}
+				// Append HTML
 				$pp_pic_holder.find('#pp_full_res')[0].innerHTML = pp_typeMarkup;
-
+				
+				// Show content
 				showimage(correctSizes['width'],correctSizes['height'],correctSizes["containerWidth"],correctSizes["containerHeight"],correctSizes["contentHeight"],correctSizes["contentWidth"],correctSizes["resized"]);
 			}
 		};

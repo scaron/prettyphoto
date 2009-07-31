@@ -2,48 +2,13 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 2.4.3
+	Version: 2.5
 ------------------------------------------------------------------------- */
 
-var $pp_pic_holder;
-var $ppt;
-
 (function($) {
+	$.prettyPhoto = {version: '2.5'};
+	
 	$.fn.prettyPhoto = function(settings) {
-		// global Variables
-		var doresize = true;
-		var percentBased = false;
-		var imagesArray = [];
-		var setPosition = 0; /* Position in the set */
-		var pp_contentHeight;
-		var pp_contentWidth;
-		var pp_containerHeight;
-		var pp_containerWidth;
-		var pp_type = 'image';
-	
-		// Global elements
-		var $caller;
-		var $scrollPos = _getScroll();
-	
-		$(window).scroll(function(){ $scrollPos = _getScroll(); _centerPicture(); });
-		$(window).resize(function(){ _centerPicture(); _resizeOverlay(); });
-		$(document).keypress(function(e){
-			switch(e.keyCode){
-				case 37:
-					if (setPosition == 1) return;
-					changePicture('previous');
-					break;
-				case 39:
-					if (setPosition == setCount) return;
-					changePicture('next');
-					break;
-				case 27:
-					close();
-					break;
-			};
-	    });
- 
-	
 		settings = jQuery.extend({
 			animationSpeed: 'normal', /* fast/slow/normal */
 			padding: 40, /* padding for each side of the picture */
@@ -59,134 +24,225 @@ var $ppt;
 		if($.browser.msie && $.browser.version == 6){
 			settings.theme = "light_square";
 		}
+		
+		if($('.pp_overlay').size() == 0) {
+			_buildOverlay(); // If the overlay is not there, inject it!
+		}else{
+			// Set my global selectors
+			$pp_pic_holder = $('.pp_pic_holder');
+			$ppt = $('.ppt');
+		}
+		
+		// Global variables accessible only by prettyPhoto
+		var doresize = true, percentBased = false, correctSizes,
+		
+		// Cached selectors
+		$pp_pic_holder, $ppt, settings,
+		
+		// prettyPhoto container specific
+		pp_contentHeight, pp_contentWidth, pp_containerHeight, pp_containerWidth, pp_type = 'image',
 	
+		//Gallery specific
+		setPosition = 0,
+
+		// Global elements
+		$scrollPos = _getScroll();
+	
+		// Window/Keyboard events
+		$(window).scroll(function(){ $scrollPos = _getScroll(); _centerOverlay(); });
+		$(window).resize(function(){ _centerOverlay(); _resizeOverlay(); });
+		$(document).keydown(function(e){
+			switch(e.keyCode){
+				case 37:
+					$.prettyPhoto.changePage('previous');
+					break;
+				case 39:
+					$.prettyPhoto.changePage('next');
+					break;
+				case 27:
+					$.prettyPhoto.close();
+					break;
+			};
+	    });
+	
+		// Bind the code to each links
 		$(this).each(function(){
-			var hasTitle = false;
-			var isSet = false;
-			var setCount = 0; /* Total images in the set */
-			var arrayPosition = 0; /* Total position in the array */
-			
-			imagesArray[imagesArray.length] = this;
 			$(this).bind('click',function(){
-				open(this);
+				
+				link = this; // Fix scoping
+				
+				// Find out if the picture is part of a set
+				theRel = $(this).attr('rel');
+				galleryRegExp = /\[(?:.*)\]/;
+				theGallery = galleryRegExp.exec(theRel);
+				
+				// Build the gallery array
+				images = new Array(), titles = new Array(), descriptions = new Array();
+				if(theGallery){
+					$('a[rel*='+theGallery+']').each(function(i){
+						if($(this)[0] === $(link)[0]) setPosition = i; // Get the position in the set
+						images.push($(this).attr('href'));
+						titles.push($(this).find('img').attr('alt'));
+						descriptions.push($(this).attr('title'));
+					});
+				}else{
+					images = $(this).attr('href');
+					titles = $(this).find('img').attr('alt');
+					descriptions = $(this).attr('title');
+				}
+
+				$.prettyPhoto.open(images,titles,descriptions);
 				return false;
 			});
 		});
 	
-		function open(el) {
-			$caller = $(el);
 		
-			// Find out if the picture is part of a set
-			theRel = $caller.attr('rel');
-			galleryRegExp = /\[(?:.*)\]/;
-			theGallery = galleryRegExp.exec(theRel);
-		
-			// Calculate the number of items in the set, and the position of the clicked picture.
-			isSet = false;
-			setCount = 0;
+		/**
+		* Opens the prettyPhoto modal box.
+		* @param image {String,Array} Full path to the image to be open, can also be an array containing full images paths.
+		* @param title {String,Array} The title to be displayed with the picture, can also be an array containing all the titles.
+		* @param description {String,Array} The description to be displayed with the picture, can also be an array containing all the descriptions.
+		*/
+		$.prettyPhoto.open = function(gallery_images,gallery_titles,gallery_descriptions) {
+			// To fix the bug with IE select boxes
+			if($.browser.msie && $.browser.version == 6){
+				$('select').css('visibility','hidden');
+			};
 			
-			_getFileType();
+			// Hide the flash
+			$('object,embed').css('visibility','hidden');
 			
-			for (i = 0; i < imagesArray.length; i++){
-				if($(imagesArray[i]).attr('rel').indexOf(theGallery) != -1){
-					setCount++;
-					if(setCount > 1) isSet = true;
+			// Convert everything to an array in the case it's a single item
+			if(gallery_images) images = $.makeArray(gallery_images);
+			if(gallery_titles) titles = $.makeArray(gallery_titles);
+			if(gallery_descriptions) descriptions = $.makeArray(gallery_descriptions);
+			
+			if($('.pp_overlay').size() == 0) {
+				_buildOverlay(); // If the overlay is not there, inject it!
+			}else{
+				// Set my global selectors
+				$pp_pic_holder = $('.pp_pic_holder');
+				$ppt = $('.ppt');
+			}
+			
+			$pp_pic_holder.attr('class','pp_pic_holder ' + settings.theme); // Set the proper theme
 
-					if($(imagesArray[i]).attr('href') == $caller.attr('href')){
-						setPosition = setCount;
-						arrayPosition = i;
+			isSet = ($(images).size() > 0) ?  true : false; // Find out if it's a set
+
+			_getFileType(images[setPosition]); // Set the proper file type
+
+			_centerOverlay(); // Center it
+
+			// Hide the next/previous links if on first or last images.
+			_checkPosition($(images).size());
+		
+			$('.pp_loaderIcon').show(); // Do I need to explain?
+		
+			// Fade the content in
+			$('div.pp_overlay').show().fadeTo(settings.animationSpeed,settings.opacity, function(){
+				$pp_pic_holder.fadeIn(settings.animationSpeed,function(){
+					// Display the current position
+					$pp_pic_holder.find('p.currentTextHolder').text((setPosition+1) + settings.counter_separator_label + $(images).size());
+
+					// Set the description
+					if(descriptions[setPosition]){
+						$pp_pic_holder.find('.pp_description').show().html(unescape(descriptions[setPosition]));
+					}else{
+						$pp_pic_holder.find('.pp_description').hide().text('');
 					};
-				};
-			};
-		
-			_buildOverlay();
 
-			// Display the current position
-			$pp_pic_holder.find('p.currentTextHolder').text(setPosition + settings.counter_separator_label + setCount);
+					// Set the title
+					if(titles[setPosition] && settings.showTitle){
+						hasTitle = true;
+						$ppt.html(unescape(titles[setPosition]));
+					}else{
+						hasTitle = false;
+					};
+					
+					// Inject the proper content
+					if(pp_type == 'image'){
+						// Set the new image
+						imgPreloader = new Image();
 
-			// Position the picture in the center of the viewing area
-			_centerPicture();
-		
-			$('#pp_full_res').hide();
-			$pp_pic_holder.find('.pp_loaderIcon').show();
-		};
-	
-		showimage = function(width,height,containerWidth,containerHeight,contentHeight,contentWidth,resized){
-			$('.pp_loaderIcon').hide();
+						// Preload the neighbour images
+						nextImage = new Image();
+						if(isSet && setPosition > $(images).size()) nextImage.src = images[setPosition + 1];
+						prevImage = new Image();
+						if(isSet && images[setPosition - 1]) prevImage.src = images[setPosition - 1];
 
-			if($.browser.opera) {
-				windowHeight = window.innerHeight;
-				windowWidth = window.innerWidth;
-			}else{
-				windowHeight = $(window).height();
-				windowWidth = $(window).width();
-			};
+						pp_typeMarkup = '<img id="fullResImage" src="" />';				
+						$pp_pic_holder.find('#pp_full_res')[0].innerHTML = pp_typeMarkup;
 
-			$pp_pic_holder.find('.pp_content').animate({'height':contentHeight},settings.animationSpeed);
+						$pp_pic_holder.find('.pp_content').css('overflow','hidden');
+						$pp_pic_holder.find('#fullResImage').attr('src',images[setPosition]);
 
-			projectedTop = $scrollPos['scrollTop'] + ((windowHeight/2) - (containerHeight/2));
-			if(projectedTop < 0) projectedTop = 0 + $pp_pic_holder.find('.ppt').height();
+						imgPreloader.onload = function(){
+							// Fit item to viewport
+							correctSizes = _fitToViewport(imgPreloader.width,imgPreloader.height);
+							
+							_showContent();
+						};
 
-			// Resize the holder
-			$pp_pic_holder.animate({
-				'top': projectedTop,
-				'left': ((windowWidth/2) - (containerWidth/2)),
-				'width': containerWidth
-			},settings.animationSpeed,function(){
-				$pp_pic_holder.width(containerWidth);
-				$pp_pic_holder.find('.pp_hoverContainer,#fullResImage').height(height).width(width);
+						imgPreloader.src = images[setPosition];
+					}else{
+						// Get the dimensions
+						movie_width = ( parseFloat(grab_param('width',images[setPosition])) ) ? grab_param('width',images[setPosition]) : "425";
+						movie_height = ( parseFloat(grab_param('height',images[setPosition])) ) ? grab_param('height',images[setPosition]) : "344";
 
-				// Fade the new image
-				$pp_pic_holder.find('#pp_full_res').fadeIn(settings.animationSpeed,function(){
-					$(this).find('object,embed').css('visibility','visible');
+						// If the size is % based, calculate according to window dimensions
+						if(movie_width.indexOf('%') != -1 || movie_height.indexOf('%') != -1){
+							movie_height = ($(window).height() * parseFloat(movie_height) / 100) - 100;
+							movie_width = ($(window).width() * parseFloat(movie_width) / 100) - 100;
+							percentBased = true;
+						}
+
+						movie_height = parseFloat(movie_height);
+						movie_width = parseFloat(movie_width);
+
+						if(pp_type == 'quicktime') movie_height+=13; // Add space for the control bar
+
+						// Fit item to viewport
+						correctSizes = _fitToViewport(movie_width,movie_height);
+
+						if(pp_type == 'youtube'){
+							pp_typeMarkup = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="'+correctSizes['width']+'" height="'+correctSizes['height']+'"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="http://www.youtube.com/v/'+grab_param('v',images[setPosition])+'" /><embed src="http://www.youtube.com/v/'+grab_param('v',images[setPosition])+'" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="'+correctSizes['width']+'" height="'+correctSizes['height']+'"></embed></object>';
+						}else if(pp_type == 'quicktime'){
+							pp_typeMarkup = '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab" height="'+correctSizes['height']+'" width="'+correctSizes['width']+'"><param name="src" value="'+images[setPosition]+'"><param name="autoplay" value="true"><param name="type" value="video/quicktime"><embed src="'+images[setPosition]+'" height="'+correctSizes['height']+'" width="'+correctSizes['width']+'" autoplay="true" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"></embed></object>';
+						}else if(pp_type == 'flash'){
+							flash_vars = images[setPosition];
+							flash_vars = flash_vars.substring(images[setPosition].indexOf('flashvars') + 10,images[setPosition].length);
+
+							filename = images[setPosition];
+							filename = filename.substring(0,filename.indexOf('?'));
+
+							pp_typeMarkup = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="'+correctSizes['width']+'" height="'+correctSizes['height']+'"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="'+filename+'?'+flash_vars+'" /><embed src="'+filename+'?'+flash_vars+'" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="'+correctSizes['width']+'" height="'+correctSizes['height']+'"></embed></object>';
+						}else if(pp_type == 'iframe'){
+							movie_url = images[setPosition];
+							movie_url = movie_url.substr(0,movie_url.indexOf('iframe')-1);
+
+							pp_typeMarkup = '<iframe src ="'+movie_url+'" width="'+(correctSizes['width']-10)+'" height="'+(correctSizes['height']-10)+'" frameborder="no"></iframe>';
+						}
+
+						// Show content
+						_showContent();
+					}
 				});
-
-				// Show the nav elements
-				_showContent();
-			
-				// Fade the resizing link if the image is resized
-				if(resized) $('a.pp_expand,a.pp_contract').fadeIn(settings.animationSpeed);
 			});
 		};
 		
-		function _showContent(){
-			// Show the nav
-			if(isSet && pp_type=="image") { $pp_pic_holder.find('.pp_hoverContainer').fadeIn(settings.animationSpeed); }else{ $pp_pic_holder.find('.pp_hoverContainer').hide(); }
-			$pp_pic_holder.find('.pp_details').fadeIn(settings.animationSpeed);
-			
-			// Show the title
-			if(settings.showTitle && hasTitle){
-				$ppt.css({
-					'top' : $pp_pic_holder.offset().top - 22,
-					'left' : $pp_pic_holder.offset().left + (settings.padding/2),
-					'display' : 'none'
-				});
-			
-				$ppt.fadeIn(settings.animationSpeed);
-			};
-		}
-		
-		function _hideContent(){
-			// Fade out the current picture
-			$pp_pic_holder.find('.pp_hoverContainer,.pp_details').fadeOut(settings.animationSpeed);
-			$pp_pic_holder.find('#pp_full_res object,#pp_full_res embed').css('visibility','hidden');
-			$pp_pic_holder.find('#pp_full_res').fadeOut(settings.animationSpeed,function(){
-				$('.pp_loaderIcon').show();
-			
-				// Preload the image
-				_preload();
-			});
-			
-			// Hide the title
-			$ppt.fadeOut(settings.animationSpeed);
-		}
-	
-		function changePicture(direction){
+		/**
+		* Change page in the prettyPhoto modal box
+		* @param direction {String} Direction of the paging, previous or next.
+		*/
+		$.prettyPhoto.changePage = function(direction){
 			if(direction == 'previous') {
-				arrayPosition--;
 				setPosition--;
+				if (setPosition < 0){
+					setPosition = 0;
+					return;
+				}
 			}else{
-				arrayPosition++;
+				if($('.pp_arrow_next').is('.disabled')) return;
 				setPosition++;
 			};
 
@@ -196,10 +252,14 @@ var $ppt;
 			_hideContent();
 			$('a.pp_expand,a.pp_contract').fadeOut(settings.animationSpeed,function(){
 				$(this).removeClass('pp_contract').addClass('pp_expand');
+				$.prettyPhoto.open();
 			});
 		};
-	
-		function close(){
+		
+		/**
+		* Closes the prettyPhoto modal box.
+		*/
+		$.prettyPhoto.close = function(){
 			$pp_pic_holder.find('object,embed').css('visibility','hidden');
 			
 			$('div.pp_pic_holder,div.ppt').fadeOut(settings.animationSpeed);
@@ -212,57 +272,131 @@ var $ppt;
 					$('select').css('visibility','visible');
 				};
 				
+				// Show the flash
+				$('object,embed').css('visibility','visible');
+				
+				setPosition = 0;
+				
 				settings.callback();
 			});
 			
 			doresize = true;
 		};
 	
-		function _checkPosition(){
+		/**
+		* Set the proper sizes on the containers and animate the content in.
+		*/
+		_showContent = function(){
+			$('.pp_loaderIcon').hide();
+
+			if($.browser.opera) {
+				windowHeight = window.innerHeight;
+				windowWidth = window.innerWidth;
+			}else{
+				windowHeight = $(window).height();
+				windowWidth = $(window).width();
+			};
+
+			// Calculate the opened top position of the pic holder
+			projectedTop = $scrollPos['scrollTop'] + ((windowHeight/2) - (correctSizes['containerHeight']/2));
+			if(projectedTop < 0) projectedTop = 0 + $pp_pic_holder.find('.ppt').height();
+
+			// Resize the content holder
+			$pp_pic_holder.find('.pp_content').animate({'height':correctSizes['contentHeight']},settings.animationSpeed);
+			
+			// Resize picture the holder
+			$pp_pic_holder.animate({
+				'top': projectedTop,
+				'left': ((windowWidth/2) - (correctSizes['containerWidth']/2)),
+				'width': correctSizes['containerWidth']
+			},settings.animationSpeed,function(){
+				$pp_pic_holder.width(correctSizes['containerWidth']);
+				$pp_pic_holder.find('.pp_hoverContainer,#fullResImage').height(correctSizes['height']).width(correctSizes['width']);
+
+				// Fade the new image
+				$pp_pic_holder.find('#pp_full_res').fadeIn(settings.animationSpeed);
+
+				// Show the nav
+				if(isSet && pp_type=="image") { $pp_pic_holder.find('.pp_hoverContainer').fadeIn(settings.animationSpeed); }else{ $pp_pic_holder.find('.pp_hoverContainer').hide(); }
+				$pp_pic_holder.find('.pp_details').fadeIn(settings.animationSpeed);
+
+				// Show the title
+				if(settings.showTitle && hasTitle){
+					$ppt.css({
+						'top' : $pp_pic_holder.offset().top - 20,
+						'left' : $pp_pic_holder.offset().left + (settings.padding/2),
+						'display' : 'none'
+					});
+
+					$ppt.fadeIn(settings.animationSpeed);
+				};
+			
+				// Fade the resizing link if the image is resized
+				if(correctSizes['resized']) $('a.pp_expand,a.pp_contract').fadeIn(settings.animationSpeed);
+				
+				// Once everything is done, inject the content if it's now a photo
+				if(pp_type != 'image') $pp_pic_holder.find('#pp_full_res')[0].innerHTML = pp_typeMarkup;
+			});
+		};
+		
+		/**
+		* Hide the content...DUH!
+		*/
+		function _hideContent(){
+			// Fade out the current picture
+			$pp_pic_holder.find('.pp_hoverContainer,.pp_details').fadeOut(settings.animationSpeed);
+			$pp_pic_holder.find('#pp_full_res object,#pp_full_res embed').css('visibility','hidden');
+			$pp_pic_holder.find('#pp_full_res').fadeOut(settings.animationSpeed,function(){
+				$('.pp_loaderIcon').show();
+			});
+			
+			// Hide the title
+			$ppt.fadeOut(settings.animationSpeed);
+		}
+	
+		/**
+		* Check the item position in the gallery array, hide or show the navigation links
+		* @param setCount {integer} The total number of items in the set
+		*/
+		function _checkPosition(setCount){
 			// If at the end, hide the next link
-			if(setPosition == setCount) {
+			if(setPosition == setCount-1) {
 				$pp_pic_holder.find('a.pp_next').css('visibility','hidden');
 				$pp_pic_holder.find('a.pp_arrow_next').addClass('disabled').unbind('click');
 			}else{ 
 				$pp_pic_holder.find('a.pp_next').css('visibility','visible');
 				$pp_pic_holder.find('a.pp_arrow_next.disabled').removeClass('disabled').bind('click',function(){
-					changePicture('next');
+					$.prettyPhoto.changePage('next');
 					return false;
 				});
 			};
 		
 			// If at the beginning, hide the previous link
-			if(setPosition == 1) {
+			if(setPosition == 0) {
 				$pp_pic_holder.find('a.pp_previous').css('visibility','hidden');
 				$pp_pic_holder.find('a.pp_arrow_previous').addClass('disabled').unbind('click');
 			}else{
 				$pp_pic_holder.find('a.pp_previous').css('visibility','visible');
 				$pp_pic_holder.find('a.pp_arrow_previous.disabled').removeClass('disabled').bind('click',function(){
-					changePicture('previous');
+					$.prettyPhoto.changePage('previous');
 					return false;
 				});
 			};
-		
-			// Change the current picture text
-			$pp_pic_holder.find('p.currentTextHolder').text(setPosition + settings.counter_separator_label + setCount);
-		
-			$caller = (isSet) ? $(imagesArray[arrayPosition]) : $caller;
-			_getFileType();
-
-			if($caller.attr('title')){
-				$pp_pic_holder.find('.pp_description').show().html(unescape($caller.attr('title')));
+			
+			// Hide the bottom nav if it's not a set.
+			if(setCount > 1) {
+				$('.pp_nav').show();
 			}else{
-				$pp_pic_holder.find('.pp_description').hide().text('');
-			};
-		
-			if($caller.find('img').attr('alt') && settings.showTitle){
-				hasTitle = true;
-				$ppt.html(unescape($caller.find('img').attr('alt')));
-			}else{
-				hasTitle = false;
-			};
+				$('.pp_nav').hide();
+			}
 		};
 	
+		/**
+		* Resize the item dimensions if it's bigger than the viewport
+		* @param width {integer} Width of the item to be opened
+		* @param height {integer} Height of the item to be opened
+		* @return An array containin the "fitted" dimensions
+		*/
 		function _fitToViewport(width,height){
 			hasBeenResized = false;
 		
@@ -308,6 +442,11 @@ var $ppt;
 			};
 		};
 		
+		/**
+		* Get the containers dimensions according to the item size
+		* @param width {integer} Width of the item to be opened
+		* @param height {integer} Height of the item to be opened
+		*/
 		function _getDimensions(width,height){
 			$pp_pic_holder.find('.pp_details').width(width).find('.pp_description').width(width - parseFloat($pp_pic_holder.find('a.pp_close').css('width'))); /* To have the correct height */
 			
@@ -318,23 +457,21 @@ var $ppt;
 			pp_containerWidth = width + settings.padding;
 		}
 	
-		function _getFileType(){
-			if ($caller.attr('href').match(/youtube\.com\/watch/i)) {
+		function _getFileType(itemSrc){
+			if (itemSrc.match(/youtube\.com\/watch/i)) {
 				pp_type = 'youtube';
-			}else if($caller.attr('href').indexOf('.mov') != -1){ 
+			}else if(itemSrc.indexOf('.mov') != -1){ 
 				pp_type = 'quicktime';
-			}else if($caller.attr('href').indexOf('.swf') != -1){
+			}else if(itemSrc.indexOf('.swf') != -1){
 				pp_type = 'flash';
-			}else if($caller.attr('href').indexOf('iframe') != -1){
+			}else if(itemSrc.indexOf('iframe') != -1){
 				pp_type = 'iframe'
 			}else{
 				pp_type = 'image';
-			}
-		}
+			};
+		};
 	
-		function _centerPicture(){
-			if ($pp_pic_holder){ if($pp_pic_holder.size() == 0){ return; }}else{ return; }; //Make sure the gallery is open
-
+		function _centerOverlay(){
 			if($.browser.opera) {
 				windowHeight = window.innerHeight;
 				windowWidth = window.innerWidth;
@@ -342,7 +479,7 @@ var $ppt;
 				windowHeight = $(window).height();
 				windowWidth = $(window).width();
 			};
-		
+
 			if(doresize) {
 				$pHeight = $pp_pic_holder.height();
 				$pWidth = $pp_pic_holder.width();
@@ -363,85 +500,11 @@ var $ppt;
 			};
 		};
 	
-		function _preload(){
-			// Hide the next/previous links if on first or last images.
-			_checkPosition();
-		
-			if(pp_type == 'image'){
-				// Set the new image
-				imgPreloader = new Image();
-		
-				// Preload the neighbour images
-				nextImage = new Image();
-				if(isSet && setPosition > setCount) nextImage.src = $(imagesArray[arrayPosition + 1]).attr('href');
-				prevImage = new Image();
-				if(isSet && imagesArray[arrayPosition - 1]) prevImage.src = $(imagesArray[arrayPosition - 1]).attr('href');
-
-				pp_typeMarkup = '<img id="fullResImage" src="" />';				
-				$pp_pic_holder.find('#pp_full_res')[0].innerHTML = pp_typeMarkup;
-
-				$pp_pic_holder.find('.pp_content').css('overflow','hidden');
-				$pp_pic_holder.find('#fullResImage').attr('src',$caller.attr('href'));
-
-				imgPreloader.onload = function(){
-					var correctSizes = _fitToViewport(imgPreloader.width,imgPreloader.height);
-					imgPreloader.width = correctSizes['width'];
-					imgPreloader.height = correctSizes['height'];
-					showimage(imgPreloader.width,imgPreloader.height,correctSizes["containerWidth"],correctSizes["containerHeight"],correctSizes["contentHeight"],correctSizes["contentWidth"],correctSizes["resized"]);
-				};
-		
-				imgPreloader.src = $caller.attr('href');
-			}else{
-				// Get the dimensions
-				movie_width = ( parseFloat(grab_param('width',$caller.attr('href'))) ) ? grab_param('width',$caller.attr('href')) : "425";
-				movie_height = ( parseFloat(grab_param('height',$caller.attr('href'))) ) ? grab_param('height',$caller.attr('href')) : "344";
-
-				// If the size is % based
-				if(movie_width.indexOf('%') != -1 || movie_height.indexOf('%') != -1){
-					movie_height = ($(window).height() * parseFloat(movie_height) / 100) - 100;
-					movie_width = ($(window).width() * parseFloat(movie_width) / 100) - 100;
-					parsentBased = true;
-				}else{
-					movie_height = parseFloat(movie_height);
-					movie_width = parseFloat(movie_width);
-				}
-				
-				if(pp_type == 'quicktime'){ movie_height+=13; }
-				
-				// Fit them to viewport
-				correctSizes = _fitToViewport(movie_width,movie_height);
-				
-				if(pp_type == 'youtube'){
-					pp_typeMarkup = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="'+correctSizes['width']+'" height="'+correctSizes['height']+'"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="http://www.youtube.com/v/'+grab_param('v',$caller.attr('href'))+'" /><embed src="http://www.youtube.com/v/'+grab_param('v',$caller.attr('href'))+'" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="'+correctSizes['width']+'" height="'+correctSizes['height']+'"></embed></object>';
-				}else if(pp_type == 'quicktime'){
-					pp_typeMarkup = '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab" height="'+correctSizes['height']+'" width="'+correctSizes['width']+'"><param name="src" value="'+$caller.attr('href')+'"><param name="autoplay" value="true"><param name="type" value="video/quicktime"><embed src="'+$caller.attr('href')+'" height="'+correctSizes['height']+'" width="'+correctSizes['width']+'" autoplay="true" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"></embed></object>';
-				}else if(pp_type == 'flash'){
-					flash_vars = $caller.attr('href');
-					flash_vars = flash_vars.substring($caller.attr('href').indexOf('flashvars') + 10,$caller.attr('href').length);
-
-					filename = $caller.attr('href');
-					filename = filename.substring(0,filename.indexOf('?'));
-
-					pp_typeMarkup = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="'+correctSizes['width']+'" height="'+correctSizes['height']+'"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="'+filename+'?'+flash_vars+'" /><embed src="'+filename+'?'+flash_vars+'" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="'+correctSizes['width']+'" height="'+correctSizes['height']+'"></embed></object>';
-				}else if(pp_type == 'iframe'){
-					movie_url = $caller.attr('href');
-					movie_url = movie_url.substr(0,movie_url.indexOf('iframe')-1);
-
-					pp_typeMarkup = '<iframe src ="'+movie_url+'" width="'+(correctSizes['width']-10)+'" height="'+(correctSizes['height']-10)+'" frameborder="no"></iframe>';
-				}
-				// Append HTML
-				$pp_pic_holder.find('#pp_full_res')[0].innerHTML = pp_typeMarkup;
-				
-				// Show content
-				showimage(correctSizes['width'],correctSizes['height'],correctSizes["containerWidth"],correctSizes["containerHeight"],correctSizes["contentHeight"],correctSizes["contentWidth"],correctSizes["resized"]);
-			}
-		};
-	
 		function _getScroll(){
 			if (self.pageYOffset) {
 				scrollTop = self.pageYOffset;
 				scrollLeft = self.pageXOffset;
-			} else if (document.documentElement && document.documentElement.scrollTop) {	 // Explorer 6 Strict
+			} else if (document.documentElement && document.documentElement.scrollTop) { // Explorer 6 Strict
 				scrollTop = document.documentElement.scrollTop;
 				scrollLeft = document.documentElement.scrollLeft;
 			} else if (document.body) {// all other Explorers
@@ -465,32 +528,26 @@ var $ppt;
 			// Build the background overlay div
 			toInject += "<div class='pp_overlay'></div>";
 			
-			// Define the markup to append, depending on the content type.
-			if(pp_type == 'image'){
-				pp_typeMarkup = '<img id="fullResImage" src="" />';
-			}else{
-				pp_typeMarkup = '';
-			}
-			
 			// Basic HTML for the picture holder
-			toInject += '<div class="pp_pic_holder"><div class="pp_top"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div><div class="pp_content"><a href="#" class="pp_expand" title="Expand the image">Expand</a><div class="pp_loaderIcon"></div><div class="pp_hoverContainer"><a class="pp_next" href="#">next</a><a class="pp_previous" href="#">previous</a></div><div id="pp_full_res">'+ pp_typeMarkup +'</div><div class="pp_details clearfix"><a class="pp_close" href="#">Close</a><p class="pp_description"></p><div class="pp_nav"><a href="#" class="pp_arrow_previous">Previous</a><p class="currentTextHolder">0'+settings.counter_separator_label+'0</p><a href="#" class="pp_arrow_next">Next</a></div></div></div><div class="pp_bottom"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div></div>';
+			toInject += '<div class="pp_pic_holder"><div class="pp_top"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div><div class="pp_content"><a href="#" class="pp_expand" title="Expand the image">Expand</a><div class="pp_loaderIcon"></div><div class="pp_hoverContainer"><a class="pp_next" href="#">next</a><a class="pp_previous" href="#">previous</a></div><div id="pp_full_res"></div><div class="pp_details clearfix"><a class="pp_close" href="#">Close</a><p class="pp_description"></p><div class="pp_nav"><a href="#" class="pp_arrow_previous">Previous</a><p class="currentTextHolder">0'+settings.counter_separator_label+'0</p><a href="#" class="pp_arrow_next">Next</a></div></div></div><div class="pp_bottom"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div></div>';
 			
 			// Basic html for the title holder
 			toInject += '<div class="ppt"></div>';
 			
 			$('body').append(toInject);
 			
+			// So it fades nicely
+			$('div.pp_overlay').css('opacity',0);
+			
 			// Set my global selectors
 			$pp_pic_holder = $('.pp_pic_holder');
 			$ppt = $('.ppt');
 			
-			$('div.pp_overlay').css('height',$(document).height()).bind('click',function(){
-				close();
+			$('div.pp_overlay').css('height',$(document).height()).hide().bind('click',function(){
+				$.prettyPhoto.close();
 			});
 
-			$pp_pic_holder.css({'opacity': 0}).addClass(settings.theme);
-
-			$('a.pp_close').bind('click',function(){ close(); return false; });
+			$('a.pp_close').bind('click',function(){ $.prettyPhoto.close(); return false; });
 
 			$('a.pp_expand').bind('click',function(){				
 				$this = $(this);
@@ -507,44 +564,24 @@ var $ppt;
 				_hideContent();
 				
 				$pp_pic_holder.find('.pp_hoverContainer, #pp_full_res, .pp_details').fadeOut(settings.animationSpeed,function(){
-					_preload();
+					$.prettyPhoto.open();
 				});
 		
 				return false;	
 			});
 		
 			$pp_pic_holder.find('.pp_previous, .pp_arrow_previous').bind('click',function(){
-				changePicture('previous');
+				$.prettyPhoto.changePage('previous');
 				return false;
 			});
 		
 			$pp_pic_holder.find('.pp_next, .pp_arrow_next').bind('click',function(){
-				changePicture('next');
+				$.prettyPhoto.changePage('next');
 				return false;
 			});
 
 			$pp_pic_holder.find('.pp_hoverContainer').css({
 				'margin-left': settings.padding/2
-			});
-		
-			// If it's not a set, hide the links
-			if(!isSet) {
-				$pp_pic_holder.find('.pp_hoverContainer,.pp_nav').hide();
-			};
-
-
-			// To fix the bug with IE select boxes
-			if($.browser.msie && $.browser.version == 6){
-				$('body').addClass('ie6');
-				$('select').css('visibility','hidden');
-			};
-
-			// Then fade it in
-			$('div.pp_overlay').css('opacity',0).fadeTo(settings.animationSpeed,settings.opacity, function(){
-				$pp_pic_holder.css('opacity',0).fadeIn(settings.animationSpeed,function(){
-					$pp_pic_holder.attr('style','left:'+$pp_pic_holder.css('left')+';top:'+$pp_pic_holder.css('top')+';');
-					_preload();
-				});
 			});
 		};
 	};

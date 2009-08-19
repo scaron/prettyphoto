@@ -87,7 +87,7 @@
 					});
 				}else{
 					images = $(this).attr('href');
-					titles = $(this).find('img').attr('alt');
+					titles = ($(this).find('img').attr('alt')) ?  $(this).find('img').attr('alt') : '';
 					descriptions = $(this).attr('title');
 				}
 

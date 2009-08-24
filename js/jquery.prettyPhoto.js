@@ -2,7 +2,7 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 2.5
+	Version: 2.5.1
 ------------------------------------------------------------------------- */
 
 (function($) {
@@ -88,7 +88,7 @@
 				}else{
 					images = $(this).attr('href');
 					titles = ($(this).find('img').attr('alt')) ?  $(this).find('img').attr('alt') : '';
-					descriptions = $(this).attr('title');
+					descriptions = ($(this).attr('title')) ?  $(this).attr('title') : '';
 				}
 
 				$.prettyPhoto.open(images,titles,descriptions);
@@ -104,6 +104,11 @@
 		* @param description {String,Array} The description to be displayed with the picture, can also be an array containing all the descriptions.
 		*/
 		$.prettyPhoto.open = function(gallery_images,gallery_titles,gallery_descriptions) {
+			// If no description/title provided
+			if(!gallery_titles) gallery_titles = Array();
+			if(!gallery_descriptions) gallery_descriptions = Array();
+			
+			
 			// To fix the bug with IE select boxes
 			if($.browser.msie && $.browser.version == 6){
 				$('select').css('visibility','hidden');

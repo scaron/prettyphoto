@@ -2,7 +2,7 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 2.5.1
+	Version: 2.5.2
 ------------------------------------------------------------------------- */
 
 (function($) {
@@ -77,7 +77,7 @@
 				theGallery = galleryRegExp.exec(theRel);
 				
 				// Build the gallery array
-				images = new Array(), titles = new Array(), descriptions = new Array();
+				var images = new Array(), titles = new Array(), descriptions = new Array();
 				if(theGallery){
 					$('a[rel*='+theGallery+']').each(function(i){
 						if($(this)[0] === $(link)[0]) setPosition = i; // Get the position in the set
@@ -104,11 +104,6 @@
 		* @param description {String,Array} The description to be displayed with the picture, can also be an array containing all the descriptions.
 		*/
 		$.prettyPhoto.open = function(gallery_images,gallery_titles,gallery_descriptions) {
-			// If no description/title provided
-			if(!gallery_titles) gallery_titles = Array();
-			if(!gallery_descriptions) gallery_descriptions = Array();
-			
-			
 			// To fix the bug with IE select boxes
 			if($.browser.msie && $.browser.version == 6){
 				$('select').css('visibility','hidden');
@@ -118,9 +113,9 @@
 			$('object,embed').css('visibility','hidden');
 			
 			// Convert everything to an array in the case it's a single item
-			if(gallery_images) images = $.makeArray(gallery_images);
-			if(gallery_titles) titles = $.makeArray(gallery_titles);
-			if(gallery_descriptions) descriptions = $.makeArray(gallery_descriptions);
+			images = $.makeArray(gallery_images);
+			titles = $.makeArray(gallery_titles);
+			descriptions = $.makeArray(gallery_descriptions);
 			
 			if($('.pp_overlay').size() == 0) {
 				_buildOverlay(); // If the overlay is not there, inject it!
@@ -257,7 +252,7 @@
 			_hideContent();
 			$('a.pp_expand,a.pp_contract').fadeOut(settings.animationSpeed,function(){
 				$(this).removeClass('pp_contract').addClass('pp_expand');
-				$.prettyPhoto.open();
+				$.prettyPhoto.open(images,titles,descriptions);
 			});
 		};
 		
@@ -569,7 +564,7 @@
 				_hideContent();
 				
 				$pp_pic_holder.find('.pp_hoverContainer, #pp_full_res, .pp_details').fadeOut(settings.animationSpeed,function(){
-					$.prettyPhoto.open();
+					$.prettyPhoto.open(images,titles,descriptions);
 				});
 		
 				return false;	

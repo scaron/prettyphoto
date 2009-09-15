@@ -2,11 +2,11 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 2.5.2
+	Version: 2.5.3
 ------------------------------------------------------------------------- */
 
 (function($) {
-	$.prettyPhoto = {version: '2.5'};
+	$.prettyPhoto = {version: '2.5.3'};
 	
 	$.fn.prettyPhoto = function(settings) {
 		settings = jQuery.extend({
@@ -17,7 +17,10 @@
 			allowresize: true, /* true/false */
 			counter_separator_label: '/', /* The separator for the gallery counter 1 "of" 2 */
 			theme: 'light_rounded', /* light_rounded / dark_rounded / light_square / dark_square */
-			callback: function(){}
+			hideflash: false, /* Hides all the flash object on a page, set to TRUE if flash appears over prettyPhoto */
+			modal: false, /* If set to true, only the close button will close the window */
+			changepicturecallback: function(){}, /* Called everytime an item is shown/changed */
+			callback: function(){} /* Called when prettyPhoto is closed */
 		}, settings);
 		
 		// Fallback to a supported theme for IE6
@@ -49,9 +52,10 @@
 		$scrollPos = _getScroll();
 	
 		// Window/Keyboard events
-		$(window).scroll(function(){ $scrollPos = _getScroll(); _centerOverlay(); });
+		$(window).scroll(function(){ $scrollPos = _getScroll(); _centerOverlay(); _resizeOverlay(); });
 		$(window).resize(function(){ _centerOverlay(); _resizeOverlay(); });
 		$(document).keydown(function(e){
+			if($pp_pic_holder.is(':visible'))
 			switch(e.keyCode){
 				case 37:
 					$.prettyPhoto.changePage('previous');
@@ -60,6 +64,7 @@
 					$.prettyPhoto.changePage('next');
 					break;
 				case 27:
+					if(!settings.modal)
 					$.prettyPhoto.close();
 					break;
 			};
@@ -110,7 +115,7 @@
 			};
 			
 			// Hide the flash
-			$('object,embed').css('visibility','hidden');
+			if(settings.hideflash) $('object,embed').css('visibility','hidden');
 			
 			// Convert everything to an array in the case it's a single item
 			images = $.makeArray(gallery_images);
@@ -199,7 +204,7 @@
 						movie_height = parseFloat(movie_height);
 						movie_width = parseFloat(movie_width);
 
-						if(pp_type == 'quicktime') movie_height+=13; // Add space for the control bar
+						if(pp_type == 'quicktime') movie_height+=15; // Add space for the control bar
 
 						// Fit item to viewport
 						correctSizes = _fitToViewport(movie_width,movie_height);
@@ -273,7 +278,7 @@
 				};
 				
 				// Show the flash
-				$('object,embed').css('visibility','visible');
+				if(settings.hideflash) $('object,embed').css('visibility','visible');
 				
 				setPosition = 0;
 				
@@ -336,6 +341,9 @@
 				
 				// Once everything is done, inject the content if it's now a photo
 				if(pp_type != 'image') $pp_pic_holder.find('#pp_full_res')[0].innerHTML = pp_typeMarkup;
+				
+				// Callback!
+				settings.changepicturecallback();
 			});
 		};
 		
@@ -344,8 +352,8 @@
 		*/
 		function _hideContent(){
 			// Fade out the current picture
-			$pp_pic_holder.find('.pp_hoverContainer,.pp_details').fadeOut(settings.animationSpeed);
 			$pp_pic_holder.find('#pp_full_res object,#pp_full_res embed').css('visibility','hidden');
+			$pp_pic_holder.find('.pp_hoverContainer,.pp_details').fadeOut(settings.animationSpeed);
 			$pp_pic_holder.find('#pp_full_res').fadeOut(settings.animationSpeed,function(){
 				$('.pp_loaderIcon').show();
 			});
@@ -544,13 +552,14 @@
 			$ppt = $('.ppt');
 			
 			$('div.pp_overlay').css('height',$(document).height()).hide().bind('click',function(){
+				if(!settings.modal)
 				$.prettyPhoto.close();
 			});
 
 			$('a.pp_close').bind('click',function(){ $.prettyPhoto.close(); return false; });
 
-			$('a.pp_expand').bind('click',function(){				
-				$this = $(this);
+			$('a.pp_expand').bind('click',function(){
+				$this = $(this); // Fix scoping
 				
 				// Expand the image
 				if($this.hasClass('pp_expand')){
@@ -563,11 +572,12 @@
 			
 				_hideContent();
 				
-				$pp_pic_holder.find('.pp_hoverContainer, #pp_full_res, .pp_details').fadeOut(settings.animationSpeed,function(){
+				$pp_pic_holder.find('.pp_hoverContainer, .pp_details').fadeOut(settings.animationSpeed);
+				$pp_pic_holder.find('#pp_full_res').fadeOut(settings.animationSpeed,function(){
 					$.prettyPhoto.open(images,titles,descriptions);
 				});
 		
-				return false;	
+				return false;
 			});
 		
 			$pp_pic_holder.find('.pp_previous, .pp_arrow_previous').bind('click',function(){

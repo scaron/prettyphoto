@@ -2,11 +2,11 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 2.5.3
+	Version: 2.5.4
 ------------------------------------------------------------------------- */
 
 (function($) {
-	$.prettyPhoto = {version: '2.5.3'};
+	$.prettyPhoto = {version: '2.5.4'};
 	
 	$.fn.prettyPhoto = function(settings) {
 		settings = jQuery.extend({
@@ -24,7 +24,7 @@
 		}, settings);
 		
 		// Fallback to a supported theme for IE6
-		if($.browser.msie && $.browser.version == 6){
+		if(!$.support.opacity){
 			settings.theme = "light_square";
 		}
 		
@@ -40,7 +40,7 @@
 		var doresize = true, percentBased = false, correctSizes,
 		
 		// Cached selectors
-		$pp_pic_holder, $ppt, settings,
+		$pp_pic_holder, $ppt,
 		
 		// prettyPhoto container specific
 		pp_contentHeight, pp_contentWidth, pp_containerHeight, pp_containerWidth, pp_type = 'image',

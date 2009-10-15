@@ -180,6 +180,7 @@
 				}
 				
 				.pp_nav {
+					clear: left;
 					float: left;
 					margin: 3px 0 0 0;
 				}

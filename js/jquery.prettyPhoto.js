@@ -24,7 +24,7 @@
 		}, settings);
 		
 		// Fallback to a supported theme for IE6
-		if(!$.support.opacity){
+		if($.browser.msie && $.browser.version == 6){
 			settings.theme = "light_square";
 		}
 		

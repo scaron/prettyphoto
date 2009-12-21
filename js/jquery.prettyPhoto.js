@@ -6,7 +6,7 @@
 ------------------------------------------------------------------------- */
 
 (function($) {
-	$.prettyPhoto = {version: '2.5.4'};
+	$.prettyPhoto = {version: '2.5.5'};
 	
 	$.fn.prettyPhoto = function(settings) {
 		settings = jQuery.extend({
@@ -17,7 +17,7 @@
 			default_width: 500,
 			default_height: 344,
 			counter_separator_label: '/', /* The separator for the gallery counter 1 "of" 2 */
-			theme: 'light_rounded', /* light_rounded / dark_rounded / light_square / dark_square */
+			theme: 'light_rounded', /* light_rounded / dark_rounded / light_square / dark_square / facebook */
 			hideflash: false, /* Hides all the flash object on a page, set to TRUE if flash appears over prettyPhoto */
 			wmode: 'opaque', /* Set the flash wmode attribute */
 			autoplay: true, /* Automatically start videos: True/False */

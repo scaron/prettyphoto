@@ -2,7 +2,7 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 2.5.4
+	Version: 2.5.5
 ------------------------------------------------------------------------- */
 
 (function($) {
@@ -11,16 +11,64 @@
 	$.fn.prettyPhoto = function(settings) {
 		settings = jQuery.extend({
 			animationSpeed: 'normal', /* fast/slow/normal */
-			padding: 40, /* padding for each side of the picture */
 			opacity: 0.80, /* Value between 0 and 1 */
 			showTitle: true, /* true/false */
 			allowresize: true, /* true/false */
+			default_width: 500,
+			default_height: 344,
 			counter_separator_label: '/', /* The separator for the gallery counter 1 "of" 2 */
 			theme: 'light_rounded', /* light_rounded / dark_rounded / light_square / dark_square */
 			hideflash: false, /* Hides all the flash object on a page, set to TRUE if flash appears over prettyPhoto */
+			wmode: 'opaque', /* Set the flash wmode attribute */
+			autoplay: true, /* Automatically start videos: True/False */
 			modal: false, /* If set to true, only the close button will close the window */
 			changepicturecallback: function(){}, /* Called everytime an item is shown/changed */
-			callback: function(){} /* Called when prettyPhoto is closed */
+			callback: function(){}, /* Called when prettyPhoto is closed */
+			markup: '<div class="pp_pic_holder"> \
+						<div class="pp_top"> \
+							<div class="pp_left"></div> \
+							<div class="pp_middle"></div> \
+							<div class="pp_right"></div> \
+						</div> \
+						<div class="pp_content_container"> \
+							<div class="pp_left"> \
+							<div class="pp_right"> \
+								<div class="pp_content"> \
+									<div class="pp_fade"> \
+										<a href="#" class="pp_expand" title="Expand the image">Expand</a> \
+										<div class="pp_loaderIcon"></div> \
+										<div class="pp_hoverContainer"> \
+											<a class="pp_next" href="#">next</a> \
+											<a class="pp_previous" href="#">previous</a> \
+										</div> \
+										<div id="pp_full_res"></div> \
+										<div class="pp_details clearfix"> \
+											<a class="pp_close" href="#">Close</a> \
+											<p class="pp_description"></p> \
+											<div class="pp_nav"> \
+												<a href="#" class="pp_arrow_previous">Previous</a> \
+												<p class="currentTextHolder">0/0</p> \
+												<a href="#" class="pp_arrow_next">Next</a> \
+											</div> \
+										</div> \
+									</div> \
+								</div> \
+							</div> \
+							</div> \
+						</div> \
+						<div class="pp_bottom"> \
+							<div class="pp_left"></div> \
+							<div class="pp_middle"></div> \
+							<div class="pp_right"></div> \
+						</div> \
+					</div> \
+					<div class="pp_overlay"></div> \
+					<div class="ppt"></div>',
+			image_markup: '<img id="fullResImage" src="" />',
+			flash_markup: '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="{width}" height="{height}"><param name="wmode" value="{wmode}" /><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="{path}" /><embed src="{path}" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="{width}" height="{height}" wmode="{wmode}"></embed></object>',
+			quicktime_markup: '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab" height="{height}" width="{width}"><param name="src" value="{path}"><param name="autoplay" value="{autoplay}"><param name="type" value="video/quicktime"><embed src="{path}" height="{height}" width="{width}" autoplay="{autoplay}" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"></embed></object>',
+			iframe_markup: '<iframe src ="{path}" width="{width}" height="{height}" frameborder="no"></iframe>',
+			inline_markup: '<div class="pp_inline clearfix">{content}</div>'
 		}, settings);
 		
 		// Fallback to a supported theme for IE6
@@ -28,31 +76,28 @@
 			settings.theme = "light_square";
 		}
 		
-		if($('.pp_overlay').size() == 0) {
-			_buildOverlay(); // If the overlay is not there, inject it!
-		}else{
-			// Set my global selectors
-			$pp_pic_holder = $('.pp_pic_holder');
-			$ppt = $('.ppt');
-		}
+		if(!$pp_overlay) _buildOverlay(); // If the overlay is not there, inject it!
 		
 		// Global variables accessible only by prettyPhoto
 		var doresize = true, percentBased = false, correctSizes,
 		
 		// Cached selectors
-		$pp_pic_holder, $ppt,
+		$pp_pic_holder, $ppt, $pp_overlay,
 		
 		// prettyPhoto container specific
-		pp_contentHeight, pp_contentWidth, pp_containerHeight, pp_containerWidth, pp_type = 'image',
+		pp_contentHeight, pp_contentWidth, pp_containerHeight, pp_containerWidth,
+		
+		// Window size
+		windowHeight = $(window).height(), windowWidth = $(window).width(),
 	
 		//Gallery specific
 		setPosition = 0,
 
 		// Global elements
-		$scrollPos = _getScroll();
+		scrollPos = _getScroll();
 	
 		// Window/Keyboard events
-		$(window).scroll(function(){ $scrollPos = _getScroll(); _centerOverlay(); _resizeOverlay(); });
+		$(window).scroll(function(){ scrollPos = _getScroll(); _centerOverlay(); _resizeOverlay(); });
 		$(window).resize(function(){ _centerOverlay(); _resizeOverlay(); });
 		$(document).keydown(function(e){
 			if($pp_pic_holder.is(':visible'))
@@ -73,8 +118,7 @@
 		// Bind the code to each links
 		$(this).each(function(){
 			$(this).bind('click',function(){
-				
-				link = this; // Fix scoping
+				_self = this; // Fix scoping
 				
 				// Find out if the picture is part of a set
 				theRel = $(this).attr('rel');
@@ -85,7 +129,7 @@
 				var images = new Array(), titles = new Array(), descriptions = new Array();
 				if(theGallery){
 					$('a[rel*='+theGallery+']').each(function(i){
-						if($(this)[0] === $(link)[0]) setPosition = i; // Get the position in the set
+						if($(this)[0] === $(_self)[0]) setPosition = i; // Get the position in the set
 						images.push($(this).attr('href'));
 						titles.push($(this).find('img').attr('alt'));
 						descriptions.push($(this).attr('title'));
@@ -114,29 +158,14 @@
 				$('select').css('visibility','hidden');
 			};
 			
-			// Hide the flash
-			if(settings.hideflash) $('object,embed').css('visibility','hidden');
+			if(settings.hideflash) $('object,embed').css('visibility','hidden'); // Hide the flash
 			
 			// Convert everything to an array in the case it's a single item
 			images = $.makeArray(gallery_images);
 			titles = $.makeArray(gallery_titles);
 			descriptions = $.makeArray(gallery_descriptions);
-			
-			if($('.pp_overlay').size() == 0) {
-				_buildOverlay(); // If the overlay is not there, inject it!
-			}else{
-				// Set my global selectors
-				$pp_pic_holder = $('.pp_pic_holder');
-				$ppt = $('.ppt');
-			}
-			
-			$pp_pic_holder.attr('class','pp_pic_holder ' + settings.theme); // Set the proper theme
 
-			isSet = ($(images).size() > 0) ?  true : false; // Find out if it's a set
-
-			_getFileType(images[setPosition]); // Set the proper file type
-
-			_centerOverlay(); // Center it
+			image_set = ($(images).size() > 0) ?  true : false; // Find out if it's a set
 
 			// Hide the next/previous links if on first or last images.
 			_checkPosition($(images).size());
@@ -144,95 +173,132 @@
 			$('.pp_loaderIcon').show(); // Do I need to explain?
 		
 			// Fade the content in
-			$('div.pp_overlay').show().fadeTo(settings.animationSpeed,settings.opacity, function(){
-				$pp_pic_holder.fadeIn(settings.animationSpeed,function(){
-					// Display the current position
-					$pp_pic_holder.find('p.currentTextHolder').text((setPosition+1) + settings.counter_separator_label + $(images).size());
+			$pp_overlay.show().fadeTo(settings.animationSpeed,settings.opacity);
 
-					// Set the description
-					if(descriptions[setPosition]){
-						$pp_pic_holder.find('.pp_description').show().html(unescape(descriptions[setPosition]));
-					}else{
-						$pp_pic_holder.find('.pp_description').hide().text('');
+			// Display the current position
+			$pp_pic_holder.find('.currentTextHolder').text((setPosition+1) + settings.counter_separator_label + $(images).size());
+
+			// Set the description
+			if(descriptions[setPosition]){
+				$pp_pic_holder.find('.pp_description').show().html(unescape(descriptions[setPosition]));
+			}else{
+				$pp_pic_holder.find('.pp_description').hide().text('');
+			};
+
+			// Set the title
+			if(titles[setPosition] && settings.showTitle){
+				hasTitle = true;
+				$ppt.html(unescape(titles[setPosition]));
+			}else{
+				hasTitle = false;
+			};
+			
+			// Get the dimensions
+			movie_width = ( parseFloat(grab_param('width',images[setPosition])) ) ? grab_param('width',images[setPosition]) : settings.default_width.toString();
+			movie_height = ( parseFloat(grab_param('height',images[setPosition])) ) ? grab_param('height',images[setPosition]) : settings.default_height.toString();
+			
+			// If the size is % based, calculate according to window dimensions
+			if(movie_width.indexOf('%') != -1 || movie_height.indexOf('%') != -1){
+				movie_height = parseFloat(($(window).height() * parseFloat(movie_height) / 100) - 100);
+				movie_width = parseFloat(($(window).width() * parseFloat(movie_width) / 100) - 100);
+				percentBased = true;
+			}
+			
+			imgPreloader = "";
+			
+			// Inject the proper content
+			switch(_getFileType(images[setPosition])){
+				case 'image':
+					// Set the new image
+					imgPreloader = new Image();
+
+					// Preload the neighbour images
+					nextImage = new Image();
+					if(image_set && setPosition > $(images).size()) nextImage.src = images[setPosition + 1];
+					prevImage = new Image();
+					if(image_set && images[setPosition - 1]) prevImage.src = images[setPosition - 1];
+
+					$pp_pic_holder.find('#pp_full_res')[0].innerHTML = settings.image_markup;
+					$pp_pic_holder.find('#fullResImage').attr('src',images[setPosition]);
+
+					imgPreloader.onload = function(){
+						// Fit item to viewport
+						correctSizes = _fitToViewport(imgPreloader.width,imgPreloader.height);
+
+						_showContent();
 					};
 
-					// Set the title
-					if(titles[setPosition] && settings.showTitle){
-						hasTitle = true;
-						$ppt.html(unescape(titles[setPosition]));
-					}else{
-						hasTitle = false;
+					imgPreloader.onerror = function(){
+						alert('Image cannot be loaded. Make sure the path is correct and image exist.');
+						$.prettyPhoto.close();
 					};
 					
-					// Inject the proper content
-					if(pp_type == 'image'){
-						// Set the new image
-						imgPreloader = new Image();
+					imgPreloader.src = images[setPosition];
+				break;
+				
+				case 'youtube':
+					correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 
-						// Preload the neighbour images
-						nextImage = new Image();
-						if(isSet && setPosition > $(images).size()) nextImage.src = images[setPosition + 1];
-						prevImage = new Image();
-						if(isSet && images[setPosition - 1]) prevImage.src = images[setPosition - 1];
+					movie = 'http://www.youtube.com/v/'+grab_param('v',images[setPosition]);
+					if(settings.autoplay) movie += "&autoplay=1";
+					
+					toInject = settings.flash_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,movie);
+				break;
+				
+				case 'vimeo':
+					correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+					
+					movie_id = images[setPosition];
+					movie = 'http://vimeo.com/moogaloop.swf?clip_id='+ movie_id.replace('http://vimeo.com/','');
+					if(settings.autoplay) movie += "&autoplay=1";
+				
+					toInject = settings.flash_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,movie);
+				break;
+				
+				case 'quicktime':
+					correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+					correctSizes['height']+=15; correctSizes['contentHeight']+=15; correctSizes['containerHeight']+=15; // Add space for the control bar
+				
+					toInject = settings.quicktime_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,images[setPosition]).replace(/{autoplay}/g,settings.autoplay);
+				break;
+				
+				case 'flash':
+					correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+					
+					flash_vars = images[setPosition];
+					flash_vars = flash_vars.substring(images[setPosition].indexOf('flashvars') + 10,images[setPosition].length);
 
-						pp_typeMarkup = '<img id="fullResImage" src="" />';				
-						$pp_pic_holder.find('#pp_full_res')[0].innerHTML = pp_typeMarkup;
+					filename = images[setPosition];
+					filename = filename.substring(0,filename.indexOf('?'));
+					
+					toInject =  settings.flash_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,filename+'?'+flash_vars);
+				break;
+				
+				case 'iframe':
+					correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+				
+					frame_url = images[setPosition];
+					frame_url = frame_url.substr(0,frame_url.indexOf('iframe')-1);
+				
+					toInject = settings.iframe_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{path}/g,frame_url);
+				break;
+				
+				case 'inline':
+					// to get the item height clone it, apply default width, wrap it in the prettyPhoto containers , then delete
+					myClone = $(images[setPosition]).clone().css({'width':settings.default_width}).wrapInner('<div id="pp_full_res"><div class="pp_inline clearfix"></div></div>').appendTo($('body'));
+					correctSizes = _fitToViewport($(myClone).width(),$(myClone).height());
+					$(myClone).remove();
+					toInject = settings.inline_markup.replace(/{content}/g,$(images[setPosition]).html());
+				break;
+			};
 
-						$pp_pic_holder.find('.pp_content').css('overflow','hidden');
-						$pp_pic_holder.find('#fullResImage').attr('src',images[setPosition]);
+			if(!imgPreloader){
+				$pp_pic_holder.find('#pp_full_res')[0].innerHTML = toInject;
+				
+				// Show content
+				_showContent();
+			};
 
-						imgPreloader.onload = function(){
-							// Fit item to viewport
-							correctSizes = _fitToViewport(imgPreloader.width,imgPreloader.height);
-							
-							_showContent();
-						};
-
-						imgPreloader.src = images[setPosition];
-					}else{
-						// Get the dimensions
-						movie_width = ( parseFloat(grab_param('width',images[setPosition])) ) ? grab_param('width',images[setPosition]) : "425";
-						movie_height = ( parseFloat(grab_param('height',images[setPosition])) ) ? grab_param('height',images[setPosition]) : "344";
-
-						// If the size is % based, calculate according to window dimensions
-						if(movie_width.indexOf('%') != -1 || movie_height.indexOf('%') != -1){
-							movie_height = ($(window).height() * parseFloat(movie_height) / 100) - 100;
-							movie_width = ($(window).width() * parseFloat(movie_width) / 100) - 100;
-							percentBased = true;
-						}
-
-						movie_height = parseFloat(movie_height);
-						movie_width = parseFloat(movie_width);
-
-						if(pp_type == 'quicktime') movie_height+=15; // Add space for the control bar
-
-						// Fit item to viewport
-						correctSizes = _fitToViewport(movie_width,movie_height);
-
-						if(pp_type == 'youtube'){
-							pp_typeMarkup = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="'+correctSizes['width']+'" height="'+correctSizes['height']+'"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="http://www.youtube.com/v/'+grab_param('v',images[setPosition])+'" /><embed src="http://www.youtube.com/v/'+grab_param('v',images[setPosition])+'" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="'+correctSizes['width']+'" height="'+correctSizes['height']+'"></embed></object>';
-						}else if(pp_type == 'quicktime'){
-							pp_typeMarkup = '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab" height="'+correctSizes['height']+'" width="'+correctSizes['width']+'"><param name="src" value="'+images[setPosition]+'"><param name="autoplay" value="true"><param name="type" value="video/quicktime"><embed src="'+images[setPosition]+'" height="'+correctSizes['height']+'" width="'+correctSizes['width']+'" autoplay="true" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"></embed></object>';
-						}else if(pp_type == 'flash'){
-							flash_vars = images[setPosition];
-							flash_vars = flash_vars.substring(images[setPosition].indexOf('flashvars') + 10,images[setPosition].length);
-
-							filename = images[setPosition];
-							filename = filename.substring(0,filename.indexOf('?'));
-
-							pp_typeMarkup = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="'+correctSizes['width']+'" height="'+correctSizes['height']+'"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="'+filename+'?'+flash_vars+'" /><embed src="'+filename+'?'+flash_vars+'" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="'+correctSizes['width']+'" height="'+correctSizes['height']+'"></embed></object>';
-						}else if(pp_type == 'iframe'){
-							movie_url = images[setPosition];
-							movie_url = movie_url.substr(0,movie_url.indexOf('iframe')-1);
-
-							pp_typeMarkup = '<iframe src ="'+movie_url+'" width="'+(correctSizes['width']-10)+'" height="'+(correctSizes['height']-10)+'" frameborder="no"></iframe>';
-						}
-
-						// Show content
-						_showContent();
-					}
-				});
-			});
 		};
 		
 		/**
@@ -245,7 +311,7 @@
 				if (setPosition < 0){
 					setPosition = 0;
 					return;
-				}
+				};
 			}else{
 				if($('.pp_arrow_next').is('.disabled')) return;
 				setPosition++;
@@ -254,11 +320,8 @@
 			// Allow the resizing of the images
 			if(!doresize) doresize = true;
 
-			_hideContent();
-			$('a.pp_expand,a.pp_contract').fadeOut(settings.animationSpeed,function(){
-				$(this).removeClass('pp_contract').addClass('pp_expand');
-				$.prettyPhoto.open(images,titles,descriptions);
-			});
+			_hideContent(function(){$.prettyPhoto.open(images,titles,descriptions)});
+			$('a.pp_expand,a.pp_contract').fadeOut(settings.animationSpeed);
 		};
 		
 		/**
@@ -267,10 +330,11 @@
 		$.prettyPhoto.close = function(){
 			$pp_pic_holder.find('object,embed').css('visibility','hidden');
 			
-			$('div.pp_pic_holder,div.ppt').fadeOut(settings.animationSpeed);
+			$('div.pp_pic_holder,div.ppt,.pp_fade').fadeOut(settings.animationSpeed);
 			
-			$('div.pp_overlay').fadeOut(settings.animationSpeed, function(){
-				$('div.pp_overlay,div.pp_pic_holder,div.ppt').remove();
+			$pp_overlay.fadeOut(settings.animationSpeed, function(){
+				$pp_pic_holder.attr('style','').find('div:not(.pp_hoverContainer)').attr('style',''); // Reset the width and everything that has been set.
+				_centerOverlay(); // Center it
 			
 				// To fix the bug with IE select boxes
 				if($.browser.msie && $.browser.version == 6){
@@ -281,10 +345,8 @@
 				if(settings.hideflash) $('object,embed').css('visibility','visible');
 				
 				setPosition = 0;
-				
 				settings.callback();
 			});
-			
 			doresize = true;
 		};
 	
@@ -294,17 +356,9 @@
 		_showContent = function(){
 			$('.pp_loaderIcon').hide();
 
-			if($.browser.opera) {
-				windowHeight = window.innerHeight;
-				windowWidth = window.innerWidth;
-			}else{
-				windowHeight = $(window).height();
-				windowWidth = $(window).width();
-			};
-
 			// Calculate the opened top position of the pic holder
-			projectedTop = $scrollPos['scrollTop'] + ((windowHeight/2) - (correctSizes['containerHeight']/2));
-			if(projectedTop < 0) projectedTop = 0 + $pp_pic_holder.find('.ppt').height();
+			projectedTop = scrollPos['scrollTop'] + ((windowHeight/2) - (correctSizes['containerHeight']/2));
+			if(projectedTop < 0) projectedTop = 0 + $ppt.height();
 
 			// Resize the content holder
 			$pp_pic_holder.find('.pp_content').animate({'height':correctSizes['contentHeight']},settings.animationSpeed);
@@ -312,24 +366,22 @@
 			// Resize picture the holder
 			$pp_pic_holder.animate({
 				'top': projectedTop,
-				'left': ((windowWidth/2) - (correctSizes['containerWidth']/2)),
+				'left': (windowWidth/2) - (correctSizes['containerWidth']/2),
 				'width': correctSizes['containerWidth']
 			},settings.animationSpeed,function(){
-				$pp_pic_holder.width(correctSizes['containerWidth']);
 				$pp_pic_holder.find('.pp_hoverContainer,#fullResImage').height(correctSizes['height']).width(correctSizes['width']);
 
 				// Fade the new image
-				$pp_pic_holder.find('#pp_full_res').fadeIn(settings.animationSpeed);
+				$pp_pic_holder.find('.pp_fade').fadeIn(settings.animationSpeed);
 
 				// Show the nav
-				if(isSet && pp_type=="image") { $pp_pic_holder.find('.pp_hoverContainer').fadeIn(settings.animationSpeed); }else{ $pp_pic_holder.find('.pp_hoverContainer').hide(); }
-				$pp_pic_holder.find('.pp_details').fadeIn(settings.animationSpeed);
+				if(image_set && _getFileType(images[setPosition])=="image") { $pp_pic_holder.find('.pp_hoverContainer').show(); }else{ $pp_pic_holder.find('.pp_hoverContainer').hide(); }
 
 				// Show the title
 				if(settings.showTitle && hasTitle){
 					$ppt.css({
-						'top' : $pp_pic_holder.offset().top - 20,
-						'left' : $pp_pic_holder.offset().left + (settings.padding/2),
+						'top' : $pp_pic_holder.offset().top - 25,
+						'left' : $pp_pic_holder.offset().left + 20,
 						'display' : 'none'
 					});
 
@@ -339,9 +391,6 @@
 				// Fade the resizing link if the image is resized
 				if(correctSizes['resized']) $('a.pp_expand,a.pp_contract').fadeIn(settings.animationSpeed);
 				
-				// Once everything is done, inject the content if it's now a photo
-				if(pp_type != 'image') $pp_pic_holder.find('#pp_full_res')[0].innerHTML = pp_typeMarkup;
-				
 				// Callback!
 				settings.changepicturecallback();
 			});
@@ -350,12 +399,13 @@
 		/**
 		* Hide the content...DUH!
 		*/
-		function _hideContent(){
+		function _hideContent(callback){
 			// Fade out the current picture
 			$pp_pic_holder.find('#pp_full_res object,#pp_full_res embed').css('visibility','hidden');
-			$pp_pic_holder.find('.pp_hoverContainer,.pp_details').fadeOut(settings.animationSpeed);
-			$pp_pic_holder.find('#pp_full_res').fadeOut(settings.animationSpeed,function(){
+			$pp_pic_holder.find('.pp_fade').fadeOut(settings.animationSpeed,function(){
 				$('.pp_loaderIcon').show();
+				
+				if(callback) callback();
 			});
 			
 			// Hide the title
@@ -407,16 +457,13 @@
 		*/
 		function _fitToViewport(width,height){
 			hasBeenResized = false;
-		
+
 			_getDimensions(width,height);
 			
 			// Define them in case there's no resize needed
 			imageWidth = width;
 			imageHeight = height;
 
-			windowHeight = $(window).height();
-			windowWidth = $(window).width();
-		
 			if( ((pp_containerWidth > windowWidth) || (pp_containerHeight > windowHeight)) && doresize && settings.allowresize && !percentBased) {
 				hasBeenResized = true;
 				notFitting = true;
@@ -440,12 +487,12 @@
 			};
 
 			return {
-				width:imageWidth,
-				height:imageHeight,
-				containerHeight:pp_containerHeight,
-				containerWidth:pp_containerWidth,
-				contentHeight:pp_contentHeight,
-				contentWidth:pp_contentWidth,
+				width:Math.floor(imageWidth),
+				height:Math.floor(imageHeight),
+				containerHeight:Math.floor(pp_containerHeight),
+				containerWidth:Math.floor(pp_containerWidth) + 40,
+				contentHeight:Math.floor(pp_contentHeight),
+				contentWidth:Math.floor(pp_contentWidth),
 				resized:hasBeenResized
 			};
 		};
@@ -456,105 +503,106 @@
 		* @param height {integer} Height of the item to be opened
 		*/
 		function _getDimensions(width,height){
-			$pp_pic_holder.find('.pp_details').width(width).find('.pp_description').width(width - parseFloat($pp_pic_holder.find('a.pp_close').css('width'))); /* To have the correct height */
+			width = parseFloat(width);
+			height = parseFloat(height);
+			
+			// Get the details height, to do so, I need to clone it since it's invisible
+			$pp_details = $pp_pic_holder.find('.pp_details');
+			$pp_details.width(width);
+			detailsHeight = parseFloat($pp_details.css('marginTop')) + parseFloat($pp_details.css('marginBottom'));
+			$pp_details = $pp_details.clone().appendTo($('body')).css({
+				'position':'absolute',
+				'top':-10000
+			});
+			detailsHeight += $pp_details.height();
+			detailsHeight = (detailsHeight <= 34) ? 36 : detailsHeight; // Min-height for the details
+			if($.browser.msie && $.browser.version==7) detailsHeight+=8;
+			$pp_details.remove();
 			
 			// Get the container size, to resize the holder to the right dimensions
-			pp_contentHeight = height + $pp_pic_holder.find('.pp_details').height() + parseFloat($pp_pic_holder.find('.pp_details').css('marginTop')) + parseFloat($pp_pic_holder.find('.pp_details').css('marginBottom'));
+			pp_contentHeight = height + detailsHeight;
 			pp_contentWidth = width;
-			pp_containerHeight = pp_contentHeight + $pp_pic_holder.find('.ppt').height() + $pp_pic_holder.find('.pp_top').height() + $pp_pic_holder.find('.pp_bottom').height();
-			pp_containerWidth = width + settings.padding;
+			pp_containerHeight = pp_contentHeight + $ppt.height() + $pp_pic_holder.find('.pp_top').height() + $pp_pic_holder.find('.pp_bottom').height();
+			pp_containerWidth = width;
 		}
 	
 		function _getFileType(itemSrc){
 			if (itemSrc.match(/youtube\.com\/watch/i)) {
-				pp_type = 'youtube';
+				return 'youtube';
+			}else if (itemSrc.match(/vimeo\.com/i)) {
+				return 'vimeo';
 			}else if(itemSrc.indexOf('.mov') != -1){ 
-				pp_type = 'quicktime';
+				return 'quicktime';
 			}else if(itemSrc.indexOf('.swf') != -1){
-				pp_type = 'flash';
+				return 'flash';
 			}else if(itemSrc.indexOf('iframe') != -1){
-				pp_type = 'iframe'
+				return 'iframe'
+			}else if(itemSrc.substr(0,1) == '#'){
+				return 'inline';
 			}else{
-				pp_type = 'image';
+				return 'image';
 			};
 		};
 	
 		function _centerOverlay(){
-			if($.browser.opera) {
-				windowHeight = window.innerHeight;
-				windowWidth = window.innerWidth;
-			}else{
-				windowHeight = $(window).height();
-				windowWidth = $(window).width();
-			};
-
 			if(doresize) {
-				$pHeight = $pp_pic_holder.height();
-				$pWidth = $pp_pic_holder.width();
-				$tHeight = $ppt.height();
+				titleHeight = $ppt.height();
+				contentHeight = $pp_pic_holder.height();
+				contentwidth = $pp_pic_holder.width();
 				
-				projectedTop = (windowHeight/2) + $scrollPos['scrollTop'] - ($pHeight/2);
-				if(projectedTop < 0) projectedTop = 0 + $tHeight;
+				projectedTop = (windowHeight/2) + scrollPos['scrollTop'] - ((contentHeight+titleHeight)/2);
 				
 				$pp_pic_holder.css({
 					'top': projectedTop,
-					'left': (windowWidth/2) + $scrollPos['scrollLeft'] - ($pWidth/2)
+					'left': (windowWidth/2) + scrollPos['scrollLeft'] - (contentwidth/2)
 				});
-		
+				
 				$ppt.css({
-					'top' : projectedTop - $tHeight,
-					'left' : (windowWidth/2) + $scrollPos['scrollLeft'] - ($pWidth/2) + (settings.padding/2)
+					'top' : projectedTop - titleHeight,
+					'left': (windowWidth/2) + scrollPos['scrollLeft'] - (contentwidth/2) + 20
 				});
 			};
 		};
 	
 		function _getScroll(){
 			if (self.pageYOffset) {
-				scrollTop = self.pageYOffset;
-				scrollLeft = self.pageXOffset;
+				return {scrollTop:self.pageYOffset,scrollLeft:self.pageXOffset};
 			} else if (document.documentElement && document.documentElement.scrollTop) { // Explorer 6 Strict
-				scrollTop = document.documentElement.scrollTop;
-				scrollLeft = document.documentElement.scrollLeft;
+				return {scrollTop:document.documentElement.scrollTop,scrollLeft:document.documentElement.scrollLeft};
 			} else if (document.body) {// all other Explorers
-				scrollTop = document.body.scrollTop;
-				scrollLeft = document.body.scrollLeft;	
-			}
-			
-			return {scrollTop:scrollTop,scrollLeft:scrollLeft};
+				return {scrollTop:document.body.scrollTop,scrollLeft:document.body.scrollLeft};
+			};
 		};
 	
 		function _resizeOverlay() {
-			$('div.pp_overlay').css({
-				'height':$(document).height(),
-				'width':$(window).width()
+			windowHeight = $(window).height();
+			windowWidth = $(window).width();
+			
+			$pp_overlay.css({
+				'height':$(document).height()
 			});
 		};
 	
 		function _buildOverlay(){
-			toInject = "";
-			
-			// Build the background overlay div
-			toInject += "<div class='pp_overlay'></div>";
-			
-			// Basic HTML for the picture holder
-			toInject += '<div class="pp_pic_holder"><div class="pp_top"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div><div class="pp_content"><a href="#" class="pp_expand" title="Expand the image">Expand</a><div class="pp_loaderIcon"></div><div class="pp_hoverContainer"><a class="pp_next" href="#">next</a><a class="pp_previous" href="#">previous</a></div><div id="pp_full_res"></div><div class="pp_details clearfix"><a class="pp_close" href="#">Close</a><p class="pp_description"></p><div class="pp_nav"><a href="#" class="pp_arrow_previous">Previous</a><p class="currentTextHolder">0'+settings.counter_separator_label+'0</p><a href="#" class="pp_arrow_next">Next</a></div></div></div><div class="pp_bottom"><div class="pp_left"></div><div class="pp_middle"></div><div class="pp_right"></div></div></div>';
-			
-			// Basic html for the title holder
-			toInject += '<div class="ppt"></div>';
-			
-			$('body').append(toInject);
-			
-			// So it fades nicely
-			$('div.pp_overlay').css('opacity',0);
+			// Inject the markup
+			$('body').append(settings.markup);
 			
 			// Set my global selectors
 			$pp_pic_holder = $('.pp_pic_holder');
 			$ppt = $('.ppt');
+			$pp_overlay = $('div.pp_overlay');
 			
-			$('div.pp_overlay').css('height',$(document).height()).hide().bind('click',function(){
-				if(!settings.modal)
-				$.prettyPhoto.close();
-			});
+			$pp_pic_holder.attr('class','pp_pic_holder ' + settings.theme); // Set the proper theme
+			
+			$pp_overlay
+				.css({
+					'opacity':0,
+					'height':$(document).height()
+					})
+				.bind('click',function(){
+					if(!settings.modal)
+					$.prettyPhoto.close();
+				});
 
 			$('a.pp_close').bind('click',function(){ $.prettyPhoto.close(); return false; });
 
@@ -570,12 +618,9 @@
 					doresize = true;
 				};
 			
-				_hideContent();
+				_hideContent(function(){ $.prettyPhoto.open(images,titles,descriptions) });
 				
-				$pp_pic_holder.find('.pp_hoverContainer, .pp_details').fadeOut(settings.animationSpeed);
-				$pp_pic_holder.find('#pp_full_res').fadeOut(settings.animationSpeed,function(){
-					$.prettyPhoto.open(images,titles,descriptions);
-				});
+				$pp_pic_holder.find('.pp_fade').fadeOut(settings.animationSpeed);
 		
 				return false;
 			});
@@ -589,11 +634,9 @@
 				$.prettyPhoto.changePage('next');
 				return false;
 			});
-
-			$pp_pic_holder.find('.pp_hoverContainer').css({
-				'margin-left': settings.padding/2
-			});
 		};
+		
+		_centerOverlay(); // Center it
 	};
 	
 	function grab_param(name,url){

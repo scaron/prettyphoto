@@ -204,100 +204,102 @@
 				percentBased = true;
 			}
 			
-			imgPreloader = "";
-			
-			// Inject the proper content
-			switch(_getFileType(images[setPosition])){
-				case 'image':
-					// Set the new image
-					imgPreloader = new Image();
+			// Fade the holder
+			$pp_pic_holder.fadeIn(function(){
+				imgPreloader = "";
+				// Inject the proper content
+				switch(_getFileType(images[setPosition])){
+					case 'image':
+						// Set the new image
+						imgPreloader = new Image();
 
-					// Preload the neighbour images
-					nextImage = new Image();
-					if(image_set && setPosition > $(images).size()) nextImage.src = images[setPosition + 1];
-					prevImage = new Image();
-					if(image_set && images[setPosition - 1]) prevImage.src = images[setPosition - 1];
+						// Preload the neighbour images
+						nextImage = new Image();
+						if(image_set && setPosition > $(images).size()) nextImage.src = images[setPosition + 1];
+						prevImage = new Image();
+						if(image_set && images[setPosition - 1]) prevImage.src = images[setPosition - 1];
 
-					$pp_pic_holder.find('#pp_full_res')[0].innerHTML = settings.image_markup;
-					$pp_pic_holder.find('#fullResImage').attr('src',images[setPosition]);
+						$pp_pic_holder.find('#pp_full_res')[0].innerHTML = settings.image_markup;
+						$pp_pic_holder.find('#fullResImage').attr('src',images[setPosition]);
 
-					imgPreloader.onload = function(){
-						// Fit item to viewport
-						correctSizes = _fitToViewport(imgPreloader.width,imgPreloader.height);
+						imgPreloader.onload = function(){
+							// Fit item to viewport
+							correctSizes = _fitToViewport(imgPreloader.width,imgPreloader.height);
 
-						_showContent();
-					};
+							_showContent();
+						};
 
-					imgPreloader.onerror = function(){
-						alert('Image cannot be loaded. Make sure the path is correct and image exist.');
-						$.prettyPhoto.close();
-					};
+						imgPreloader.onerror = function(){
+							alert('Image cannot be loaded. Make sure the path is correct and image exist.');
+							$.prettyPhoto.close();
+						};
 					
-					imgPreloader.src = images[setPosition];
-				break;
+						imgPreloader.src = images[setPosition];
+					break;
 				
-				case 'youtube':
-					correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+					case 'youtube':
+						correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 
-					movie = 'http://www.youtube.com/v/'+grab_param('v',images[setPosition]);
-					if(settings.autoplay) movie += "&autoplay=1";
+						movie = 'http://www.youtube.com/v/'+grab_param('v',images[setPosition]);
+						if(settings.autoplay) movie += "&autoplay=1";
 					
-					toInject = settings.flash_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,movie);
-				break;
+						toInject = settings.flash_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,movie);
+					break;
 				
-				case 'vimeo':
-					correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+					case 'vimeo':
+						correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 					
-					movie_id = images[setPosition];
-					movie = 'http://vimeo.com/moogaloop.swf?clip_id='+ movie_id.replace('http://vimeo.com/','');
-					if(settings.autoplay) movie += "&autoplay=1";
+						movie_id = images[setPosition];
+						movie = 'http://vimeo.com/moogaloop.swf?clip_id='+ movie_id.replace('http://vimeo.com/','');
+						if(settings.autoplay) movie += "&autoplay=1";
 				
-					toInject = settings.flash_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,movie);
-				break;
+						toInject = settings.flash_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,movie);
+					break;
 				
-				case 'quicktime':
-					correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
-					correctSizes['height']+=15; correctSizes['contentHeight']+=15; correctSizes['containerHeight']+=15; // Add space for the control bar
+					case 'quicktime':
+						correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+						correctSizes['height']+=15; correctSizes['contentHeight']+=15; correctSizes['containerHeight']+=15; // Add space for the control bar
 				
-					toInject = settings.quicktime_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,images[setPosition]).replace(/{autoplay}/g,settings.autoplay);
-				break;
+						toInject = settings.quicktime_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,images[setPosition]).replace(/{autoplay}/g,settings.autoplay);
+					break;
 				
-				case 'flash':
-					correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+					case 'flash':
+						correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 					
-					flash_vars = images[setPosition];
-					flash_vars = flash_vars.substring(images[setPosition].indexOf('flashvars') + 10,images[setPosition].length);
+						flash_vars = images[setPosition];
+						flash_vars = flash_vars.substring(images[setPosition].indexOf('flashvars') + 10,images[setPosition].length);
 
-					filename = images[setPosition];
-					filename = filename.substring(0,filename.indexOf('?'));
+						filename = images[setPosition];
+						filename = filename.substring(0,filename.indexOf('?'));
 					
-					toInject =  settings.flash_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,filename+'?'+flash_vars);
-				break;
+						toInject =  settings.flash_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,filename+'?'+flash_vars);
+					break;
 				
-				case 'iframe':
-					correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+					case 'iframe':
+						correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 				
-					frame_url = images[setPosition];
-					frame_url = frame_url.substr(0,frame_url.indexOf('iframe')-1);
+						frame_url = images[setPosition];
+						frame_url = frame_url.substr(0,frame_url.indexOf('iframe')-1);
 				
-					toInject = settings.iframe_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{path}/g,frame_url);
-				break;
+						toInject = settings.iframe_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{path}/g,frame_url);
+					break;
 				
-				case 'inline':
-					// to get the item height clone it, apply default width, wrap it in the prettyPhoto containers , then delete
-					myClone = $(images[setPosition]).clone().css({'width':settings.default_width}).wrapInner('<div id="pp_full_res"><div class="pp_inline clearfix"></div></div>').appendTo($('body'));
-					correctSizes = _fitToViewport($(myClone).width(),$(myClone).height());
-					$(myClone).remove();
-					toInject = settings.inline_markup.replace(/{content}/g,$(images[setPosition]).html());
-				break;
-			};
+					case 'inline':
+						// to get the item height clone it, apply default width, wrap it in the prettyPhoto containers , then delete
+						myClone = $(images[setPosition]).clone().css({'width':settings.default_width}).wrapInner('<div id="pp_full_res"><div class="pp_inline clearfix"></div></div>').appendTo($('body'));
+						correctSizes = _fitToViewport($(myClone).width(),$(myClone).height());
+						$(myClone).remove();
+						toInject = settings.inline_markup.replace(/{content}/g,$(images[setPosition]).html());
+					break;
+				};
 
-			if(!imgPreloader){
-				$pp_pic_holder.find('#pp_full_res')[0].innerHTML = toInject;
+				if(!imgPreloader){
+					$pp_pic_holder.find('#pp_full_res')[0].innerHTML = toInject;
 				
-				// Show content
-				_showContent();
-			};
+					// Show content
+					_showContent();
+				};
+			});
 
 		};
 		

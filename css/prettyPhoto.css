@@ -337,7 +337,7 @@
 			}
 		
 		.pp_loaderIcon {
-			display: none;
+			display: block;
 			height: 24px;
 			left: 50%;
 			margin: -12px 0 0 -12px;

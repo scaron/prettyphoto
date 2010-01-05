@@ -34,9 +34,9 @@
 							<div class="pp_left"> \
 							<div class="pp_right"> \
 								<div class="pp_content"> \
+									<div class="pp_loaderIcon"></div> \
 									<div class="pp_fade"> \
 										<a href="#" class="pp_expand" title="Expand the image">Expand</a> \
-										<div class="pp_loaderIcon"></div> \
 										<div class="pp_hoverContainer"> \
 											<a class="pp_next" href="#">next</a> \
 											<a class="pp_previous" href="#">previous</a> \
@@ -72,11 +72,11 @@
 		}, settings);
 		
 		// Fallback to a supported theme for IE6
-		if($.browser.msie && $.browser.version == 6){
+		if($.browser.msie && parseInt($.browser.version) == 6){
 			settings.theme = "light_square";
 		}
 		
-		if(!$pp_overlay) _buildOverlay(); // If the overlay is not there, inject it!
+		if($('.pp_overlay').size()==0) _buildOverlay(); // If the overlay is not there, inject it!
 		
 		// Global variables accessible only by prettyPhoto
 		var doresize = true, percentBased = false, correctSizes,
@@ -333,6 +333,8 @@
 			$('div.pp_pic_holder,div.ppt,.pp_fade').fadeOut(settings.animationSpeed);
 			
 			$pp_overlay.fadeOut(settings.animationSpeed, function(){
+				$('#pp_full_res').html(''); // Kill the opened content
+				
 				$pp_pic_holder.attr('style','').find('div:not(.pp_hoverContainer)').attr('style',''); // Reset the width and everything that has been set.
 				_centerOverlay(); // Center it
 			

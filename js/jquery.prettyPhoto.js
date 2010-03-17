@@ -129,8 +129,8 @@
 			
 			_buildOverlay(this); // Build the overlay {this} being the caller
 			
-			setPosition = jQuery.inArray($(this).attr('href'), pp_images); // Define where in the array the clicked item is positionned
-			
+			setPosition = jQuery.inArray($(this).attr('href').toLowerCase(), pp_images); // Define where in the array the clicked item is positionned
+
 			$.prettyPhoto.open();
 			
 			return false;
@@ -184,7 +184,7 @@
 				movie_height = parseFloat(($(window).height() * parseFloat(movie_height) / 100) - 100);
 				movie_width = parseFloat(($(window).width() * parseFloat(movie_width) / 100) - 100);
 				percentBased = true;
-			}
+			};
 			
 			// Fade the holder
 			$pp_pic_holder.fadeIn(function(){
@@ -354,10 +354,11 @@
 					$.prettyPhoto.stopSlideshow();
 					return false;
 				});
-				pp_slideshow = setTimeout($.prettyPhoto.startSlideshow,settings.slideshow);
 			}else{
-				$.prettyPhoto.changePage('next');	
+				$.prettyPhoto.changePage('next');
 			};
+			
+			pp_slideshow = setTimeout($.prettyPhoto.startSlideshow,settings.slideshow);
 		}
 
 
@@ -492,10 +493,10 @@
 			// If at the end, hide the next link
 			if(setPosition == setCount-1) {
 				$pp_pic_holder.find('a.pp_next').css('visibility','hidden');
-				$pp_pic_holder.find('a.pp_arrow_next').addClass('disabled').unbind('click');
+				$pp_pic_holder.find('.pp_nav a.pp_arrow_next').addClass('disabled').unbind('click');
 			}else{ 
 				$pp_pic_holder.find('a.pp_next').css('visibility','visible');
-				$pp_pic_holder.find('a.pp_arrow_next.disabled').removeClass('disabled').bind('click',function(){
+				$pp_pic_holder.find('.pp_nav a.pp_arrow_next.disabled').removeClass('disabled').bind('click',function(){
 					$.prettyPhoto.changePage('next');
 					return false;
 				});
@@ -504,10 +505,10 @@
 			// If at the beginning, hide the previous link
 			if(setPosition == 0) {
 				$pp_pic_holder.find('a.pp_previous').css('visibility','hidden');
-				$pp_pic_holder.find('a.pp_arrow_previous').addClass('disabled').unbind('click');
+				$pp_pic_holder.find('.pp_nav a.pp_arrow_previous').addClass('disabled').unbind('click');
 			}else{
 				$pp_pic_holder.find('a.pp_previous').css('visibility','visible');
-				$pp_pic_holder.find('a.pp_arrow_previous.disabled').removeClass('disabled').bind('click',function(){
+				$pp_pic_holder.find('.pp_nav a.pp_arrow_previous.disabled').removeClass('disabled').bind('click',function(){
 					$.prettyPhoto.changePage('previous');
 					return false;
 				});
@@ -658,6 +659,7 @@
 				toInject = "";
 				for (var i=0; i < pp_images.length; i++) {
 					var regex = new RegExp("(.*?)\.(jpg|jpeg|png|gif)$");
+					pp_images[i] = pp_images[i].toLowerCase();
 					var results = regex.exec( pp_images[i] );
 					if(!results){
 						classname = 'default';

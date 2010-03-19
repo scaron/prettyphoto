@@ -12,7 +12,7 @@
 		pp_settings = jQuery.extend({
 			animationSpeed: 'fast', /* fast/slow/normal */
 			slideshow: false, /* false OR interval time in ms */
-			autoplay_slideshow: false, /* true/false */
+			autoplay_slideshow: true, /* true/false */
 			opacity: 0.80, /* Value between 0 and 1 */
 			showTitle: true, /* true/false */
 			allowresize: true, /* true/false */
@@ -471,7 +471,13 @@
 			}else{
 				$pp_pic_holder.find('.pp_content').unbind('mouseenter mouseleave');
 				$pp_pic_holder.find('.pp_gallery').hide();
-			}
+			};
+			
+			if(settings.autoplay_slideshow) {
+				pp_slideshow = clearTimeout(pp_slideshow);
+				$.prettyPhoto.startSlideshow();
+				settings.autoplay_slideshow = false; // Because we only want it to autostart on the first opening.
+			};
 		};
 		
 		/**

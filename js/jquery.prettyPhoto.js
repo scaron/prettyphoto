@@ -129,7 +129,9 @@
 			
 			_buildOverlay(this); // Build the overlay {this} being the caller
 			
-			setPosition = jQuery.inArray($(this).attr('href').toLowerCase(), pp_images); // Define where in the array the clicked item is positionned
+			setItem = (_getFileType($(this).attr('href')) != 'youtube') ? $(this).attr('href').toLowerCase() : $(this).attr('href');
+			
+			setPosition = jQuery.inArray(setItem, pp_images); // Define where in the array the clicked item is positionned
 
 			$.prettyPhoto.open();
 			

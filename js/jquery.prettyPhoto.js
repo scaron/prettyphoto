@@ -12,7 +12,7 @@
 		pp_settings = jQuery.extend({
 			animationSpeed: 'fast', /* fast/slow/normal */
 			slideshow: false, /* false OR interval time in ms */
-			autoplay_slideshow: true, /* true/false */
+			autoplay_slideshow: false, /* true/false */
 			opacity: 0.80, /* Value between 0 and 1 */
 			showTitle: true, /* true/false */
 			allowresize: true, /* true/false */

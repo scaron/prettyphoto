@@ -66,7 +66,6 @@
 		<h4>Flash</h4>
 		<ul class="gallery clearfix">
 			<li><a href="http://www.adobe.com/products/flashplayer/include/marquee/design.swf?width=792&amp;height=294" rel="prettyPhoto[flash]" title="Flash 10 demo"><img src="images/thumbnails/flash-logo.png" width="60" alt="Flash 10 demo" /></a></li>
-			<li><a href="http://vimeo.com/moogaloop.swf?width=580&amp;height=326&amp;flashvars=clip_id=4321799&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1" rel="prettyPhoto[flash]" title="Vimeo Movie"><img src="images/thumbnails/flash-logo.png" width="60" alt="Vimeo movie" /></a></li>
 		</ul>
 		
 		<h4>Flash alone</h4>
@@ -141,11 +140,61 @@
 			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 		</div>
 		
+		<h4>Custom content</h4>
+		<ul id="custom_content" class="gallery clearfix">
+			<li><a href="#?custom=true&width=260&height=270" rel="prettyPhoto[custom]">Google Maps</a></li>
+			<li><a href="#?custom=true&width=260&height=275" rel="prettyPhoto[custom]">Ads</a></li>
+		</ul>
+		
 		<script type="text/javascript" charset="utf-8">
 		$(document).ready(function(){
 			$(".gallery:first a[rel^='prettyPhoto']").prettyPhoto({animationSpeed:'slow',theme:'light_square',slideshow:2000});
 			$(".gallery:gt(0) a[rel^='prettyPhoto']").prettyPhoto({animationSpeed:'fast',slideshow:10000});
+			
+			$("#custom_content a[rel^='prettyPhoto']:first").prettyPhoto({
+				custom_markup: '<div id="map_canvas" style="width:260px; height:265px"></div>',
+				changepicturecallback: function(){ initialize(); }
+			});
+
+			$("#custom_content a[rel^='prettyPhoto']:last").prettyPhoto({
+				custom_markup: '<div id="bsap_1237859" class="bsarocks bsap_d49a0984d0f377271ccbf01a33f2b6d6" style="height:260px"></div>',
+				changepicturecallback: function(){ _bsap.exec(); }
+			});
 		});
 		</script>
+		
+		<!-- Google Maps Code -->
+		<script type="text/javascript"
+		    src="http://maps.google.com/maps/api/js?sensor=true">
+		</script>
+		<script type="text/javascript">
+		  function initialize() {
+		    var latlng = new google.maps.LatLng(-34.397, 150.644);
+		    var myOptions = {
+		      zoom: 8,
+		      center: latlng,
+		      mapTypeId: google.maps.MapTypeId.ROADMAP
+		    };
+		    var map = new google.maps.Map(document.getElementById("map_canvas"),
+		        myOptions);
+		  }
+
+		</script>
+		<!-- END Google Maps Code -->
+		
+		<!-- BuySellAds.com Ad Code -->
+		<style type="text/css" media="screen">
+			.bsap a { float: left; }
+		</style>
+		<script type="text/javascript">
+		(function(){
+		  var bsa = document.createElement('script');
+		     bsa.type = 'text/javascript';
+		     bsa.async = true;
+		     bsa.src = '//s3.buysellads.com/ac/bsa.js';
+		  (document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(bsa);
+		})();
+		</script>
+		<!-- END BuySellAds.com Ad Code -->
 	</body>
 </html>

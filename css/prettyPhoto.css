@@ -369,6 +369,7 @@
 		a.pp_close {
 			display: block;
 			float: right;
+			line-height:22px;
 			text-indent: -10000px;
 		}
 		

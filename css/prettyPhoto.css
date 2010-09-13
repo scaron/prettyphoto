@@ -242,6 +242,7 @@
 			.pp_content_container .pp_right { padding-right: 20px; }
 		
 			.pp_content_container .pp_details {
+				float: left;
 				margin: 10px 0 2px 0;
 			}
 				.pp_description {
@@ -309,7 +310,8 @@
 				overflow: hidden;
 			}
 			
-			.pp_gallery ul a:hover { border-color: #fff; }
+			.pp_gallery ul a:hover,
+			.pp_gallery li.selected a { border-color: #fff; }
 			
 			.pp_gallery ul a img { border: 0; }
 			

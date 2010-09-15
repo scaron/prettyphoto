@@ -84,7 +84,7 @@
 		}, pp_settings);
 		
 		// Global variables accessible only by prettyPhoto
-		var matchedObjects = this, percentBased = false, correctSizes,
+		var matchedObjects = this, percentBased = false, correctSizes, pp_open,
 		
 		// prettyPhoto container specific
 		pp_contentHeight, pp_contentWidth, pp_containerHeight, pp_containerWidth,
@@ -191,8 +191,8 @@
 			
 			// If the size is % based, calculate according to window dimensions
 			if(movie_width.indexOf('%') != -1 || movie_height.indexOf('%') != -1){
-				movie_height = parseFloat(($(window).height() * parseFloat(movie_height) / 100) - 100);
-				movie_width = parseFloat(($(window).width() * parseFloat(movie_width) / 100) - 100);
+				movie_height = parseFloat(($(window).height() * parseFloat(movie_height) / 100) - 150);
+				movie_width = parseFloat(($(window).width() * parseFloat(movie_width) / 100) - 150);
 				percentBased = true;
 			}else{
 				percentBased = false;
@@ -401,7 +401,7 @@
 
 
 		/**
-		* Closes the prettyPhoto modal box.
+		* Closes prettyPhoto.
 		*/
 		$.prettyPhoto.close = function(){
 
@@ -423,6 +423,8 @@
 				settings.callback();
 				
 				doresize = true;
+				
+				pp_open = false;
 				
 				delete settings;
 			});
@@ -458,9 +460,11 @@
 			
 				if(correctSizes['resized']) $('a.pp_expand,a.pp_contract').fadeIn(settings.animation_speed); // Fade the resizing link if the image is resized
 				
-				if(settings.autoplay_slideshow && !pp_slideshow) $.prettyPhoto.startSlideshow();
+				if(settings.autoplay_slideshow && !pp_slideshow && !pp_open) $.prettyPhoto.startSlideshow();
 				
 				settings.changepicturecallback(); // Callback!
+				
+				pp_open = true;
 			});
 			
 			_insert_gallery();

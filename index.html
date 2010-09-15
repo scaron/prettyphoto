@@ -36,6 +36,16 @@
 			MIXED API CALLS: <a href="#" onclick="$.prettyPhoto.open(['http://www.youtube.com/watch?v=qqXi8WmQ_WM','images/fullscreen/2.jpg','http://movies.apple.com/movies/wb/terminatorsalvation/terminatorsalvation-tlr3_h.480.mov?width=480&amp;height=204'],['YouTube','Image','Quicktime'],['API call','API Call','API Call']);">Open</a> | <a href="#" onclick="$.prettyPhoto.changePage('previous');">Previous</a> | <a href="#" onclick="$.prettyPhoto.changePage('next');">Next</a> | <a href="#" onclick="$.prettyPhoto.close();">Close</a>
 		</div>
 		
+		<br /><br /><br /><br /><br />
+		
+		<h1>prettyPhoto</h1>
+		
+		<p>This page has been made for testing purpose only. It covers all the basic things you can handle in prettyPhoto.</p>
+		
+		<p>For complete documentation, please refer to the official website: <a href="http://www.no-margin-for-errors.com/projects/prettyphoto-jquery-lightbox-clone/">http://www.no-margin-for-errors.com/projects/prettyphoto-jquery-lightbox-clone/</a></p>
+		
+		<br /><br />
+		
 		<object width="425" height="344"><param name="movie" value="http://www.youtube.com/v/zrdEHvREfdI&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/zrdEHvREfdI&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="344"></embed></object>
 		
 		<h4>Gallery</h4>
@@ -45,8 +55,6 @@
 			<li><a href="images/fullscreen/3.jpg" rel="prettyPhoto[gallery1]"><img src="images/thumbnails/t_3.jpg" width="60" height="60" alt="Fire!" /></a></li>
 			<li><a href="images/fullscreen/4.jpg" rel="prettyPhoto[gallery1]"><img src="images/thumbnails/t_4.jpg" width="60" height="60" alt="Rock climbing" /></a></li>
 			<li><a href="images/fullscreen/5.jpg" rel="prettyPhoto[gallery1]"><img src="images/thumbnails/t_5.jpg" width="60" height="60" alt="Fly kite, fly!" /></a></li>
-			<li><a href="images/fullscreen/DSC05016.jpg" rel="prettyPhoto[gallery1]"><img src="images/thumbnails/t_5.jpg" width="60" height="60" alt="Fly kite, fly!" /></a></li>
-			<li><a href="images/fullscreen/DSCF0031.JPG" rel="prettyPhoto[gallery1]"><img src="images/thumbnails/t_5.jpg" width="60" height="60" alt="Fly kite, fly!" /></a></li>
 		</ul>
 
 		<h4>Gallery 2</h4>
@@ -92,7 +100,7 @@
 		
 		<h4>Movies (.mov) alone</h4>
 		<ul class="gallery clearfix">
-			<li><a href="http://trailers.apple.com/movies/disney/tronlegacy/tronlegacy-tsr1_r640s.mov?width=640&height=272" rel="prettyPhoto[movies]" title="Tron!"><img src="images/thumbnails/quicktime-logo.gif" alt="Tron teaser" width="60" /></a></li>
+			<li><a href="http://trailers.apple.com/movies/disney/tronlegacy/tronlegacy-tsr1_r640s.mov?width=640&height=272" rel="prettyPhoto[movie]" title="Tron!"><img src="images/thumbnails/quicktime-logo.gif" alt="Tron teaser" width="60" /></a></li>
 		</ul>
 		
 		<h4>Unusual sizes</h4>
@@ -112,7 +120,7 @@
 		<h4>Mixed gallery</h4>
 		<ul class="gallery clearfix">
 			<li><a href="http://www.google.ca?iframe=true&amp;width=1000&amp;height=500" rel="prettyPhoto[mixed]">Google.ca</a></li>
-			<li><a href="http://trailers.apple.com/movies/disney/tronlegacy/tronlegacy-tsr1_r640s.mov?width=640&height=272" rel="prettyPhoto[movies]" title="Tron!"><img src="images/thumbnails/quicktime-logo.gif" alt="Tron teaser" width="60" /></a></li>
+			<li><a href="http://trailers.apple.com/movies/disney/tronlegacy/tronlegacy-tsr1_r640s.mov?width=640&height=272" rel="prettyPhoto[mixed]" title="Tron!"><img src="images/thumbnails/quicktime-logo.gif" alt="Tron teaser" width="60" /></a></li>
 			<li><a href="images/fullscreen/5.jpg" rel="prettyPhoto[mixed]"><img src="images/thumbnails/t_5.jpg" width="60" height="60" alt="" /></a></li>
 			<li><a href="http://www.adobe.com/products/flashplayer/include/marquee/design.swf?width=792&amp;height=294" rel="prettyPhoto[mixed]" title="Flash 10 demo"><img src="images/thumbnails/flash-logo.png" width="60" alt="Flash 10 demo" /></a></li>
 		</ul>
@@ -143,12 +151,12 @@
 		<h4>Custom content</h4>
 		<ul id="custom_content" class="gallery clearfix">
 			<li><a href="#?custom=true&width=260&height=270" rel="prettyPhoto[custom]">Google Maps</a></li>
-			<li><a href="#?custom=true&width=260&height=275" rel="prettyPhoto[custom]">Ads</a></li>
+			<li><a href="#?custom=true&width=260&height=400" rel="prettyPhoto[custom]">Ads</a></li>
 		</ul>
 		
 		<script type="text/javascript" charset="utf-8">
 		$(document).ready(function(){
-			$(".gallery:first a[rel^='prettyPhoto']").prettyPhoto({animationSpeed:'slow',theme:'light_square',slideshow:2000});
+			$(".gallery:first a[rel^='prettyPhoto']").prettyPhoto({animationSpeed:'slow',theme:'light_square',slideshow:2000, autoplay_slideshow: true});
 			$(".gallery:gt(0) a[rel^='prettyPhoto']").prettyPhoto({animationSpeed:'fast',slideshow:10000});
 			
 			$("#custom_content a[rel^='prettyPhoto']:first").prettyPhoto({
@@ -157,7 +165,7 @@
 			});
 
 			$("#custom_content a[rel^='prettyPhoto']:last").prettyPhoto({
-				custom_markup: '<div id="bsap_1237859" class="bsarocks bsap_d49a0984d0f377271ccbf01a33f2b6d6" style="height:260px"></div>',
+				custom_markup: '<div id="bsap_1237859" class="bsarocks bsap_d49a0984d0f377271ccbf01a33f2b6d6" style="height:260px"></div><div id="bsap_1251710" class="bsarocks bsap_d49a0984d0f377271ccbf01a33f2b6d6"></div>',
 				changepicturecallback: function(){ _bsap.exec(); }
 			});
 		});

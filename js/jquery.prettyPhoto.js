@@ -183,7 +183,7 @@
 			$pp_pic_holder.find('.pp_description').show().html(unescape(pp_descriptions[set_position]));
 
 			// Set the title
-			(settings.show_title && pp_titles[set_position] != "") ? $ppt.html(unescape(pp_titles[set_position])) : $ppt.html('&nbsp;');
+			(settings.show_title && pp_titles[set_position] != "" && typeof pp_titles[set_position] != "undefined") ? $ppt.html(unescape(pp_titles[set_position])) : $ppt.html('&nbsp;');
 			
 			// Get the dimensions
 			movie_width = ( parseFloat(grab_param('width',pp_images[set_position])) ) ? grab_param('width',pp_images[set_position]) : settings.default_width.toString();

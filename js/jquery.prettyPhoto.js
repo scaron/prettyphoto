@@ -2,7 +2,7 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 3.0
+	Version: 3.0.1
 ------------------------------------------------------------------------- */
 
 (function($) {
@@ -152,11 +152,11 @@
 		* @param title {String,Array} The title to be displayed with the picture, can also be an array containing all the titles.
 		* @param description {String,Array} The description to be displayed with the picture, can also be an array containing all the descriptions.
 		*/
-		$.prettyPhoto.open = function() {
+		$.prettyPhoto.open = function(event) {
 			if(typeof settings == "undefined"){ // Means it's an API call, need to manually get the settings and set the variables
 				settings = pp_settings;
 				if($.browser.msie && $.browser.version == 6) settings.theme = "light_square"; // Fallback to a supported theme for IE6
-				_buildOverlay(this); // Build the overlay {this} being the caller
+				_buildOverlay(event.target); // Build the overlay {this} being the caller
 				pp_images = $.makeArray(arguments[0]);
 				pp_titles = (arguments[1]) ? $.makeArray(arguments[1]) : $.makeArray("");
 				pp_descriptions = (arguments[2]) ? $.makeArray(arguments[2]) : $.makeArray("");

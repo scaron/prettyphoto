@@ -228,7 +228,7 @@
 				width: 20px;
 			}
 		
-		.pp_content { height: 40px; width: 40px; }
+		.pp_content { height: 40px; min-width: 40px; }
 		
 		.pp_fade { display: none; }
 		

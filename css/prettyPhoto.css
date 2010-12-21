@@ -320,6 +320,7 @@
 				display: block;
 				float: left;
 				margin: 0 5px 0 0;
+				padding: 0;
 			}
 			
 			.pp_gallery li.default a {

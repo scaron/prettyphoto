@@ -192,9 +192,10 @@
 	div.pp_pic_holder {
 		display: none;
 		position: absolute;
-/*		width: 100px;*/
+		width: 100px;
 		z-index: 10000;
 	}
+
 		
 		.pp_top {
 			height: 20px;
@@ -229,6 +230,7 @@
 			}
 		
 		.pp_content { height: 40px; min-width: 40px; }
+		* html .pp_content { width: 40px; }
 		
 		.pp_fade { display: none; }
 		

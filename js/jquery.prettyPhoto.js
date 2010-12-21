@@ -471,7 +471,11 @@
 				// Show the nav
 				if(isSet && _getFileType(pp_images[set_position])=="image") { $pp_pic_holder.find('.pp_hoverContainer').show(); }else{ $pp_pic_holder.find('.pp_hoverContainer').hide(); }
 			
-				if(pp_dimensions['resized']) $('a.pp_expand,a.pp_contract').fadeIn(settings.animation_speed); // Fade the resizing link if the image is resized
+				if(pp_dimensions['resized']){ // Fade the resizing link if the image is resized
+					$('a.pp_expand,a.pp_contract').show();
+				}else{
+					$('a.pp_expand,a.pp_contract').hide();
+				}
 				
 				if(settings.autoplay_slideshow && !pp_slideshow && !pp_open) $.prettyPhoto.startSlideshow();
 				

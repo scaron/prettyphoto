@@ -616,9 +616,9 @@
 				return 'quicktime';
 			}else if(itemSrc.indexOf('.swf') != -1){
 				return 'flash';
-			}else if(itemSrc.indexOf('iframe') != -1){
+			}else if(itemSrc.indexOf('iframe=true') != -1){
 				return 'iframe';
-			}else if(itemSrc.indexOf('custom') != -1){
+			}else if(itemSrc.indexOf('custom=true') != -1){
 				return 'custom';
 			}else if(itemSrc.substr(0,1) == '#'){
 				return 'inline';

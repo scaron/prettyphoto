@@ -2,11 +2,11 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 3.0.1
+	Version: 3.0.2
 ------------------------------------------------------------------------- */
 
 (function($) {
-	$.prettyPhoto = {version: '3.0'};
+	$.prettyPhoto = {version: '3.0.2'};
 	
 	$.fn.prettyPhoto = function(pp_settings) {
 		pp_settings = jQuery.extend({
@@ -84,7 +84,7 @@
 		}, pp_settings);
 		
 		// Global variables accessible only by prettyPhoto
-		var matchedObjects = this, percentBased = false, correctSizes, pp_open,
+		var matchedObjects = this, percentBased = false, pp_dimensions, pp_open,
 		
 		// prettyPhoto container specific
 		pp_contentHeight, pp_contentWidth, pp_containerHeight, pp_containerWidth,
@@ -130,6 +130,16 @@
 			settings = pp_settings;
 			
 			if($.browser.msie && parseInt($.browser.version) == 6) settings.theme = "light_square"; // Fallback to a supported theme for IE6
+			
+			// Find out if the picture is part of a set
+			theRel = $(this).attr('rel');
+			galleryRegExp = /\[(?:.*)\]/;
+			isSet = (galleryRegExp.exec(theRel)) ? true : false;
+			
+			// Put the SRCs, TITLEs, ALTs into an array.
+			pp_images = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr('rel').indexOf(theRel) != -1) return $(n).attr('href'); }) : $.makeArray($(caller).attr('href'));
+			pp_titles = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr('rel').indexOf(theRel) != -1) return ($(n).find('img').attr('alt')) ? $(n).find('img').attr('alt') : ""; }) : $.makeArray($(caller).find('img').attr('alt'));
+			pp_descriptions = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr('rel').indexOf(theRel) != -1) return ($(n).attr('title')) ? $(n).attr('title') : ""; }) : $.makeArray($(caller).attr('title'));
 			
 			_buildOverlay(this); // Build the overlay {this} being the caller
 			
@@ -218,7 +228,7 @@
 
 						imgPreloader.onload = function(){
 							// Fit item to viewport
-							correctSizes = _fitToViewport(imgPreloader.width,imgPreloader.height);
+							pp_dimensions = _fitToViewport(imgPreloader.width,imgPreloader.height);
 
 							_showContent();
 						};
@@ -232,16 +242,16 @@
 					break;
 				
 					case 'youtube':
-						correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 
 						movie = 'http://www.youtube.com/v/'+grab_param('v',pp_images[set_position]);
 						if(settings.autoplay) movie += "&autoplay=1";
 					
-						toInject = settings.flash_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,movie);
+						toInject = settings.flash_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,movie);
 					break;
 				
 					case 'vimeo':
-						correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 					
 						movie_id = pp_images[set_position];
 						var regExp = /http:\/\/(www\.)?vimeo.com\/(\d+)/;
@@ -250,20 +260,20 @@
 						movie = 'http://player.vimeo.com/video/'+ match[2] +'?title=0&amp;byline=0&amp;portrait=0';
 						if(settings.autoplay) movie += "&autoplay=1;";
 				
-						vimeo_width = correctSizes['width'] + '/embed/?moog_width='+ correctSizes['width'];
+						vimeo_width = pp_dimensions['width'] + '/embed/?moog_width='+ pp_dimensions['width'];
 				
-						toInject = settings.iframe_markup.replace(/{width}/g,vimeo_width).replace(/{height}/g,correctSizes['height']).replace(/{path}/g,movie);
+						toInject = settings.iframe_markup.replace(/{width}/g,vimeo_width).replace(/{height}/g,pp_dimensions['height']).replace(/{path}/g,movie);
 					break;
 				
 					case 'quicktime':
-						correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
-						correctSizes['height']+=15; correctSizes['contentHeight']+=15; correctSizes['containerHeight']+=15; // Add space for the control bar
+						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+						pp_dimensions['height']+=15; pp_dimensions['contentHeight']+=15; pp_dimensions['containerHeight']+=15; // Add space for the control bar
 				
-						toInject = settings.quicktime_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,pp_images[set_position]).replace(/{autoplay}/g,settings.autoplay);
+						toInject = settings.quicktime_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,pp_images[set_position]).replace(/{autoplay}/g,settings.autoplay);
 					break;
 				
 					case 'flash':
-						correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 					
 						flash_vars = pp_images[set_position];
 						flash_vars = flash_vars.substring(pp_images[set_position].indexOf('flashvars') + 10,pp_images[set_position].length);
@@ -271,20 +281,20 @@
 						filename = pp_images[set_position];
 						filename = filename.substring(0,filename.indexOf('?'));
 					
-						toInject =  settings.flash_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,filename+'?'+flash_vars);
+						toInject =  settings.flash_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,filename+'?'+flash_vars);
 					break;
 				
 					case 'iframe':
-						correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 				
 						frame_url = pp_images[set_position];
 						frame_url = frame_url.substr(0,frame_url.indexOf('iframe')-1);
 				
-						toInject = settings.iframe_markup.replace(/{width}/g,correctSizes['width']).replace(/{height}/g,correctSizes['height']).replace(/{path}/g,frame_url);
+						toInject = settings.iframe_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{path}/g,frame_url);
 					break;
 					
 					case 'custom':
-						correctSizes = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 					
 						toInject = settings.custom_markup;
 					break;
@@ -292,7 +302,7 @@
 					case 'inline':
 						// to get the item height clone it, apply default width, wrap it in the prettyPhoto containers , then delete
 						myClone = $(pp_images[set_position]).clone().css({'width':settings.default_width}).wrapInner('<div id="pp_full_res"><div class="pp_inline clearfix"></div></div>').appendTo($('body'));
-						correctSizes = _fitToViewport($(myClone).width(),$(myClone).height());
+						pp_dimensions = _fitToViewport($(myClone).width(),$(myClone).height());
 						$(myClone).remove();
 						toInject = settings.inline_markup.replace(/{content}/g,$(pp_images[set_position]).html());
 					break;
@@ -433,32 +443,35 @@
 		/**
 		* Set the proper sizes on the containers and animate the content in.
 		*/
-		_showContent = function(){
+		function _showContent(){
 			$('.pp_loaderIcon').hide();
 			
 			$ppt.fadeTo(settings.animation_speed,1);
 
 			// Calculate the opened top position of the pic holder
-			projectedTop = scroll_pos['scrollTop'] + ((windowHeight/2) - (correctSizes['containerHeight']/2));
+			projectedTop = scroll_pos['scrollTop'] + ((windowHeight/2) - (pp_dimensions['containerHeight']/2));
 			if(projectedTop < 0) projectedTop = 0;
 
 			// Resize the content holder
-			$pp_pic_holder.find('.pp_content').animate({'height':correctSizes['contentHeight']},settings.animation_speed);
+			$pp_pic_holder.find('.pp_content')
+				.animate({
+					height:pp_dimensions['contentHeight'],
+					width:pp_dimensions['contentWidth']
+				},settings.animation_speed);
 			
 			// Resize picture the holder
 			$pp_pic_holder.animate({
 				'top': projectedTop,
-				'left': (windowWidth/2) - (correctSizes['containerWidth']/2),
-				'width': correctSizes['containerWidth']
+				'left': (windowWidth/2) - (pp_dimensions['containerWidth']/2)
 			},settings.animation_speed,function(){
-				$pp_pic_holder.find('.pp_hoverContainer,#fullResImage').height(correctSizes['height']).width(correctSizes['width']);
+				$pp_pic_holder.find('.pp_hoverContainer,#fullResImage').height(pp_dimensions['height']).width(pp_dimensions['width']);
 
 				$pp_pic_holder.find('.pp_fade').fadeIn(settings.animation_speed); // Fade the new content
 
 				// Show the nav
 				if(isSet && _getFileType(pp_images[set_position])=="image") { $pp_pic_holder.find('.pp_hoverContainer').show(); }else{ $pp_pic_holder.find('.pp_hoverContainer').hide(); }
 			
-				if(correctSizes['resized']) $('a.pp_expand,a.pp_contract').fadeIn(settings.animation_speed); // Fade the resizing link if the image is resized
+				if(pp_dimensions['resized']) $('a.pp_expand,a.pp_contract').fadeIn(settings.animation_speed); // Fade the resizing link if the image is resized
 				
 				if(settings.autoplay_slideshow && !pp_slideshow && !pp_open) $.prettyPhoto.startSlideshow();
 				
@@ -618,7 +631,7 @@
 			if(doresize && typeof $pp_pic_holder != 'undefined') {
 				scroll_pos = _get_scroll();
 				
-				titleHeight = $ppt.height(), contentHeight = $pp_pic_holder.height(), contentwidth = $pp_pic_holder.width();
+				contentHeight = $pp_pic_holder.height(), contentwidth = $pp_pic_holder.width();
 				
 				projectedTop = (windowHeight/2) + scroll_pos['scrollTop'] - (contentHeight/2);
 				
@@ -650,7 +663,7 @@
 				itemWidth = 52+5; // 52 beign the thumb width, 5 being the right margin.
 				navWidth = (settings.theme == "facebook") ? 58 : 38; // Define the arrow width depending on the theme
 				
-				itemsPerPage = Math.floor((correctSizes['containerWidth'] - 100 - navWidth) / itemWidth);
+				itemsPerPage = Math.floor((pp_dimensions['containerWidth'] - 100 - navWidth) / itemWidth);
 				itemsPerPage = (itemsPerPage < pp_images.length) ? itemsPerPage : pp_images.length;
 				totalPage = Math.ceil(pp_images.length / itemsPerPage) - 1;
 
@@ -696,15 +709,6 @@
 		}
 	
 		function _buildOverlay(caller){
-			// Find out if the picture is part of a set
-			theRel = $(caller).attr('rel');
-			galleryRegExp = /\[(?:.*)\]/;
-			isSet = (galleryRegExp.exec(theRel)) ? true : false;
-			
-			// Put the SRCs, TITLEs, ALTs into an array.
-			pp_images = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr('rel').indexOf(theRel) != -1) return $(n).attr('href'); }) : $.makeArray($(caller).attr('href'));
-			pp_titles = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr('rel').indexOf(theRel) != -1) return ($(n).find('img').attr('alt')) ? $(n).find('img').attr('alt') : ""; }) : $.makeArray($(caller).find('img').attr('alt'));
-			pp_descriptions = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr('rel').indexOf(theRel) != -1) return ($(n).attr('title')) ? $(n).attr('title') : ""; }) : $.makeArray($(caller).attr('title'));
 			
 			$('body').append(settings.markup); // Inject the markup
 			
@@ -715,7 +719,7 @@
 				currentGalleryPage = 0;
 				toInject = "";
 				for (var i=0; i < pp_images.length; i++) {
-					var regex = new RegExp("(.*?)\.(jpg|jpeg|png|gif)$");
+					var regex = new RegExp("(.*?)\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$");
 					var results = regex.exec( pp_images[i] );
 					if(!results){
 						classname = 'default';

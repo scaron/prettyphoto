@@ -75,7 +75,7 @@
 								</ul> \
 								<a href="#" class="pp_arrow_next">Next</a> \
 							</div>',
-			image_markup: '<img id="fullResImage" src="" />',
+			image_markup: '<img id="fullResImage" src="{path}" />',
 			flash_markup: '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="{width}" height="{height}"><param name="wmode" value="{wmode}" /><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="{path}" /><embed src="{path}" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="{width}" height="{height}" wmode="{wmode}"></embed></object>',
 			quicktime_markup: '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab" height="{height}" width="{width}"><param name="src" value="{path}"><param name="autoplay" value="{autoplay}"><param name="type" value="video/quicktime"><embed src="{path}" height="{height}" width="{width}" autoplay="{autoplay}" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"></embed></object>',
 			iframe_markup: '<iframe src ="{path}" width="{width}" height="{height}" frameborder="no"></iframe>',
@@ -219,12 +219,11 @@
 
 						// Preload the neighbour images
 						nextImage = new Image();
-						if(isSet && set_position > $(pp_images).size()) nextImage.src = pp_images[set_position + 1];
+						if(isSet && set_position < $(pp_images).size() -1) nextImage.src = pp_images[set_position + 1];
 						prevImage = new Image();
 						if(isSet && pp_images[set_position - 1]) prevImage.src = pp_images[set_position - 1];
 
-						$pp_pic_holder.find('#pp_full_res')[0].innerHTML = settings.image_markup;
-						$pp_pic_holder.find('#fullResImage').attr('src',pp_images[set_position]);
+						$pp_pic_holder.find('#pp_full_res')[0].innerHTML = settings.image_markup.replace(/{path}/g,pp_images[set_position]);
 
 						imgPreloader.onload = function(){
 							// Fit item to viewport

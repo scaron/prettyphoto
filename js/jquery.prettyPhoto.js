@@ -659,7 +659,7 @@
 		function _resize_overlay() {
 			windowHeight = $(window).height(), windowWidth = $(window).width();
 			
-			if(typeof $pp_overlay != "undefined") $pp_overlay.height($(document).height());
+			if(typeof $pp_overlay != "undefined") $pp_overlay.height($(document).height()).width(windowWidth);
 		};
 	
 		function _insert_gallery(){
@@ -788,7 +788,7 @@
 				.css({
 					'opacity':0,
 					'height':$(document).height(),
-					'width':$(document).width()
+					'width':$(window).width()
 					})
 				.bind('click',function(){
 					if(!settings.modal) $.prettyPhoto.close();

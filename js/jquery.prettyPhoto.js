@@ -98,25 +98,28 @@
 		doresize = true, scroll_pos = _get_scroll();
 	
 		// Window/Keyboard events
-		$(window).unbind('resize').resize(function(){ _center_overlay(); _resize_overlay(); });
+		$(window).unbind('resize.prettyphoto').bind('resize.prettyphoto',function(){ _center_overlay(); _resize_overlay(); });
 		
 		if(pp_settings.keyboard_shortcuts) {
-			$(document).unbind('keydown').keydown(function(e){
+			$(document).unbind('keydown.prettyphoto').bind('keydown.prettyphoto',function(e){
 				if(typeof $pp_pic_holder != 'undefined'){
 					if($pp_pic_holder.is(':visible')){
 						switch(e.keyCode){
 							case 37:
 								$.prettyPhoto.changePage('previous');
+								e.preventDefault();
 								break;
 							case 39:
 								$.prettyPhoto.changePage('next');
+								e.preventDefault();
 								break;
 							case 27:
 								if(!settings.modal)
 								$.prettyPhoto.close();
+								e.preventDefault();
 								break;
 						};
-						return false;
+						// return false;
 					};
 				};
 			});
@@ -144,7 +147,7 @@
 			_buildOverlay(this); // Build the overlay {this} being the caller
 			
 			if(settings.allow_resize)
-				$(window).scroll(function(){ _center_overlay(); });
+				$(window).bind('scroll.prettyphoto',function(){ _center_overlay(); });
 				
 			_center_overlay();
 			
@@ -826,7 +829,7 @@
 			_center_overlay(); // Center it
 		};
 		
-		return this.unbind('click').click($.prettyPhoto.initialize); // Return the jQuery object for chaining. The unbind method is used to avoid click conflict when the plugin is called more than once
+		return this.unbind('click.prettyphoto').bind('click.prettyphoto',$.prettyPhoto.initialize); // Return the jQuery object for chaining. The unbind method is used to avoid click conflict when the plugin is called more than once
 	};
 	
 	function grab_param(name,url){

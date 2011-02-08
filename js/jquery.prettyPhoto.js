@@ -148,8 +148,6 @@
 			
 			if(settings.allow_resize)
 				$(window).bind('scroll.prettyphoto',function(){ _center_overlay(); });
-				
-			_center_overlay();
 			
 			set_position = jQuery.inArray($(this).attr('href'), pp_images); // Define where in the array the clicked item is positionned
 			
@@ -417,7 +415,7 @@
 		*/
 		$.prettyPhoto.close = function(){
 
-			clearInterval(pp_slideshow);
+			$.prettyPhoto.stopSlideshow();
 			
 			$pp_pic_holder.stop().find('object,embed').css('visibility','hidden');
 			
@@ -607,10 +605,21 @@
 			if($.browser.msie && $.browser.version==7) detailsHeight+=8;
 			$pp_details.remove();
 			
+			// Get the titles height, to do so, I need to clone it since it's invisible
+			$pp_title = $pp_pic_holder.find('.ppt');
+			$pp_title.width(width);
+			titleHeight = parseFloat($pp_title.css('marginTop')) + parseFloat($pp_title.css('marginBottom'));
+			$pp_title = $pp_title.clone().appendTo($('body')).css({
+				'position':'absolute',
+				'top':-10000
+			});
+			titleHeight += $pp_title.height();
+			$pp_title.remove();
+			
 			// Get the container size, to resize the holder to the right dimensions
 			pp_contentHeight = height + detailsHeight;
 			pp_contentWidth = width;
-			pp_containerHeight = pp_contentHeight + $ppt.height() + $pp_pic_holder.find('.pp_top').height() + $pp_pic_holder.find('.pp_bottom').height();
+			pp_containerHeight = pp_contentHeight + titleHeight + $pp_pic_holder.find('.pp_top').height() + $pp_pic_holder.find('.pp_bottom').height();
 			pp_containerWidth = width;
 		}
 	
@@ -637,11 +646,10 @@
 		function _center_overlay(){
 			if(doresize && typeof $pp_pic_holder != 'undefined') {
 				scroll_pos = _get_scroll();
-				
 				contentHeight = $pp_pic_holder.height(), contentwidth = $pp_pic_holder.width();
-				
+
 				projectedTop = (windowHeight/2) + scroll_pos['scrollTop'] - (contentHeight/2);
-				
+
 				$pp_pic_holder.css({
 					'top': projectedTop,
 					'left': (windowWidth/2) + scroll_pos['scrollLeft'] - (contentwidth/2)

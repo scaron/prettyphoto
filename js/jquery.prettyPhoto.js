@@ -697,13 +697,6 @@
 				
 				goToPage = (Math.floor(set_position/itemsPerPage) <= totalPage) ? Math.floor(set_position/itemsPerPage) : totalPage;
 				
-				
-				if(itemsPerPage) {
-					$pp_pic_holder.find('.pp_gallery').hide().show().removeClass('disabled');
-				}else{
-					$pp_pic_holder.find('.pp_gallery').hide().addClass('disabled');
-				}
-				
 				$.prettyPhoto.changeGalleryPage(goToPage);
 				
 				$pp_pic_holder

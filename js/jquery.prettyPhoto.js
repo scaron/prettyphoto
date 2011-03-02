@@ -369,10 +369,10 @@
 			}else{
 				currentGalleryPage = direction;
 			};
-			
+
 			// Slide the pages, if we're on the last page, find out how many items we need to slide. To make sure we don't have an empty space.
 			itemsToSlide = (currentGalleryPage == totalPage) ? pp_images.length - ((totalPage) * itemsPerPage) : itemsPerPage;
-			
+
 			$pp_pic_holder.find('.pp_gallery li').each(function(i){
 				$(this).animate({
 					'left': (i * itemWidth) - ((itemsToSlide * itemWidth) * currentGalleryPage)
@@ -506,35 +506,6 @@
 		* @param setCount {integer} The total number of items in the set
 		*/
 		function _checkPosition(setCount){
-			// If at the end, hide the next link
-			if(set_position == setCount-1) {
-				$pp_pic_holder.find('a.pp_next').css('visibility','hidden');
-				$pp_pic_holder.find('a.pp_next').addClass('disabled').unbind('click');
-			}else{ 
-				$pp_pic_holder.find('a.pp_next').css('visibility','visible');
-				$pp_pic_holder.find('a.pp_next.disabled').removeClass('disabled').bind('click',function(){
-					$.prettyPhoto.changePage('next');
-					return false;
-				});
-			};
-		
-			// If at the beginning, hide the previous link
-			if(set_position == 0) {
-				$pp_pic_holder
-					.find('a.pp_previous')
-					.css('visibility','hidden')
-					.addClass('disabled')
-					.unbind('click');
-			}else{
-				$pp_pic_holder.find('a.pp_previous.disabled')
-					.css('visibility','visible')
-					.removeClass('disabled')
-					.bind('click',function(){
-						$.prettyPhoto.changePage('previous');
-						return false;
-					});
-			};
-			
 			(setCount > 1) ? $('.pp_nav').show() : $('.pp_nav').hide(); // Hide the bottom nav if it's not a set.
 		};
 	
@@ -703,8 +674,8 @@
 					.find('li.selected')
 					.removeClass('selected');
 				
-				goToPage = (Math.floor(set_position/itemsPerPage) <= totalPage) ? Math.floor(set_position/itemsPerPage) : totalPage;
-				
+				goToPage = (Math.ceil((set_position+1)/itemsPerPage) < totalPage) ? Math.ceil((set_position+1)/itemsPerPage) : totalPage;
+
 				$.prettyPhoto.changeGalleryPage(goToPage);
 				
 				$pp_pic_holder
@@ -727,7 +698,7 @@
 				currentGalleryPage = 0;
 				toInject = "";
 				for (var i=0; i < pp_images.length; i++) {
-					var regex = new RegExp("(.*?)\.(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$");
+					var regex = new RegExp("(.*?)\.(jpg|jpeg|png|gif)(?:\\?[^/]+)?$");
 					var results = regex.exec( pp_images[i] );
 					if(!results){
 						classname = 'default';

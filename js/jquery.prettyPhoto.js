@@ -29,7 +29,7 @@
 			changepicturecallback: function(){}, /* Called everytime an item is shown/changed */
 			callback: function(){}, /* Called when prettyPhoto is closed */
 			markup: '<div class="pp_pic_holder"> \
-						<div class="ppt">&nbsp;</div> \
+						<div class="ppt">&nbsp;12212</div> \
 						<div class="pp_top"> \
 							<div class="pp_left"></div> \
 							<div class="pp_middle"></div> \
@@ -601,13 +601,13 @@
 				return 'youtube';
 			}else if (itemSrc.match(/vimeo\.com/i)) {
 				return 'vimeo';
-			}else if(itemSrc.indexOf('.mov') != -1){ 
+			}else if(itemSrc.match(/\b.mov\b/i)){ 
 				return 'quicktime';
-			}else if(itemSrc.indexOf('.swf') != -1){
+			}else if(itemSrc.match(/\b.swf\b/i)){
 				return 'flash';
-			}else if(itemSrc.indexOf('iframe=true') != -1){
+			}else if(itemSrc.match(/\biframe=true\b/i)){
 				return 'iframe';
-			}else if(itemSrc.indexOf('custom=true') != -1){
+			}else if(itemSrc.match(/\bcustom=true\b/i)){
 				return 'custom';
 			}else if(itemSrc.substr(0,1) == '#'){
 				return 'inline';

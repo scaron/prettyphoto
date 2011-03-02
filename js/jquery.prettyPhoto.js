@@ -701,9 +701,7 @@
 				currentGalleryPage = 0;
 				toInject = "";
 				for (var i=0; i < pp_images.length; i++) {
-					var regex = new RegExp("(.*?)\.(jpg|jpeg|png|gif)(?:\\?[^/]+)?$");
-					var results = regex.exec( pp_images[i] );
-					if(!results){
+					if(!pp_images[i].match(/\b(jpg|jpeg|png|gif)\b/gi)){
 						classname = 'default';
 					}else{
 						classname = '';

@@ -29,7 +29,7 @@
 			changepicturecallback: function(){}, /* Called everytime an item is shown/changed */
 			callback: function(){}, /* Called when prettyPhoto is closed */
 			markup: '<div class="pp_pic_holder"> \
-						<div class="ppt">&nbsp;12212</div> \
+						<div class="ppt">&nbsp;</div> \
 						<div class="pp_top"> \
 							<div class="pp_left"></div> \
 							<div class="pp_middle"></div> \
@@ -201,13 +201,8 @@
 			movie_height = ( parseFloat(grab_param('height',pp_images[set_position])) ) ? grab_param('height',pp_images[set_position]) : settings.default_height.toString();
 			
 			// If the size is % based, calculate according to window dimensions
-			if(movie_width.indexOf('%') != -1 || movie_height.indexOf('%') != -1){
-				movie_height = parseFloat(($(window).height() * parseFloat(movie_height) / 100) - 150);
-				movie_width = parseFloat(($(window).width() * parseFloat(movie_width) / 100) - 150);
-				percentBased = true;
-			}else{
-				percentBased = false;
-			}
+			if(movie_height.indexOf('%') != -1) { movie_height = parseFloat(($(window).height() * parseFloat(movie_height) / 100) - 150); percentBased = true; }
+			if(movie_width.indexOf('%') != -1) { movie_width = parseFloat(($(window).width() * parseFloat(movie_width) / 100) - 150); percentBased = true; }
 			
 			// Fade the holder
 			$pp_pic_holder.fadeIn(function(){

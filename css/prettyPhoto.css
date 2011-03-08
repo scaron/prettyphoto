@@ -134,6 +134,8 @@
 	
 	div.light_square .pp_next:hover { background: url(../images/prettyPhoto/light_square/btnNext.png) center right  no-repeat; cursor: pointer; } /* Next button */
 	div.light_square .pp_previous:hover { background: url(../images/prettyPhoto/light_square/btnPrevious.png) center left no-repeat; cursor: pointer; } /* Previous button */
+	
+	div.light_square .pp_loaderIcon { background: url(../images/prettyPhoto/light_rounded/loader.gif) center center no-repeat; } /* Loader icon */
 
 
 	/* ----------------------------------

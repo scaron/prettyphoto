@@ -6,7 +6,7 @@
 ------------------------------------------------------------------------- */
 
 (function($) {
-	$.prettyPhoto = {version: '3.0.2'};
+	$.prettyPhoto = {version: '3.0.3'};
 	
 	$.fn.prettyPhoto = function(pp_settings) {
 		pp_settings = jQuery.extend({

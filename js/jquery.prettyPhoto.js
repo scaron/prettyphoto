@@ -2,7 +2,7 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 3.0.2
+	Version: 3.0.3
 ------------------------------------------------------------------------- */
 
 (function($) {
@@ -411,7 +411,8 @@
 		* Closes prettyPhoto.
 		*/
 		$.prettyPhoto.close = function(){
-
+			if($pp_overlay.is(":animated")) return;
+			
 			$.prettyPhoto.stopSlideshow();
 			
 			$pp_pic_holder.stop().find('object,embed').css('visibility','hidden');

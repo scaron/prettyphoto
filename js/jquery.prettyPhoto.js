@@ -167,12 +167,12 @@
 			if(typeof settings == "undefined"){ // Means it's an API call, need to manually get the settings and set the variables
 				settings = pp_settings;
 				if($.browser.msie && $.browser.version == 6) settings.theme = "light_square"; // Fallback to a supported theme for IE6
-				_buildOverlay(event.target); // Build the overlay {this} being the caller
 				pp_images = $.makeArray(arguments[0]);
 				pp_titles = (arguments[1]) ? $.makeArray(arguments[1]) : $.makeArray("");
 				pp_descriptions = (arguments[2]) ? $.makeArray(arguments[2]) : $.makeArray("");
 				isSet = (pp_images.length > 1) ? true : false;
 				set_position = 0;
+				_buildOverlay(event.target); // Build the overlay {this} being the caller
 			}
 
 			if($.browser.msie && $.browser.version == 6) $('select').css('visibility','hidden'); // To fix the bug with IE select boxes

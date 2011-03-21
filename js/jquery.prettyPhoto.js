@@ -2,11 +2,11 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 3.0.3
+	Version: 3.0.4
 ------------------------------------------------------------------------- */
 
 (function($) {
-	$.prettyPhoto = {version: '3.0.3'};
+	$.prettyPhoto = {version: '3.0.4'};
 	
 	$.fn.prettyPhoto = function(pp_settings) {
 		pp_settings = jQuery.extend({
@@ -239,10 +239,10 @@
 					case 'youtube':
 						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 
-						movie = 'http://www.youtube.com/v/'+grab_param('v',pp_images[set_position]);
-						if(settings.autoplay) movie += "&autoplay=1";
+						movie = 'http://www.youtube.com/embed/'+grab_param('v',pp_images[set_position]);
+						if(settings.autoplay) movie += "?autoplay=1";
 					
-						toInject = settings.flash_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,movie);
+						toInject = settings.iframe_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,movie);
 					break;
 				
 					case 'vimeo':

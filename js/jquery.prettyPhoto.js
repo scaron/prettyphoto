@@ -207,6 +207,7 @@
 			// Fade the holder
 			$pp_pic_holder.fadeIn(function(){
 				imgPreloader = "";
+				skipInjection = false;
 				
 				// Inject the proper content
 				switch(_getFileType(pp_images[set_position])){
@@ -288,6 +289,20 @@
 						toInject = settings.iframe_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{path}/g,frame_url);
 					break;
 					
+					case 'ajax':
+						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+					
+						$pp_pic_holder.css('height', pp_dimensions['height']);
+						$pp_pic_holder.css('width', pp_dimensions['width']);
+						_center_overlay();
+					
+						ajax_url = pp_images[set_position];
+						$pp_pic_holder.find('#pp_full_res:first').load(ajax_url);
+						
+						skipInjection = true;
+						_showContent();
+					break;
+					
 					case 'custom':
 						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 					
@@ -305,7 +320,7 @@
 					break;
 				};
 
-				if(!imgPreloader){
+				if(!imgPreloader && !skipInjection){
 					$pp_pic_holder.find('#pp_full_res')[0].innerHTML = toInject;
 				
 					// Show content
@@ -603,6 +618,8 @@
 				return 'flash';
 			}else if(itemSrc.match(/\biframe=true\b/i)){
 				return 'iframe';
+			}else if(itemSrc.match(/\bajax=true\b/i)){
+				return 'ajax';
 			}else if(itemSrc.match(/\bcustom=true\b/i)){
 				return 'custom';
 			}else if(itemSrc.substr(0,1) == '#'){

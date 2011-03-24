@@ -546,8 +546,8 @@
 			return {
 				width:Math.floor(imageWidth),
 				height:Math.floor(imageHeight),
-				containerHeight:Math.floor(pp_containerHeight) + container_padding_height,
-				containerWidth:Math.floor(pp_containerWidth) + container_padding_width,
+				containerHeight:Math.floor(pp_containerHeight) + settings.container_padding_height,
+				containerWidth:Math.floor(pp_containerWidth) + settings.container_padding_width,
 				contentHeight:Math.floor(pp_contentHeight),
 				contentWidth:Math.floor(pp_contentWidth),
 				resized:resized

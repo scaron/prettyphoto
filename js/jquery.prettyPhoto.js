@@ -425,7 +425,7 @@
 				
 				$(this).remove(); // No more need for the prettyPhoto markup
 				
-				$(window).unbind('scroll');
+				$(window).unbind('scroll.prettyphoto');
 				
 				settings.callback();
 				

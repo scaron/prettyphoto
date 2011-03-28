@@ -327,8 +327,7 @@
 			if(direction == 'previous') {
 				set_position--;
 				if (set_position < 0){
-					set_position = 0;
-					return;
+					set_position = $(pp_images).size()-1;
 				};
 			}else if(direction == 'next'){
 				set_position++;

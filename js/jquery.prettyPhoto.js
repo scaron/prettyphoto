@@ -622,6 +622,9 @@
 
 				projectedTop = (windowHeight/2) + scroll_pos['scrollTop'] - (contentHeight/2);
 				if(projectedTop < 0) projectedTop = 0;
+				
+				if(contentHeight > windowHeight)
+					return;
 
 				$pp_pic_holder.css({
 					'top': projectedTop,

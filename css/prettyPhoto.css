@@ -79,13 +79,12 @@
 	div.dark_square .pp_left ,
 	div.dark_square .pp_middle,
 	div.dark_square .pp_right,
-	div.dark_square .pp_content { background: url(../images/prettyPhoto/dark_square/contentPattern.png) top left repeat; }
+	div.dark_square .pp_content { background: #000; }
+	
 	div.dark_square .currentTextHolder { color: #c4c4c4; }
 	div.dark_square .pp_description { color: #fff; }
-	div.dark_square .pp_loaderIcon { background: url(../images/prettyPhoto/dark_rounded/loader.gif) center center no-repeat; } /* Loader icon */
+	div.dark_square .pp_loaderIcon { background: url(../images/prettyPhoto/dark_square/loader.gif) center center no-repeat; } /* Loader icon */
 	
-	div.dark_square .pp_content_container .pp_left { background: url(../images/prettyPhoto/dark_rounded/contentPattern.png) top left repeat-y; } /* Left Content background */
-	div.dark_square .pp_content_container .pp_right { background: url(../images/prettyPhoto/dark_rounded/contentPattern.png) top right repeat-y; } /* Right Content background */
 	div.dark_square .pp_expand { background: url(../images/prettyPhoto/dark_square/sprite.png) -31px -26px no-repeat; cursor: pointer; } /* Expand button */
 	div.dark_square .pp_expand:hover { background: url(../images/prettyPhoto/dark_square/sprite.png) -31px -47px no-repeat; cursor: pointer; } /* Expand button hover */
 	div.dark_square .pp_contract { background: url(../images/prettyPhoto/dark_square/sprite.png) 0 -26px no-repeat; cursor: pointer; } /* Contract button */

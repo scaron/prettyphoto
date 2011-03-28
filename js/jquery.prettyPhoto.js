@@ -28,7 +28,6 @@
 			keyboard_shortcuts: true, /* Set to false if you open forms inside prettyPhoto */
 			changepicturecallback: function(){}, /* Called everytime an item is shown/changed */
 			callback: function(){}, /* Called when prettyPhoto is closed */
-			container_padding_height: 0, /* Adding extra container height to provide more padding/whitespace */
 			container_padding_width: 40, /* Adding extra container width to provide more padding/whitespace */
 			markup: '<div class="pp_pic_holder"> \
 						<div class="ppt">&nbsp;</div> \
@@ -546,7 +545,7 @@
 			return {
 				width:Math.floor(imageWidth),
 				height:Math.floor(imageHeight),
-				containerHeight:Math.floor(pp_containerHeight) + settings.container_padding_height,
+				containerHeight:Math.floor(pp_containerHeight),
 				containerWidth:Math.floor(pp_containerWidth) + settings.container_padding_width,
 				contentHeight:Math.floor(pp_contentHeight),
 				contentWidth:Math.floor(pp_contentWidth),

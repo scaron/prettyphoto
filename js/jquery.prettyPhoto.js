@@ -539,6 +539,10 @@
 				};
 			
 				_getDimensions(imageWidth,imageHeight);
+				
+				if((pp_containerWidth > windowWidth) || (pp_containerHeight > windowHeight)){
+					_fitToViewport(pp_containerWidth,pp_containerHeight)
+				};
 			};
 
 			return {

@@ -756,16 +756,14 @@
 
 				itemWidth = 52+5; // 52 beign the thumb width, 5 being the right margin.
 				$pp_pic_holder.find('.pp_gallery ul li').each(function(i){
-					$(this).css({
-						'position':'absolute',
-						'left': i * itemWidth
-					});
-
-					$(this).find('a').unbind('click').click(function(){
-						$.prettyPhoto.changePage(i);
-						$.prettyPhoto.stopSlideshow();
-						return false;
-					});
+					$(this)
+						.attr('style','position:absolute,left:' +  (i * itemWidth) + 'px')
+						.find('a')
+						.click(function(){
+							$.prettyPhoto.changePage(i);
+							$.prettyPhoto.stopSlideshow();
+							return false;
+						});
 				});
 			};
 			

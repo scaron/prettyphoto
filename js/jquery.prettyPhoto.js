@@ -290,17 +290,18 @@
 					break;
 					
 					case 'ajax':
-						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+						doresize = false; // Make sure the dimensions are not resized.
+						pp_dimensions = _fitToViewport(movie_width,movie_height);
+						doresize = true; // Reset the dimensions
 					
-						$pp_pic_holder.css('height', pp_dimensions['height']);
-						$pp_pic_holder.css('width', pp_dimensions['width']);
-						_center_overlay();
-					
-						ajax_url = pp_images[set_position];
-						$pp_pic_holder.find('#pp_full_res:first').load(ajax_url);
-						
 						skipInjection = true;
-						_showContent();
+						$.get(pp_images[set_position],function(responseHTML){
+							console.log(responseHTML)
+							toInject = settings.inline_markup.replace(/{content}/g,responseHTML);
+							$pp_pic_holder.find('#pp_full_res')[0].innerHTML = toInject;
+							_showContent();
+						});
+						
 					break;
 					
 					case 'custom':

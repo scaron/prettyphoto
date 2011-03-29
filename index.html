@@ -60,7 +60,7 @@
 
 		<h4>Gallery 2</h4>
 		<ul class="gallery clearfix">
-			<li><a href="images/fullscreen/3.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_3.jpg" width="60" height="60" alt="Lol" /></a></li>
+			<li><a href="images/fullscreen/3.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_3.jpg" width="60" height="60" alt="This is a pretty long title" /></a></li>
 			<li><a href="images/fullscreen/4.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_4.jpg" width="60" height="60" alt="" /></a></li>
 			<li><a href="images/fullscreen/5.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_5.jpg" width="60" height="60" alt="" /></a></li>
 			<li><a href="images/fullscreen/1.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_1.jpg" width="60" height="60" alt="" /></a></li>
@@ -161,8 +161,8 @@
 		
 		<script type="text/javascript" charset="utf-8">
 		$(document).ready(function(){
-			$(".gallery:first a[rel^='prettyPhoto']").prettyPhoto({animationSpeed:'slow',theme:'light_square',slideshow:2000, autoplay_slideshow: true});
-			$(".gallery:gt(0) a[rel^='prettyPhoto']").prettyPhoto({animationSpeed:'fast',slideshow:10000});
+			$(".gallery:first a[rel^='prettyPhoto']").prettyPhoto({animation_speed:'slow',theme:'light_square',slideshow:2000, autoplay_slideshow: true});
+			$(".gallery:gt(0) a[rel^='prettyPhoto']").prettyPhoto({animation_speed:'fast',slideshow:10000});
 			
 			$("#custom_content a[rel^='prettyPhoto']:first").prettyPhoto({
 				custom_markup: '<div id="map_canvas" style="width:260px; height:265px"></div>',

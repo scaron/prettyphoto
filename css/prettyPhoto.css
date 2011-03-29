@@ -296,14 +296,19 @@
 			position: absolute;
 			z-index: 10000;
 		}
+		
+			.pp_gallery div {
+				float: left;
+				overflow: hidden;
+			}
 			
 			.pp_gallery ul {
 				float: left;
 				height: 35px;
 				margin: 0 0 0 5px;
-				overflow: hidden;
 				padding: 0;
 				position: relative;
+				white-space: nowrap;
 			}
 			
 			.pp_gallery ul a {

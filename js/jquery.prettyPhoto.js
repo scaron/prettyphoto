@@ -71,9 +71,11 @@
 					<div class="pp_overlay"></div>',
 			gallery_markup: '<div class="pp_gallery"> \
 								<a href="#" class="pp_arrow_previous">Previous</a> \
-								<ul> \
-									{gallery} \
-								</ul> \
+								<div> \
+									<ul> \
+										{gallery} \
+									</ul> \
+								</div> \
 								<a href="#" class="pp_arrow_next">Next</a> \
 							</div>',
 			image_markup: '<img id="fullResImage" src="{path}" />',
@@ -145,7 +147,7 @@
 			pp_titles = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr('rel').indexOf(theRel) != -1) return ($(n).find('img').attr('alt')) ? $(n).find('img').attr('alt') : ""; }) : $.makeArray($(this).find('img').attr('alt'));
 			pp_descriptions = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr('rel').indexOf(theRel) != -1) return ($(n).attr('title')) ? $(n).attr('title') : ""; }) : $.makeArray($(this).attr('title'));
 			
-			_buildOverlay(this); // Build the overlay {this} being the caller
+			_build_overlay(this); // Build the overlay {this} being the caller
 			
 			if(settings.allow_resize)
 				$(window).bind('scroll.prettyphoto',function(){ _center_overlay(); });
@@ -173,7 +175,7 @@
 				pp_descriptions = (arguments[2]) ? $.makeArray(arguments[2]) : $.makeArray("");
 				isSet = (pp_images.length > 1) ? true : false;
 				set_position = 0;
-				_buildOverlay(event.target); // Build the overlay {this} being the caller
+				_build_overlay(event.target); // Build the overlay {this} being the caller
 			}
 
 			if($.browser.msie && $.browser.version == 6) $('select').css('visibility','hidden'); // To fix the bug with IE select boxes
@@ -297,7 +299,6 @@
 					
 						skipInjection = true;
 						$.get(pp_images[set_position],function(responseHTML){
-							console.log(responseHTML)
 							toInject = settings.inline_markup.replace(/{content}/g,responseHTML);
 							$pp_pic_holder.find('#pp_full_res')[0].innerHTML = toInject;
 							_showContent();
@@ -373,24 +374,33 @@
 				if(currentGalleryPage > totalPage){
 					currentGalleryPage = 0;
 				};
+				
+				slide_speed = settings.animation_speed;
 			}else if(direction=='previous'){
 				currentGalleryPage --;
 
 				if(currentGalleryPage < 0){
 					currentGalleryPage = totalPage;
 				};
+				
+				slide_speed = settings.animation_speed;
 			}else{
 				currentGalleryPage = direction;
+				slide_speed = 0;
 			};
+
+			slide_to = currentGalleryPage * (itemsPerPage * itemWidth);
 
 			// Slide the pages, if we're on the last page, find out how many items we need to slide. To make sure we don't have an empty space.
 			itemsToSlide = (currentGalleryPage == totalPage) ? pp_images.length - ((totalPage) * itemsPerPage) : itemsPerPage;
 
-			$pp_pic_holder.find('.pp_gallery li').each(function(i){
-				$(this).animate({
-					'left': (i * itemWidth) - ((itemsToSlide * itemWidth) * currentGalleryPage)
-				});
-			});
+			$pp_gallery.find('ul').animate({left:-slide_to},slide_speed);
+
+			// $pp_gallery_li.each(function(i){
+			// 	$(this).animate({
+			// 		'left': (i * itemWidth) - ((itemsToSlide * itemWidth) * currentGalleryPage)
+			// 	});
+			// });
 		};
 
 
@@ -669,9 +679,9 @@
 		};
 	
 		function _insert_gallery(){
-			if(isSet && settings.overlay_gallery && _getFileType(pp_images[set_position])=="image") {
+			if(isSet && settings.overlay_gallery && _getFileType(pp_images[set_position])=="image" && (settings.ie6_fallback && !($.browser.msie && parseInt($.browser.version) == 6))) {
 				itemWidth = 52+5; // 52 beign the thumb width, 5 being the right margin.
-				navWidth = (settings.theme == "facebook") ? 58 : 38; // Define the arrow width depending on the theme
+				navWidth = (settings.theme == "facebook") ? 50 : 30; // Define the arrow width depending on the theme
 				
 				itemsPerPage = Math.floor((pp_dimensions['containerWidth'] - 100 - navWidth) / itemWidth);
 				itemsPerPage = (itemsPerPage < pp_images.length) ? itemsPerPage : pp_images.length;
@@ -680,38 +690,33 @@
 				// Hide the nav in the case there's no need for links
 				if(totalPage == 0){
 					navWidth = 0; // No nav means no width!
-					$pp_pic_holder.find('.pp_gallery .pp_arrow_next,.pp_gallery .pp_arrow_previous').hide();
+					$pp_gallery.find('.pp_arrow_next,.pp_arrow_previous').hide();
 				}else{
-					$pp_pic_holder.find('.pp_gallery .pp_arrow_next,.pp_gallery .pp_arrow_previous').show();
+					$pp_gallery.find('.pp_arrow_next,.pp_arrow_previous').show();
 				};
 
-				galleryWidth = itemsPerPage * itemWidth + navWidth;
+				galleryWidth = itemsPerPage * itemWidth;
+				fullGalleryWidth = pp_images.length * itemWidth;
 				
 				// Set the proper width to the gallery items
-				$pp_pic_holder.find('.pp_gallery')
-					.width(galleryWidth)
-					.css('margin-left',-(galleryWidth/2));
-					
-				$pp_pic_holder
-					.find('.pp_gallery ul')
-					.width(itemsPerPage * itemWidth)
-					.find('li.selected')
-					.removeClass('selected');
+				$pp_gallery
+					.css('margin-left',-((galleryWidth/2) + (navWidth/2)))
+					.find('div:first').width(galleryWidth+5)
+					.find('ul').width(fullGalleryWidth)
+					.find('li.selected').removeClass('selected');
 				
-				goToPage = (Math.ceil((set_position+1)/itemsPerPage) < totalPage) ? Math.ceil((set_position+1)/itemsPerPage) : totalPage;
+				goToPage = (Math.floor(set_position/itemsPerPage) < totalPage) ? Math.floor(set_position/itemsPerPage) : totalPage;
 
 				$.prettyPhoto.changeGalleryPage(goToPage);
 				
-				$pp_pic_holder
-					.find('.pp_gallery ul li:eq('+set_position+')')
-					.addClass('selected');
+				$pp_gallery_li.filter(':eq('+set_position+')').addClass('selected');
 			}else{
 				$pp_pic_holder.find('.pp_content').unbind('mouseenter mouseleave');
-				$pp_pic_holder.find('.pp_gallery').hide();
+				$pp_gallery.hide();
 			}
 		}
 	
-		function _buildOverlay(caller){
+		function _build_overlay(caller){
 			
 			$('body').append(settings.markup); // Inject the markup
 			
@@ -734,13 +739,15 @@
 				
 				$pp_pic_holder.find('#pp_full_res').after(toInject);
 				
-				$pp_pic_holder.find('.pp_gallery .pp_arrow_next').click(function(){
+				$pp_gallery = $('.pp_pic_holder .pp_gallery'), $pp_gallery_li = $pp_gallery.find('li'); // Set the gallery selectors
+				
+				$pp_gallery.find('.pp_arrow_next').click(function(){
 					$.prettyPhoto.changeGalleryPage('next');
 					$.prettyPhoto.stopSlideshow();
 					return false;
 				});
 				
-				$pp_pic_holder.find('.pp_gallery .pp_arrow_previous').click(function(){
+				$pp_gallery.find('.pp_arrow_previous').click(function(){
 					$.prettyPhoto.changeGalleryPage('previous');
 					$.prettyPhoto.stopSlideshow();
 					return false;
@@ -755,9 +762,8 @@
 					});
 
 				itemWidth = 52+5; // 52 beign the thumb width, 5 being the right margin.
-				$pp_pic_holder.find('.pp_gallery ul li').each(function(i){
+				$pp_gallery_li.each(function(i){
 					$(this)
-						.attr('style','position:absolute,left:' +  (i * itemWidth) + 'px')
 						.find('a')
 						.click(function(){
 							$.prettyPhoto.changePage(i);

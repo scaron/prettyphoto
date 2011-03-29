@@ -147,12 +147,13 @@
 			pp_titles = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr('rel').indexOf(theRel) != -1) return ($(n).find('img').attr('alt')) ? $(n).find('img').attr('alt') : ""; }) : $.makeArray($(this).find('img').attr('alt'));
 			pp_descriptions = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr('rel').indexOf(theRel) != -1) return ($(n).attr('title')) ? $(n).attr('title') : ""; }) : $.makeArray($(this).attr('title'));
 			
+			set_position = jQuery.inArray($(this).attr('href'), pp_images); // Define where in the array the clicked item is positionned
+			
 			_build_overlay(this); // Build the overlay {this} being the caller
 			
 			if(settings.allow_resize)
 				$(window).bind('scroll.prettyphoto',function(){ _center_overlay(); });
 			
-			set_position = jQuery.inArray($(this).attr('href'), pp_images); // Define where in the array the clicked item is positionned
 			
 			$.prettyPhoto.open();
 			
@@ -288,7 +289,7 @@
 				
 						frame_url = pp_images[set_position];
 						frame_url = frame_url.substr(0,frame_url.indexOf('iframe')-1);
-				
+
 						toInject = settings.iframe_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{path}/g,frame_url);
 					break;
 					
@@ -395,12 +396,6 @@
 			itemsToSlide = (currentGalleryPage == totalPage) ? pp_images.length - ((totalPage) * itemsPerPage) : itemsPerPage;
 
 			$pp_gallery.find('ul').animate({left:-slide_to},slide_speed);
-
-			// $pp_gallery_li.each(function(i){
-			// 	$(this).animate({
-			// 		'left': (i * itemWidth) - ((itemsToSlide * itemWidth) * currentGalleryPage)
-			// 	});
-			// });
 		};
 
 
@@ -729,10 +724,12 @@
 				for (var i=0; i < pp_images.length; i++) {
 					if(!pp_images[i].match(/\b(jpg|jpeg|png|gif)\b/gi)){
 						classname = 'default';
+						img_src = '';
 					}else{
 						classname = '';
+						img_src = pp_images[i];
 					}
-					toInject += "<li class='"+classname+"'><a href='#'><img src='" + pp_images[i] + "' width='50' alt='' /></a></li>";
+					toInject += "<li class='"+classname+"'><a href='#'><img src='" + img_src + "' width='50' alt='' /></a></li>";
 				};
 				
 				toInject = settings.gallery_markup.replace(/{gallery}/g,toInject);

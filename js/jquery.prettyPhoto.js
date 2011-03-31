@@ -11,7 +11,7 @@
 	$.fn.prettyPhoto = function(pp_settings) {
 		pp_settings = jQuery.extend({
 			animation_speed: 'fast', /* fast/slow/normal */
-			slideshow: false, /* false OR interval time in ms */
+			slideshow: 5000, /* false OR interval time in ms */
 			autoplay_slideshow: false, /* true/false */
 			opacity: 0.80, /* Value between 0 and 1 */
 			show_title: true, /* true/false */

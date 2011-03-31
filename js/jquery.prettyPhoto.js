@@ -19,7 +19,8 @@
 			default_width: 500,
 			default_height: 344,
 			counter_separator_label: '/', /* The separator for the gallery counter 1 "of" 2 */
-			theme: 'facebook', /* light_rounded / dark_rounded / light_square / dark_square / facebook */
+			theme: 'pp_default', /* light_rounded / dark_rounded / light_square / dark_square / facebook */
+			horizontal_padding: 20, /* The padding on each side of the picture */
 			hideflash: false, /* Hides all the flash object on a page, set to TRUE if flash appears over prettyPhoto */
 			wmode: 'opaque', /* Set the flash wmode attribute */
 			autoplay: true, /* Automatically start videos: True/False */
@@ -49,13 +50,13 @@
 										</div> \
 										<div id="pp_full_res"></div> \
 										<div class="pp_details"> \
-											<p class="pp_description"></p> \
-											<a class="pp_close" href="#">Close</a> \
 											<div class="pp_nav"> \
 												<a href="#" class="pp_arrow_previous">Previous</a> \
 												<p class="currentTextHolder">0/0</p> \
 												<a href="#" class="pp_arrow_next">Next</a> \
 											</div> \
+											<p class="pp_description"></p> \
+											<a class="pp_close" href="#">Close</a> \
 										</div> \
 									</div> \
 								</div> \
@@ -135,6 +136,7 @@
 		$.prettyPhoto.initialize = function() {
 			settings = pp_settings;
 			
+			if(settings.theme == 'pp_default') settings.horizontal_padding = 16;
 			if(settings.ie6_fallback && $.browser.msie && parseInt($.browser.version) == 6) settings.theme = "light_square"; // Fallback to a supported theme for IE6
 			
 			// Find out if the picture is part of a set
@@ -494,7 +496,7 @@
 				if(pp_dimensions['resized']){ // Fade the resizing link if the image is resized
 					$('a.pp_expand,a.pp_contract').show();
 				}else{
-					$('a.pp_expand,a.pp_contract').hide();
+					$('a.pp_expand').hide();
 				}
 				
 				if(settings.autoplay_slideshow && !pp_slideshow && !pp_open) $.prettyPhoto.startSlideshow();
@@ -565,12 +567,14 @@
 					_fitToViewport(pp_containerWidth,pp_containerHeight)
 				};
 			};
+			
+			
 
 			return {
 				width:Math.floor(imageWidth),
 				height:Math.floor(imageHeight),
 				containerHeight:Math.floor(pp_containerHeight),
-				containerWidth:Math.floor(pp_containerWidth) + 40, // 40 behind the side padding
+				containerWidth:Math.floor(pp_containerWidth) + (settings.horizontal_padding * 2),
 				contentHeight:Math.floor(pp_contentHeight),
 				contentWidth:Math.floor(pp_contentWidth),
 				resized:resized
@@ -590,7 +594,8 @@
 			$pp_details = $pp_pic_holder.find('.pp_details');
 			$pp_details.width(width);
 			detailsHeight = parseFloat($pp_details.css('marginTop')) + parseFloat($pp_details.css('marginBottom'));
-			$pp_details = $pp_details.clone().appendTo($('body')).css({
+			
+			$pp_details = $pp_details.clone().addClass(settings.theme).width(width).appendTo($('body')).css({
 				'position':'absolute',
 				'top':-10000
 			});
@@ -676,7 +681,7 @@
 		function _insert_gallery(){
 			if(isSet && settings.overlay_gallery && _getFileType(pp_images[set_position])=="image" && (settings.ie6_fallback && !($.browser.msie && parseInt($.browser.version) == 6))) {
 				itemWidth = 52+5; // 52 beign the thumb width, 5 being the right margin.
-				navWidth = (settings.theme == "facebook") ? 50 : 30; // Define the arrow width depending on the theme
+				navWidth = (settings.theme == "facebook" || settings.theme == "pp_default") ? 50 : 30; // Define the arrow width depending on the theme
 				
 				itemsPerPage = Math.floor((pp_dimensions['containerWidth'] - 100 - navWidth) / itemWidth);
 				itemsPerPage = (itemsPerPage < pp_images.length) ? itemsPerPage : pp_images.length;

@@ -2,11 +2,10 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 3.1
+	Version: 3.1.1
 ------------------------------------------------------------------------- */
-
 (function($) {
-	$.prettyPhoto = {version: '3.1'};
+	$.prettyPhoto = {version: '3.1.1'};
 	
 	$.fn.prettyPhoto = function(pp_settings) {
 		pp_settings = jQuery.extend({
@@ -25,6 +24,7 @@
 			wmode: 'opaque', /* Set the flash wmode attribute */
 			autoplay: true, /* Automatically start videos: True/False */
 			modal: false, /* If set to true, only the close button will close the window */
+			deepliking: true, /* Allow prettyPhoto to update the url to enable deeplinking. */
 			overlay_gallery: true, /* If set to true, a gallery will overlay the fullscreen image on mouse over */
 			keyboard_shortcuts: true, /* Set to false if you open forms inside prettyPhoto */
 			changepicturecallback: function(){}, /* Called everytime an item is shown/changed */
@@ -127,13 +127,13 @@
 					};
 				};
 			});
-		}
-		
+		};
 		
 		/**
 		* Initialize prettyPhoto.
 		*/
 		$.prettyPhoto.initialize = function() {
+			
 			settings = pp_settings;
 			
 			if(settings.theme == 'pp_default') settings.horizontal_padding = 16;
@@ -150,6 +150,7 @@
 			pp_descriptions = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr('rel').indexOf(theRel) != -1) return ($(n).attr('title')) ? $(n).attr('title') : ""; }) : $.makeArray($(this).attr('title'));
 			
 			set_position = jQuery.inArray($(this).attr('href'), pp_images); // Define where in the array the clicked item is positionned
+			rel_index = (isSet) ? set_position : $("a[rel^='"+theRel+"']").index($(this));
 			
 			_build_overlay(this); // Build the overlay {this} being the caller
 			
@@ -200,8 +201,8 @@
 			$pp_pic_holder.find('.pp_description').show().html(unescape(pp_descriptions[set_position]));
 			
 			// Get the dimensions
-			movie_width = ( parseFloat(grab_param('width',pp_images[set_position])) ) ? grab_param('width',pp_images[set_position]) : settings.default_width.toString();
-			movie_height = ( parseFloat(grab_param('height',pp_images[set_position])) ) ? grab_param('height',pp_images[set_position]) : settings.default_height.toString();
+			movie_width = ( parseFloat(getParam('width',pp_images[set_position])) ) ? getParam('width',pp_images[set_position]) : settings.default_width.toString();
+			movie_height = ( parseFloat(getParam('height',pp_images[set_position])) ) ? getParam('height',pp_images[set_position]) : settings.default_height.toString();
 			
 			// If the size is % based, calculate according to window dimensions
 			if(movie_height.indexOf('%') != -1) { movie_height = parseFloat(($(window).height() * parseFloat(movie_height) / 100) - 150); percentBased = true; }
@@ -246,7 +247,7 @@
 					case 'youtube':
 						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 
-						movie = 'http://www.youtube.com/embed/'+grab_param('v',pp_images[set_position]);
+						movie = 'http://www.youtube.com/embed/'+getParam('v',pp_images[set_position]);
 						if(settings.autoplay) movie += "?autoplay=1";
 					
 						toInject = settings.iframe_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,movie);
@@ -347,17 +348,15 @@
 			
 			if(direction == 'previous') {
 				set_position--;
-				if (set_position < 0){
-					set_position = $(pp_images).size()-1;
-				};
+				if (set_position < 0) set_position = $(pp_images).size()-1;
 			}else if(direction == 'next'){
 				set_position++;
-				if(set_position > $(pp_images).size()-1) {
-					set_position = 0;
-				}
+				if(set_position > $(pp_images).size()-1) set_position = 0;
 			}else{
 				set_position=direction;
 			};
+			
+			rel_index = set_position;
 
 			if(!doresize) doresize = true; // Allow the resizing of the images
 			$('.pp_contract').removeClass('pp_contract').addClass('pp_expand');
@@ -374,28 +373,18 @@
 			if(direction=='next'){
 				currentGalleryPage ++;
 
-				if(currentGalleryPage > totalPage){
-					currentGalleryPage = 0;
-				};
-				
-				slide_speed = settings.animation_speed;
+				if(currentGalleryPage > totalPage) currentGalleryPage = 0;
 			}else if(direction=='previous'){
 				currentGalleryPage --;
 
-				if(currentGalleryPage < 0){
-					currentGalleryPage = totalPage;
-				};
-				
-				slide_speed = settings.animation_speed;
+				if(currentGalleryPage < 0) currentGalleryPage = totalPage;
 			}else{
 				currentGalleryPage = direction;
-				slide_speed = 0;
 			};
+			
+			slide_speed = (direction == 'next' || direction == 'previous') ? settings.animation_speed : 0;
 
 			slide_to = currentGalleryPage * (itemsPerPage * itemWidth);
-
-			// Slide the pages, if we're on the last page, find out how many items we need to slide. To make sure we don't have an empty space.
-			itemsToSlide = (currentGalleryPage == totalPage) ? pp_images.length - ((totalPage) * itemsPerPage) : itemsPerPage;
 
 			$pp_gallery.find('ul').animate({left:-slide_to},slide_speed);
 		};
@@ -466,12 +455,12 @@
 		*/
 		function _showContent(){
 			$('.pp_loaderIcon').hide();
-			
-			$ppt.fadeTo(settings.animation_speed,1);
 
 			// Calculate the opened top position of the pic holder
 			projectedTop = scroll_pos['scrollTop'] + ((windowHeight/2) - (pp_dimensions['containerHeight']/2));
 			if(projectedTop < 0) projectedTop = 0;
+
+			$ppt.fadeTo(settings.animation_speed,1);
 
 			// Resize the content holder
 			$pp_pic_holder.find('.pp_content')
@@ -500,6 +489,9 @@
 				}
 				
 				if(settings.autoplay_slideshow && !pp_slideshow && !pp_open) $.prettyPhoto.startSlideshow();
+				
+				if(settings.deepliking)
+					setHashtag();
 				
 				settings.changepicturecallback(); // Callback!
 				
@@ -568,8 +560,6 @@
 				};
 			};
 			
-			
-
 			return {
 				width:Math.floor(imageWidth),
 				height:Math.floor(imageHeight),
@@ -829,10 +819,34 @@
 			_center_overlay(); // Center it
 		};
 		
+		if(!pp_alreadyInitialized && getHashtag()){
+			pp_alreadyInitialized = true;
+			
+			// Grab the rel index to trigger the click on the correct element
+			hashIndex = getHashtag();
+			hashRel = hashIndex;
+			hashIndex = hashIndex.substring(hashIndex.indexOf('/')+1,hashIndex.length-1);
+			hashRel = hashRel.substring(0,hashRel.indexOf('/'));
+
+			// Little timeout to make sure all the prettyPhoto initialize scripts has been run.
+			// Useful in the event the page contain several init scripts.
+			setTimeout(function(){ $("a[rel^='"+hashRel+"']:eq("+hashIndex+")").trigger('click'); },50);
+		}
+		
 		return this.unbind('click.prettyphoto').bind('click.prettyphoto',$.prettyPhoto.initialize); // Return the jQuery object for chaining. The unbind method is used to avoid click conflict when the plugin is called more than once
 	};
 	
-	function grab_param(name,url){
+	function getHashtag(){
+		url = location.href;
+		hashtag = (url.indexOf('#!') > 0) ? url.substring(url.indexOf('#!')+2,url.length) : false;
+		return hashtag;
+	};
+	
+	function setHashtag(){
+		location.hash = '!' + theRel + '/'+rel_index+'/';
+	};
+	
+	function getParam(name,url){
 	  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
 	  var regexS = "[\\?&]"+name+"=([^&#]*)";
 	  var regex = new RegExp( regexS );
@@ -841,3 +855,5 @@
 	}
 	
 })(jQuery);
+
+var pp_alreadyInitialized = false; // Used for the deep linking to make sure not to call the same function several times.

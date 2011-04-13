@@ -323,8 +323,12 @@
 			}
 				.pp_description {
 					display: none;
-					margin: 0 0 5px 0;
+					margin: 0;
 				}
+				
+				.pp_social { float: left; margin: 7px 0 0 0; }
+				.pp_social .facebook { float: left; position: relative; top: -1px; margin-left: 5px; width: 55px; overflow: hidden; }
+				.pp_social .twitter { float: left; }
 				
 				.pp_nav {
 					clear: right;
@@ -373,6 +377,7 @@
 			.pp_gallery div {
 				float: left;
 				overflow: hidden;
+				position: relative;
 			}
 			
 			.pp_gallery ul {

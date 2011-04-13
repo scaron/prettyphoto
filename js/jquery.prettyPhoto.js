@@ -853,6 +853,7 @@
 	};
 	
 	function setHashtag(){
+		if(typeof theRel == 'undefined') return; // theRel is set on normal calls, it's impossible to deeplink using the API
 		location.hash = '!' + theRel + '/'+rel_index+'/';
 	};
 	

@@ -49,7 +49,7 @@
 	<body>
 		<div id="main">
 			<h1>prettyPhoto</h1>
-	
+			
 			<p>This page has been made for testing purpose only. It covers all the basic things you can handle in prettyPhoto.</p>
 	
 			<p>For complete documentation, please refer to the official website: <a href="http://www.no-margin-for-errors.com/projects/prettyphoto-jquery-lightbox-clone/">http://www.no-margin-for-errors.com/projects/prettyphoto-jquery-lightbox-clone/</a></p>
@@ -76,6 +76,14 @@
 				<li><a href="images/fullscreen/1.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_1.jpg" width="60" height="60" alt="" /></a></li>
 				<li><a href="images/fullscreen/2.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="" /></a></li>
 			</ul>
+
+			<h2>API Call</h2>
+			<script type="text/javascript" charset="utf-8">
+				api_gallery=['images/fullscreen/1.JPG','images/fullscreen/2.jpg','images/fullscreen/3.JPG'];
+				api_titles=['API Call Image 1','API Call Image 2','API Call Image 3'];
+				api_descriptions=['Description 1','Description 2','Description 3'];
+			</script>
+			<p><a href="#" onclick="$.prettyPhoto.open(api_gallery,api_titles,api_descriptions); return false">API call</a></p>
 
 			<h2>Picture alone</h2>
 			<ul class="gallery clearfix">

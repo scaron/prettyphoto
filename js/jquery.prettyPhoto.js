@@ -827,8 +827,9 @@
 			
 			_center_overlay(); // Center it
 		};
-		
+
 		if(!pp_alreadyInitialized && getHashtag()){
+			alert(2)
 			pp_alreadyInitialized = true;
 			
 			// Grab the rel index to trigger the click on the correct element
@@ -847,8 +848,8 @@
 	
 	function getHashtag(){
 		url = location.href;
-		hashtag = (url.indexOf('#!') > 0) ? url.substring(url.indexOf('#!')+2,url.length) : false;
-		return decodeURI(hashtag);
+		hashtag = (url.indexOf('#!') != -1) ? decodeURI(url.substring(url.indexOf('#!')+2,url.length)) : false;
+		return hashtag;
 	};
 	
 	function setHashtag(){

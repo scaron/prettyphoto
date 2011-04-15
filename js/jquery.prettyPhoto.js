@@ -829,7 +829,6 @@
 		};
 
 		if(!pp_alreadyInitialized && getHashtag()){
-			alert(2)
 			pp_alreadyInitialized = true;
 			
 			// Grab the rel index to trigger the click on the correct element

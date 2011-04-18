@@ -186,7 +186,7 @@
 
 			if($.browser.msie && $.browser.version == 6) $('select').css('visibility','hidden'); // To fix the bug with IE select boxes
 			
-			if(settings.hideflash) $('object,embed').css('visibility','hidden'); // Hide the flash
+			if(settings.hideflash) $('object,embed,iframe[src*=youtube],iframe[src*=vimeo]').css('visibility','hidden'); // Hide the flash
 
 			_checkPosition($(pp_images).size()); // Hide the next/previous links if on first or last images.
 		
@@ -441,7 +441,7 @@
 			$pp_overlay.fadeOut(settings.animation_speed, function(){
 				if($.browser.msie && $.browser.version == 6) $('select').css('visibility','visible'); // To fix the bug with IE select boxes
 				
-				if(settings.hideflash) $('object,embed').css('visibility','visible'); // Show the flash
+				if(settings.hideflash) $('object,embed,iframe[src*=youtube],iframe[src*=vimeo]').css('visibility','visible'); // Show the flash
 				
 				$(this).remove(); // No more need for the prettyPhoto markup
 				

@@ -54,10 +54,6 @@
 	
 			<p>For complete documentation, please refer to the official website: <a href="http://www.no-margin-for-errors.com/projects/prettyphoto-jquery-lightbox-clone/">http://www.no-margin-for-errors.com/projects/prettyphoto-jquery-lightbox-clone/</a></p>
 	
-			<br /><br />
-	
-			<object width="425" height="344"><param name="movie" value="http://www.youtube.com/v/zrdEHvREfdI&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><param name="wmode" value="opaque"></param><embed src="http://www.youtube.com/v/zrdEHvREfdI&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="344" wmode="opaque"></embed></object>
-	
 			<h2>Gallery</h2>
 			<ul class="gallery clearfix">
 				<li><a href="images/fullscreen/1.JPG?lol=lol" rel="prettyPhoto[gallery1]" title="You can add caption to pictures. You can add caption to pictures. You can add caption to pictures."><img src="images/thumbnails/t_1.jpg" width="60" height="60" alt="Red round shape" /></a></li>
@@ -176,11 +172,16 @@
 				<li><a href="#?custom=true&width=260&height=270" rel="prettyPhoto">Google Maps</a></li>
 				<li><a href="#?custom=true&width=260&height=400" rel="prettyPhoto">Ads</a></li>
 			</ul>
+			
+			<br /><br />
+			
+			<object width="425" height="344"><param name="movie" value="http://www.youtube.com/v/_HOMoTqEASY&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><param name="wmode" value="opaque"></param><embed src="http://www.youtube.com/v/_HOMoTqEASY&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="344" wmode="opaque"></embed></object>
+			<iframe title="YouTube video player" width="425" height="344" src="http://www.youtube.com/embed/_HOMoTqEASY" frameborder="0" allowfullscreen></iframe>
 	
 			<script type="text/javascript" charset="utf-8">
 			$(document).ready(function(){
 				$(".gallery:first a[rel^='prettyPhoto']").prettyPhoto({animation_speed:'normal',theme:'facebook',slideshow:3000, autoplay_slideshow: true});
-				$(".gallery:gt(0) a[rel^='prettyPhoto']").prettyPhoto({animation_speed:'fast',slideshow:10000});
+				$(".gallery:gt(0) a[rel^='prettyPhoto']").prettyPhoto({animation_speed:'fast',slideshow:10000, hideflash: true});
 		
 				$("#custom_content a[rel^='prettyPhoto']:first").prettyPhoto({
 					custom_markup: '<div id="map_canvas" style="width:260px; height:265px"></div>',

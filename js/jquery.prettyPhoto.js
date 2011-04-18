@@ -255,7 +255,9 @@
 						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 
 						movie = 'http://www.youtube.com/embed/'+getParam('v',pp_images[set_position]);
-						if(settings.autoplay) movie += "?autoplay=1";
+						(getParam('rel',pp_images[set_position])) ? movie+="?rel="+getParam('rel',pp_images[set_position]) : movie+="?rel=1";
+							
+						if(settings.autoplay) movie += "&autoplay=1";
 					
 						toInject = settings.iframe_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,movie);
 					break;

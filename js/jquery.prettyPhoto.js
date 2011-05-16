@@ -2,10 +2,10 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 3.1.2
+	Version: 3.1.3
 ------------------------------------------------------------------------- */
 (function($) {
-	$.prettyPhoto = {version: '3.1.2'};
+	$.prettyPhoto = {version: '3.1.3'};
 	
 	$.fn.prettyPhoto = function(pp_settings) {
 		pp_settings = jQuery.extend({
@@ -453,6 +453,8 @@
 				
 				$(window).unbind('scroll.prettyphoto');
 				
+				clearHashtag();
+				
 				settings.callback();
 				
 				doresize = true;
@@ -861,6 +863,13 @@
 		if(typeof theRel == 'undefined') return; // theRel is set on normal calls, it's impossible to deeplink using the API
 		location.hash = '!' + theRel + '/'+rel_index+'/';
 	};
+	
+	function clearHashtag(){
+		// Clear the hashtag only if it was set by prettyPhoto
+		url = location.href;
+		hashtag = (url.indexOf('#!prettyPhoto')) ? true : false;
+		if(hashtag) location.hash = "";
+	}
 	
 	function getParam(name,url){
 	  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");

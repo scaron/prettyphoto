@@ -17,7 +17,7 @@
 			allow_resize: true, /* Resize the photos bigger than viewport. true/false */
 			default_width: 500,
 			default_height: 344,
-			counter_separator_label: '/', /* The separator for the gallery counter 1 "of" 2 */
+			counter_separator_label: ' of ', /* The separator for the gallery counter 1 "of" 2 */
 			theme: 'pp_default', /* light_rounded / dark_rounded / light_square / dark_square / facebook */
 			horizontal_padding: 20, /* The padding on each side of the picture */
 			hideflash: false, /* Hides all the flash object on a page, set to TRUE if flash appears over prettyPhoto */
@@ -272,9 +272,12 @@
 						if(movie_id == ""){
 							movie_id = pp_images[set_position].split('youtu.be/');
 							movie_id = movie_id[1];
-							movie_id = movie_id.substr(0,movie_id.indexOf('&')); // Strip anything after the &
+							if(movie_id.indexOf('?') > 0)
+								movie_id = movie_id.substr(0,movie_id.indexOf('?')); // Strip anything after the ?
+
+							if(movie_id.indexOf('&') > 0)
+								movie_id = movie_id.substr(0,movie_id.indexOf('&')); // Strip anything after the &
 						}
-						
 
 						movie = 'http://www.youtube.com/embed/'+movie_id;
 						(getParam('rel',pp_images[set_position])) ? movie+="?rel="+getParam('rel',pp_images[set_position]) : movie+="?rel=1";

@@ -194,6 +194,9 @@
 		
 			$('.pp_loaderIcon').show();
 		
+			if(settings.deeplinking)
+				setHashtag();
+		
 			// Rebuild Facebook Like Button with updated href
 			if(settings.social_tools){
 				facebook_like_link = settings.social_tools.replace('{location_href}', encodeURIComponent(location.href)); 
@@ -508,9 +511,6 @@
 				}
 				
 				if(settings.autoplay_slideshow && !pp_slideshow && !pp_open) $.prettyPhoto.startSlideshow();
-				
-				if(settings.deeplinking)
-					setHashtag();
 				
 				settings.changepicturecallback(); // Callback!
 				

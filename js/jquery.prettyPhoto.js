@@ -264,8 +264,19 @@
 				
 					case 'youtube':
 						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+						
+						// Regular youtube link
+						movie_id = getParam('v',pp_images[set_position]);
+						
+						// youtu.be link
+						if(movie_id == ""){
+							movie_id = pp_images[set_position].split('youtu.be/');
+							movie_id = movie_id[1];
+							movie_id = movie_id.substr(0,movie_id.indexOf('&')); // Strip anything after the &
+						}
+						
 
-						movie = 'http://www.youtube.com/embed/'+getParam('v',pp_images[set_position]);
+						movie = 'http://www.youtube.com/embed/'+movie_id;
 						(getParam('rel',pp_images[set_position])) ? movie+="?rel="+getParam('rel',pp_images[set_position]) : movie+="?rel=1";
 							
 						if(settings.autoplay) movie += "&autoplay=1";
@@ -632,7 +643,7 @@
 		}
 	
 		function _getFileType(itemSrc){
-			if (itemSrc.match(/youtube\.com\/watch/i)) {
+			if (itemSrc.match(/youtube\.com\/watch/i) || itemSrc.match(/youtu\.be/i)) {
 				return 'youtube';
 			}else if (itemSrc.match(/vimeo\.com/i)) {
 				return 'vimeo';

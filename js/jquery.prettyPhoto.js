@@ -17,7 +17,7 @@
 			allow_resize: true, /* Resize the photos bigger than viewport. true/false */
 			default_width: 500,
 			default_height: 344,
-			counter_separator_label: ' of ', /* The separator for the gallery counter 1 "of" 2 */
+			counter_separator_label: '/', /* The separator for the gallery counter 1 "of" 2 */
 			theme: 'pp_default', /* light_rounded / dark_rounded / light_square / dark_square / facebook */
 			horizontal_padding: 20, /* The padding on each side of the picture */
 			hideflash: false, /* Hides all the flash object on a page, set to TRUE if flash appears over prettyPhoto */

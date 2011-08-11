@@ -741,7 +741,9 @@
 	
 		function _build_overlay(caller){
 			// Inject Social Tool markup into General markup
-			facebook_like_link = settings.social_tools.replace('{location_href}', encodeURIComponent(location.href)); 
+			if(settings.social_tools)
+				facebook_like_link = settings.social_tools.replace('{location_href}', encodeURIComponent(location.href)); 
+
 			settings.markup=settings.markup.replace('{pp_social}',(settings.social_tools)?facebook_like_link:''); 
 			
 			$('body').append(settings.markup); // Inject the markup

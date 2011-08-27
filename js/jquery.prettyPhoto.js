@@ -211,7 +211,7 @@
 			$pp_pic_holder.find('.currentTextHolder').text((set_position+1) + settings.counter_separator_label + $(pp_images).size());
 
 			// Set the description
-			if(pp_descriptions[set_position] != ""){
+			if(typeof pp_descriptions[set_position] != 'undefined' && pp_descriptions[set_position] != ""){
 				$pp_pic_holder.find('.pp_description').show().html(unescape(pp_descriptions[set_position]));
 			}else{
 				$pp_pic_holder.find('.pp_description').hide();

@@ -886,10 +886,7 @@
 	};
 	
 	function clearHashtag(){
-		// Clear the hashtag only if it was set by prettyPhoto
-		url = location.href;
-		hashtag = (url.indexOf('#!prettyPhoto')) ? true : false;
-		if(hashtag!==-1) location.hash = "!prettyPhoto";
+		if ( location.href.indexOf('#!prettyPhoto') !== -1 ) location.hash = "!prettyPhoto";
 	}
 	
 	function getParam(name,url){

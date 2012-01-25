@@ -15,6 +15,7 @@
 			opacity: 0.80, /* Value between 0 and 1 */
 			show_title: true, /* true/false */
 			allow_resize: true, /* Resize the photos bigger than viewport. true/false */
+			allow_expand: true, /* Allow the user to expand a resized image. true/false */
 			default_width: 500,
 			default_height: 344,
 			counter_separator_label: '/', /* The separator for the gallery counter 1 "of" 2 */
@@ -393,7 +394,9 @@
 			rel_index = set_position;
 
 			if(!doresize) doresize = true; // Allow the resizing of the images
-			$('.pp_contract').removeClass('pp_contract').addClass('pp_expand');
+			if(settings.allow_expand) {
+				$('.pp_contract').removeClass('pp_contract').addClass('pp_expand');
+			}
 
 			_hideContent(function(){ $.prettyPhoto.open(); });
 		};
@@ -518,10 +521,12 @@
 				// Show the nav
 				if(isSet && _getFileType(pp_images[set_position])=="image") { $pp_pic_holder.find('.pp_hoverContainer').show(); }else{ $pp_pic_holder.find('.pp_hoverContainer').hide(); }
 			
-				if(pp_dimensions['resized']){ // Fade the resizing link if the image is resized
-					$('a.pp_expand,a.pp_contract').show();
-				}else{
-					$('a.pp_expand').hide();
+				if(settings.allow_expand) {
+					if(pp_dimensions['resized']){ // Fade the resizing link if the image is resized
+						$('a.pp_expand,a.pp_contract').show();
+					}else{
+						$('a.pp_expand').hide();
+					}
 				}
 				
 				if(settings.autoplay_slideshow && !pp_slideshow && !pp_open) $.prettyPhoto.startSlideshow();
@@ -827,20 +832,23 @@
 
 			$('a.pp_close').bind('click',function(){ $.prettyPhoto.close(); return false; });
 
-			$('a.pp_expand').bind('click',function(e){
-				// Expand the image
-				if($(this).hasClass('pp_expand')){
-					$(this).removeClass('pp_expand').addClass('pp_contract');
-					doresize = false;
-				}else{
-					$(this).removeClass('pp_contract').addClass('pp_expand');
-					doresize = true;
-				};
+
+			if(settings.allow_expand) {
+				$('a.pp_expand').bind('click',function(e){
+					// Expand the image
+					if($(this).hasClass('pp_expand')){
+						$(this).removeClass('pp_expand').addClass('pp_contract');
+						doresize = false;
+					}else{
+						$(this).removeClass('pp_contract').addClass('pp_expand');
+						doresize = true;
+					};
+				
+					_hideContent(function(){ $.prettyPhoto.open(); });
 			
-				_hideContent(function(){ $.prettyPhoto.open(); });
-		
-				return false;
-			});
+					return false;
+				});
+			}
 		
 			$pp_pic_holder.find('.pp_previous, .pp_nav .pp_arrow_previous').bind('click',function(){
 				$.prettyPhoto.changePage('previous');

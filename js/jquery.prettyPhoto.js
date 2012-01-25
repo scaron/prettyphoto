@@ -876,7 +876,7 @@
 	
 	function getHashtag(){
 		url = location.href;
-		hashtag = (url.indexOf('#!') != -1) ? decodeURI(url.substring(url.indexOf('#!')+2,url.length)) : false;
+		hashtag = (url.indexOf('#!') !== -1) ? decodeURI(url.substring(url.indexOf('#!')+2,url.length)) : false;
 		return hashtag;
 	};
 	
@@ -886,10 +886,7 @@
 	};
 	
 	function clearHashtag(){
-		// Clear the hashtag only if it was set by prettyPhoto
-		url = location.href;
-		hashtag = (url.indexOf('#!prettyPhoto')) ? true : false;
-		if(hashtag) location.hash = "!prettyPhoto";
+		if ( location.href.indexOf('#!prettyPhoto') !== -1 ) location.hash = "!prettyPhoto";
 	}
 	
 	function getParam(name,url){

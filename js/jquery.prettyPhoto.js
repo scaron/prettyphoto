@@ -27,6 +27,7 @@
 			modal: false, /* If set to true, only the close button will close the window */
 			deeplinking: true, /* Allow prettyPhoto to update the url to enable deeplinking. */
 			overlay_gallery: true, /* If set to true, a gallery will overlay the fullscreen image on mouse over */
+			overlay_gallery_max: 30, /* Maximum number of pictures in the overlay gallery */
 			keyboard_shortcuts: true, /* Set to false if you open forms inside prettyPhoto */
 			changepicturecallback: function(){}, /* Called everytime an item is shown/changed */
 			callback: function(){}, /* Called when prettyPhoto is closed */
@@ -152,7 +153,7 @@
 			pp_titles = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr('rel').indexOf(theRel) != -1) return ($(n).find('img').attr('alt')) ? $(n).find('img').attr('alt') : ""; }) : $.makeArray($(this).find('img').attr('alt'));
 			pp_descriptions = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr('rel').indexOf(theRel) != -1) return ($(n).attr('title')) ? $(n).attr('title') : ""; }) : $.makeArray($(this).attr('title'));
 			
-			if(pp_images.length > 30) settings.overlay_gallery = false;
+			if(pp_images.length > settings.overlay_gallery_max) settings.overlay_gallery = false;
 			
 			set_position = jQuery.inArray($(this).attr('href'), pp_images); // Define where in the array the clicked item is positionned
 			rel_index = (isSet) ? set_position : $("a[rel^='"+theRel+"']").index($(this));

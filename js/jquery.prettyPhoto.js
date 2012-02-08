@@ -9,6 +9,7 @@
 	
 	$.fn.prettyPhoto = function(pp_settings) {
 		pp_settings = jQuery.extend({
+			hook: 'rel', /* the attribute tag to use for prettyPhoto hooks. default: 'rel'. For HTML5, use "data-rel" or similar. */
 			animation_speed: 'fast', /* fast/slow/normal */
 			slideshow: 5000, /* false OR interval time in ms */
 			autoplay_slideshow: false, /* true/false */
@@ -144,19 +145,19 @@
 			if(settings.ie6_fallback && $.browser.msie && parseInt($.browser.version) == 6) settings.theme = "light_square"; // Fallback to a supported theme for IE6
 			
 			// Find out if the picture is part of a set
-			theRel = $(this).attr('rel');
+			theRel = $(this).attr(settings.hook);
 			galleryRegExp = /\[(?:.*)\]/;
 			isSet = (galleryRegExp.exec(theRel)) ? true : false;
 			
 			// Put the SRCs, TITLEs, ALTs into an array.
-			pp_images = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr('rel').indexOf(theRel) != -1) return $(n).attr('href'); }) : $.makeArray($(this).attr('href'));
-			pp_titles = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr('rel').indexOf(theRel) != -1) return ($(n).find('img').attr('alt')) ? $(n).find('img').attr('alt') : ""; }) : $.makeArray($(this).find('img').attr('alt'));
-			pp_descriptions = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr('rel').indexOf(theRel) != -1) return ($(n).attr('title')) ? $(n).attr('title') : ""; }) : $.makeArray($(this).attr('title'));
+			pp_images = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr(settings.hook).indexOf(theRel) != -1) return $(n).attr('href'); }) : $.makeArray($(this).attr('href'));
+			pp_titles = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr(settings.hook).indexOf(theRel) != -1) return ($(n).find('img').attr('alt')) ? $(n).find('img').attr('alt') : ""; }) : $.makeArray($(this).find('img').attr('alt'));
+			pp_descriptions = (isSet) ? jQuery.map(matchedObjects, function(n, i){ if($(n).attr(settings.hook).indexOf(theRel) != -1) return ($(n).attr('title')) ? $(n).attr('title') : ""; }) : $.makeArray($(this).attr('title'));
 			
 			if(pp_images.length > settings.overlay_gallery_max) settings.overlay_gallery = false;
 			
 			set_position = jQuery.inArray($(this).attr('href'), pp_images); // Define where in the array the clicked item is positionned
-			rel_index = (isSet) ? set_position : $("a[rel^='"+theRel+"']").index($(this));
+			rel_index = (isSet) ? set_position : $("a["+settings.hook+"^='"+theRel+"']").index($(this));
 			
 			_build_overlay(this); // Build the overlay {this} being the caller
 			
@@ -877,7 +878,7 @@
 
 			// Little timeout to make sure all the prettyPhoto initialize scripts has been run.
 			// Useful in the event the page contain several init scripts.
-			setTimeout(function(){ $("a[rel^='"+hashRel+"']:eq("+hashIndex+")").trigger('click'); },50);
+			setTimeout(function(){ $("a["+pp_settings.hook+"^='"+hashRel+"']:eq("+hashIndex+")").trigger('click'); },50);
 		}
 		
 		return this.unbind('click.prettyphoto').bind('click.prettyphoto',$.prettyPhoto.initialize); // Return the jQuery object for chaining. The unbind method is used to avoid click conflict when the plugin is called more than once

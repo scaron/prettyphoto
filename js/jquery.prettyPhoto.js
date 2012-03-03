@@ -343,7 +343,6 @@
 							toInject = settings.inline_markup.replace(/{content}/g,responseHTML);
 							$pp_pic_holder.find('#pp_full_res')[0].innerHTML = toInject;
 							_showContent();
-							pp_settings.ajaxcallback();
 						});
 						
 					break;
@@ -540,6 +539,7 @@
 			});
 			
 			_insert_gallery();
+			pp_settings.ajaxcallback();
 		};
 		
 		/**

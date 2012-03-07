@@ -2,8 +2,9 @@
 <html>
 	<head>
 		<title>jQuery lightbox clone - prettyPhoto - by Stephane Caron</title>
+
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<script src="js/jquery-1.6.1.min.js" type="text/javascript"></script>
+		<script src="http:js/jquery-1.7.1.min.js" type="text/javascript"></script>
 		<!--script src="js/jquery.lint.js" type="text/javascript" charset="utf-8"></script-->
 		<link rel="stylesheet" href="css/prettyPhoto.css" type="text/css" media="screen" title="prettyPhoto main stylesheet" charset="utf-8" />
 		<script src="js/jquery.prettyPhoto.js" type="text/javascript" charset="utf-8"></script>
@@ -56,21 +57,21 @@
 	
 			<h2>Gallery</h2>
 			<ul class="gallery clearfix">
-				<li><a href="images/fullscreen/1.JPG?lol=lol" rel="prettyPhoto[gallery1]" title="You can add caption to pictures. You can add caption to pictures. You can add caption to pictures."><img src="images/thumbnails/t_1.jpg" width="60" height="60" alt="Red round shape" /></a></li>
-				<li><a href="images/fullscreen/2.jpg" rel="prettyPhoto[gallery1]"><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="Nice building" /></a></li>
-				<li><a href="images/fullscreen/3.jpg" rel="prettyPhoto[gallery1]"><img src="images/thumbnails/t_3.jpg" width="60" height="60" alt="Fire!" /></a></li>
-				<li><a href="images/fullscreen/4.jpg" rel="prettyPhoto[gallery1]"><img src="images/thumbnails/t_4.jpg" width="60" height="60" alt="Rock climbing" /></a></li>
-				<li><a href="images/fullscreen/5.jpg" rel="prettyPhoto[gallery1]"><img src="images/thumbnails/t_5.jpg" width="60" height="60" alt="Fly kite, fly!" /></a></li>
-				<li><a href="images/fullscreen/6.jpg" rel="prettyPhoto[gallery1]"><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="Nice building" /></a></li>
+				<li><a href="images/fullscreen/1.JPG?lol=lol" data-pp="true" data-pp-gallery="gallery1" data-pp-title="You can add caption to pictures."><img src="images/thumbnails/t_1.jpg" width="60" height="60" alt="Red round shape" /></a></li>
+				<li><a href="images/fullscreen/2.jpg" data-pp="true" data-pp-gallery="gallery1" data-pp-title="This is the second picture in the set."><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="Nice building" /></a></li>
+				<li><a href="images/fullscreen/3.jpg" data-pp="true" data-pp-gallery="gallery1" data-pp-title="This is the picture number 3,"><img src="images/thumbnails/t_3.jpg" width="60" height="60" alt="Fire!" /></a></li>
+				<li><a href="images/fullscreen/4.jpg" data-pp="true" data-pp-gallery="gallery1" data-pp-title="The fourth spot is occupied by this picture."><img src="images/thumbnails/t_4.jpg" width="60" height="60" alt="Rock climbing" /></a></li>
+				<li><a href="images/fullscreen/5.jpg" data-pp="true" data-pp-gallery="gallery1" data-pp-title="Fly little kite."><img src="images/thumbnails/t_5.jpg" width="60" height="60" alt="Fly kite, fly!" /></a></li>
+				<li><a href="images/fullscreen/6.jpg" data-pp="true" data-pp-gallery="gallery1" data-pp-title="Last picture of the set, this picture is scaled down to fit."><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="Nice building" /></a></li>
 			</ul>
 
 			<h2>Gallery 2</h2>
 			<ul class="gallery clearfix">
-				<li><a href="images/fullscreen/3.jpg" rel="prettyPhoto[gallery2]" title="How is the description on that one? How is the description on that one? How is the description on that one? "><img src="images/thumbnails/t_3.jpg" width="60" height="60" alt="This is a pretty long title" /></a></li>
-				<li><a href="images/fullscreen/4.jpg" rel="prettyPhoto[gallery2]" title="Description on a single line."><img src="images/thumbnails/t_4.jpg" width="60" height="60" alt="" /></a></li>
-				<li><a href="images/fullscreen/5.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_5.jpg" width="60" height="60" alt="" /></a></li>
-				<li><a href="images/fullscreen/1.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_1.jpg" width="60" height="60" alt="" /></a></li>
-				<li><a href="images/fullscreen/2.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="" /></a></li>
+				<li><a href="images/fullscreen/3.jpg" data-pp="true" data-pp-gallery="gallery2" data-pp-title="How is the description on that one ?"><img src="images/thumbnails/t_3.jpg" width="60" height="60" alt="This is a pretty long title" /></a></li>
+				<li><a href="images/fullscreen/4.jpg" data-pp="true" data-pp-gallery="gallery2" title="Description on a single line."><img src="images/thumbnails/t_4.jpg" width="60" height="60" alt="" /></a></li>
+				<li><a href="images/fullscreen/5.jpg" data-pp="true" data-pp-gallery="gallery2"><img src="images/thumbnails/t_5.jpg" width="60" height="60" alt="" /></a></li>
+				<li><a href="images/fullscreen/1.jpg" data-pp="true" data-pp-gallery="gallery2"><img src="images/thumbnails/t_1.jpg" width="60" height="60" alt="" /></a></li>
+				<li><a href="images/fullscreen/2.jpg" data-pp="true" data-pp-gallery="gallery2"><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="" /></a></li>
 			</ul>
 
 			<h2>API Call</h2>
@@ -83,25 +84,25 @@
 
 			<h2>Picture alone</h2>
 			<ul class="gallery clearfix">
-				<li><a href="images/fullscreen/2.jpg" rel="prettyPhoto" title="&lt;a href=&#x27;http://www.google.ca&#x27; target=&#x27;_blank&#x27; &gt;This will open Google.com in a new window&lt;/a&gt;"><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="Picture alone 1" /></a></li>
+				<li><a href="images/fullscreen/2.jpg" data-pp="true" title="&lt;a href=&#x27;http://www.google.ca&#x27; target=&#x27;_blank&#x27; &gt;This will open Google.com in a new window&lt;/a&gt;"><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="Picture alone 1" /></a></li>
 			</ul>
 			<div class="fleft">
 				<h2>Flash</h2>
 				<ul class="gallery clearfix">
-					<li><a href="http://www.adobe.com/products/flashplayer/include/marquee/design.swf?width=792&amp;height=294" rel="prettyPhoto[flash]" title="Flash 10 demo"><img src="images/thumbnails/flash-logo.png" width="60" alt="Flash 10 demo" /></a></li>
+					<li><a href="http://www.adobe.com/multimedia/en_us/get/flash/flash_animation.swf?flashvars=lol=lol" data-pp="true" data-pp-gallery="flash" data-pp-width="792" data-pp-height="294" title="Flash 10 demo"><img src="images/thumbnails/flash-logo.png" width="60" alt="Flash 10 demo" /></a></li>
 				</ul>
 			</div>
 			<div class="fleft">
 				<h2>YouTube</h2>
 				<ul class="gallery clearfix">
-					<li><a href="http://www.youtube.com/watch?v=kh29_SERH0Y?rel=0" rel="prettyPhoto" title="YouTube demo"><img src="images/thumbnails/flash-logo.png" width="60" alt="" /></a></li>
-					<li><a href="http://youtu.be/kh29_SERH0Y?rel=0" rel="prettyPhoto" title="YouTube demo"><img src="images/thumbnails/flash-logo.png" width="60" alt="" /></a></li>
+					<li><a href="http://www.youtube.com/watch?v=kh29_SERH0Y" data-pp="true" data-pp-show-related="false" title="YouTube demo"><img src="images/thumbnails/flash-logo.png" width="60" alt="" /></a></li>
+					<li><a href="http://youtu.be/kh29_SERH0Y" data-pp="true" data-pp-show-related="false" title="YouTube demo"><img src="images/thumbnails/flash-logo.png" width="60" alt="" /></a></li>
 				</ul>
 			</div>
 			<div class="fleft">
 				<h2>Vimeo</h2>
 				<ul class="gallery clearfix">
-					<li><a href="http://vimeo.com/7874398&width=700" rel="prettyPhoto" title="Vimeo video"><img src="images/thumbnails/flash-logo.png" width="60" alt="VIMEO!" /></a></li>
+					<li><a href="http://vimeo.com/7874398" data-pp="true" data-pp-width="700" data-pp-autoplay="true" title="Vimeo video"><img src="images/thumbnails/flash-logo.png" width="60" alt="VIMEO!" /></a></li>
 				</ul>
 			</div>
 			
@@ -109,48 +110,48 @@
 	
 			<h2>Movies (.mov)</h2>
 			<ul class="gallery clearfix">
-				<li><a href="http://trailers.apple.com/movies/disney/tronlegacy/tronlegacy-tsr1_r640s.mov?width=640&height=272" rel="prettyPhoto[movies]" title="Tron!"><img src="images/thumbnails/quicktime-logo.gif" alt="Tron teaser" width="60" /></a></li>
-				<li><a href="http://trailers.apple.com/movies/sony_pictures/karatekid/karatekid-tlr3_r640s.mov?width=640&height=304" rel="prettyPhoto[movies]" title="The Karate Kid"><img src="images/thumbnails/quicktime-logo.gif" alt="The Karate Kid" width="60" /></a></li>
-				<li><a href="http://trailers.apple.com/movies/paramount/shutterisland/shutterisland-tvspot1_r640s.mov?width=640&height=272" rel="prettyPhoto[movies]" title="Shutter Island"><img src="images/thumbnails/quicktime-logo.gif" alt="Shutter Island" width="60" /></a></li>
+				<li><a href="http://trailers.apple.com/movies/disney/tronlegacy/tronlegacy-tsr1_r640s.mov" data-pp="true" data-pp-gallery="movies" data-pp-width="640" data-pp-height="287" title="Tron!"><img src="images/thumbnails/quicktime-logo.gif" alt="Tron teaser" width="60" /></a></li>
+				<li><a href="http://trailers.apple.com/movies/sony_pictures/karatekid/karatekid-tlr3_r640s.mov" data-pp="true" data-pp-gallery="movies" data-pp-width="640" data-pp-height="320" title="The Karate Kid"><img src="images/thumbnails/quicktime-logo.gif" alt="The Karate Kid" width="60" /></a></li>
+				<li><a href="http://trailers.apple.com/movies/paramount/shutterisland/shutterisland-tvspot1_r640s.mov" data-pp="true" data-pp-gallery="movies" data-pp-width="640" data-pp-height="287" title="Shutter Island"><img src="images/thumbnails/quicktime-logo.gif" alt="Shutter Island" width="60" /></a></li>
 			</ul>
 	
 			<h2>Movies (.mov) alone</h2>
 			<ul class="gallery clearfix">
-				<li><a href="http://trailers.apple.com/movies/disney/tronlegacy/tronlegacy-tsr1_r640s.mov?width=640&height=272" rel="prettyPhoto" title="Tron!"><img src="images/thumbnails/quicktime-logo.gif" alt="Tron teaser" width="60" /></a></li>
+				<li><a href="http://trailers.apple.com/movies/disney/tronlegacy/tronlegacy-tsr1_r640s.mov" data-pp="true" data-pp-width="640" data-pp-height="300" title="Tron!"><img src="images/thumbnails/quicktime-logo.gif" alt="Tron teaser" width="60" /></a></li>
 			</ul>
 	
 			<h2>Unusual sizes</h2>
 			<ul class="gallery clearfix">
-				<li><a href="images/fullscreen/wide.gif" rel="prettyPhoto[unusual]">Wide image (3000 x 1500)</a></li>
-				<li><a href="images/fullscreen/high.gif" rel="prettyPhoto[unusual]">High image (1500 x 3000)</a></li>
-				<li><a href="images/fullscreen/huge.gif" rel="prettyPhoto[unusual]">Huge image (3000 x 3000)</a></li>
+				<li><a href="images/fullscreen/wide.gif" data-pp="true" data-pp-gallery="unusual">Wide image (3000 x 1500)</a></li>
+				<li><a href="images/fullscreen/high.gif" data-pp="true" data-pp-gallery="unusual">High image (1500 x 3000)</a></li>
+				<li><a href="images/fullscreen/huge.gif" data-pp="true" data-pp-gallery="unusual">Huge image (3000 x 3000)</a></li>
 			</ul>
 	
 			<h2>Iframe</h2>
 			<ul class="gallery clearfix">
-				<li><a href="http://www.google.com/search?ie=UTF-8&amp;oe=UTF-8&amp;q=prettyphoto&amp;iframe=true&amp;width=100%&amp;height=100%" rel="prettyPhoto[iframe]">Google.ca</a></li>
-				<li><a href="http://www.facebook.com?iframe=true&amp;width=600&amp;height=300" rel="prettyPhoto[iframe]">Facebook</a></li>
-				<li><a href="http://nmfe.co?iframe=true&amp;width=300&amp;height=200" rel="prettyPhoto[iframe]">My site</a></li>
+				<li><a href="http://www.reddit.com/" data-pp="true" data-pp-gallery="iframe" data-pp-iframe="true" data-pp-width="100%" data-pp-height="100%">Reddit</a></li>
+				<li><a href="http://news.ycombinator.com" data-pp="true" data-pp-gallery="iframe" data-pp-iframe="true" data-pp-width="75%" data-pp-height="75%">Hacker News</a></li>
+				<li><a href="http://nmfe.co" data-pp-iframe="true" data-pp="true" data-pp-gallery="iframe" data-pp-width="100%" data-pp-height="100%">No Margin For Errors (My site)</a></li>
 			</ul>
 	
 			<h2>AJAX</h2>
 			<ul class="gallery clearfix">
-				<li><a href="xhr_response.html?ajax=true&amp;width=400&amp;height=160" rel="prettyPhoto[ajax]">Sample AJAX</a></li>
+				<li><a href="xhr_response.php" data-pp="true" data-pp-gallery="ajax" data-pp-ajax="true" data-pp-width="400" data-pp-height="160">Sample AJAX</a></li>
 			</ul>
 	
 			<h2>Mixed gallery</h2>
 			<ul class="gallery clearfix">
-				<li><a href="http://www.google.ca?iframe=true&amp;width=1000&amp;height=500" rel="prettyPhoto[mixed]">Google.ca</a></li>
-				<li><a href="http://trailers.apple.com/movies/disney/tronlegacy/tronlegacy-tsr1_r640s.mov?width=640&height=272" rel="prettyPhoto[mixed]" title="Tron!"><img src="images/thumbnails/quicktime-logo.gif" alt="Tron teaser" width="60" /></a></li>
-				<li><a href="images/fullscreen/5.jpg" rel="prettyPhoto[mixed]"><img src="images/thumbnails/t_5.jpg" width="60" height="60" alt="" /></a></li>
-				<li><a href="http://www.adobe.com/products/flashplayer/include/marquee/design.swf?width=792&amp;height=294" rel="prettyPhoto[mixed]" title="Flash 10 demo"><img src="images/thumbnails/flash-logo.png" width="60" alt="Flash 10 demo" /></a></li>
+				<li><a href="http://www.google.ca" data-pp="true" data-pp-gallery="mixed" data-pp-iframe="true" data-pp-width="1000" data-pp-height="500">Google.ca</a></li>
+				<li><a href="http://trailers.apple.com/movies/disney/tronlegacy/tronlegacy-tsr1_r640s.mov" data-pp="true" data-pp-gallery="mixed" data-pp-width="640" data-pp-height="272" title="Tron!"><img src="images/thumbnails/quicktime-logo.gif" alt="Tron teaser" width="60" /></a></li>
+				<li><a href="images/fullscreen/5.jpg" data-pp="true" data-pp-gallery="mixed"><img src="images/thumbnails/t_5.jpg" width="60" height="60" alt="" /></a></li>
+				<li><a href="http://www.adobe.com/products/flashplayer/include/marquee/design.swf" data-pp="true" data-pp-gallery="mixed" data-pp-width="792" data-pp-height="294" title="Flash 10 demo"><img src="images/thumbnails/flash-logo.png" width="60" alt="Flash 10 demo" /></a></li>
 			</ul>
 	
 			<h2>Inline content</h2>
 			<ul class="gallery clearfix">
-				<li><a href="#inline_demo" rel="prettyPhoto[inline]">Inline content 1</a></li>
-				<li><a href="#inline_demo2" rel="prettyPhoto[inline]">Inline content 2</a></li>
-				<li><a href="#inline_demo3" rel="prettyPhoto[inline]">Inline content 3</a></li>
+				<li><a href="#inline_demo" data-pp="true" data-pp-gallery="inline">Inline content 1</a></li>
+				<li><a href="#inline_demo2" data-pp="true" data-pp-gallery="inline">Inline content 2</a></li>
+				<li><a href="#inline_demo3" data-pp="true" data-pp-gallery="inline">Inline content 3</a></li>
 			</ul>
 			<div id="inline_demo" style="display:none;">
 				<p><a href="http://www.google.ca?iframe=true&amp;width=1000&amp;height=500">Google.ca</a></p>
@@ -169,9 +170,9 @@
 			</div>
 	
 			<h2>Custom content</h2>
-			<ul id="custom_content" class="gallery clearfix">
-				<li><a href="#?custom=true&width=260&height=270" rel="prettyPhoto">Google Maps</a></li>
-				<li><a href="#?custom=true&width=260&height=400" rel="prettyPhoto">Ads</a></li>
+			<ul id="custom_content" class=" clearfix">
+				<li><a href="#" data-pp-custom="true" data-pp-width="260" data-pp-height="270" data-pp="true">Google Maps</a></li>
+				<li><a href="#" data-pp-custom="true" data-pp-width="260" data-pp-height="400" data-pp="true">Ads</a></li>
 			</ul>
 			
 			<br /><br />
@@ -183,15 +184,15 @@
 			$(document).ready(function(){
 				$("area[rel^='prettyPhoto']").prettyPhoto();
 				
-				$(".gallery:first a[rel^='prettyPhoto']").prettyPhoto({slideshow:3000, autoplay_slideshow: true});
-				$(".gallery:gt(0) a[rel^='prettyPhoto']").prettyPhoto({slideshow:10000, hideflash: true});
+				$(".gallery:first a[data-pp='true']").prettyPhoto({slideshow:3000, autoplaySlideshow: true});
+				$(".gallery:gt(0) a[data-pp='true']").prettyPhoto({hideflash: true});
 		
-				$("#custom_content a[rel^='prettyPhoto']:first").prettyPhoto({
+				$("#custom_content a[data-pp='true']:first").prettyPhoto({
 					custom_markup: '<div id="map_canvas" style="width:260px; height:265px"></div>',
 					changepicturecallback: function(){ initialize(); }
 				});
 
-				$("#custom_content a[rel^='prettyPhoto']:last").prettyPhoto({
+				$("#custom_content a[data-pp='true']:last").prettyPhoto({
 					custom_markup: '<div id="bsap_1259344" class="bsarocks bsap_d49a0984d0f377271ccbf01a33f2b6d6"></div><div id="bsap_1237859" class="bsarocks bsap_d49a0984d0f377271ccbf01a33f2b6d6" style="height:260px"></div><div id="bsap_1251710" class="bsarocks bsap_d49a0984d0f377271ccbf01a33f2b6d6"></div>',
 					changepicturecallback: function(){ _bsap.exec(); }
 				});

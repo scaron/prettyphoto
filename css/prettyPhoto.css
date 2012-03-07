@@ -8,46 +8,19 @@
 	
 	div.pp_default .pp_content {
 		background: #fff;
-		border: 8px rgba(0,0,0,0.8) solid;
-		padding: 8px;
-
-        -moz-background-clip: padding;     /* Firefox 3.6 */
-        -webkit-background-clip: padding;  /* Safari 4? Chrome 6? */
-        background-clip: padding-box;      /* Firefox 4, Safari 5, Opera 10, IE 9 */
-		
-		border-radius: 10px;
-		-moz-border-radius: 10px;
-		-webkit-border-radius: 10px;
+		border: 1px #616671 solid;
+		overflow: hidden;
+		border-radius: 4px;
+		-moz-border-radius: 4px;
+		-webkit-border-radius: 4px;
 	}
-	div.pp_default .pp_content .ppt { color: #f8f8f8; }
-	div.pp_default .pp_expand { background: url(../images/prettyPhoto/default/sprite.png) 0 -29px no-repeat; cursor: pointer; width: 28px; height: 28px; } /* Expand button */
-	div.pp_default .pp_expand:hover { background: url(../images/prettyPhoto/default/sprite.png) 0 -56px no-repeat; cursor: pointer; } /* Expand button hover */
-	div.pp_default .pp_contract { background: url(../images/prettyPhoto/default/sprite.png) 0 -84px no-repeat; cursor: pointer; width: 28px; height: 28px; } /* Contract button */
-	div.pp_default .pp_contract:hover { background: url(../images/prettyPhoto/default/sprite.png) 0 -113px no-repeat; cursor: pointer; } /* Contract button hover */
-	div.pp_default .pp_close { width: 30px; height: 30px; background: url(../images/prettyPhoto/default/sprite.png) 2px 1px no-repeat; cursor: pointer; } /* Close button */
-	div.pp_default #pp_full_res .pp_inline { color: #000; } 
-	div.pp_default .pp_gallery ul li a { background: url(../images/prettyPhoto/default/default_thumb.png) center center #f8f8f8; border:1px solid #aaa; }
-	div.pp_default .pp_gallery ul li a:hover,
-	div.pp_default .pp_gallery ul li.selected a { border-color: #fff; }
-	div.pp_default .pp_social { margin-top: 7px; }
-
-	div.pp_default .pp_gallery a.pp_arrow_previous,
-	div.pp_default .pp_gallery a.pp_arrow_next { position: static; left: auto; }
-	div.pp_default .pp_details { position: relative; }
-	div.pp_default a.pp_arrow_previous,
-	div.pp_default a.pp_arrow_next { background: url(../images/prettyPhoto/default/sprite.png) -31px -3px no-repeat; height: 20px; margin: 4px 0 0 0; width: 20px; }
-	div.pp_default a.pp_arrow_next { left: 52px; background-position: -82px -3px; } /* The next arrow in the bottom nav */
-	div.pp_default .pp_content_container .pp_details { margin-top: 5px; }
-	
-	div.pp_default .pp_description{ font-size: 11px; font-weight: bold; line-height: 14px; margin: 5px 50px 5px 0; }
-	div.pp_default .pp_loaderIcon { background: url(../images/prettyPhoto/default/loader.gif) center center no-repeat; } /* Loader icon */
 
 
 /* ------------------------------------------------------------------------
 	DO NOT CHANGE
 ------------------------------------------------------------------------- */
 
-	div.pp_pic_holder a:focus { outline:none; }
+	div.pp_container a:focus { outline:none; }
 
 	div.pp_overlay {
 		background: #000;
@@ -59,45 +32,66 @@
 		z-index: 9500;
 	}
 	
-	div.pp_pic_holder {
+	div.pp_container {
 		display: none;
+		left: 50%;
 		position: fixed;
+		top: 50%;
 		z-index: 10000;
 	}
 		
 		.pp_fade { display: none; }
 		
+		#pp_mediaContainer { height: 40px; overflow: hidden; width: 40px; border-radius:3px; }
+		
 		.pp_content {
 			position: relative;
 		}
-		
-			.pp_content .pp_details {
-				display: inline-block;
-				margin: 10px 0 2px 0;
+
+			.pp_header { 
+				background: #fcfcfc -webkit-linear-gradient(#fcfcfc,#dfe2e8);
+				border-bottom: 1px #b4b8c2 solid;
+				border-top-right-radius:4px;
+				border-top-left-radius:4px;
+				color: #606878;
+				font-weight: bold;
+				left: 0;
+				min-width: 100%;
+				padding: 12px 5px 9px 15px;
+				position: absolute;
+				text-shadow: 1px 1px #fff;
+				top: 0;
+				z-index: 10;
+				
+				-webkit-box-sizing: border-box;
+				     -moz-box-sizing: border-box;
+				          box-sizing: border-box;
 			}
-				.pp_description {
-					display: none;
-					margin: 0;
-				}
-				
-				.pp_social { float: left; margin: 0; }
-				.pp_social .facebook { float: left; margin-left: 5px; width: 55px; overflow: hidden; }
-				.pp_social .twitter { float: left; }
-				
-				.pp_nav {
-					background: rgba(0,0,0,0.3) -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,0.7)), to(rgba(34,34,34,0.7))) left 15px;
-					border: 1px rgba(34,34,34,0.7) solid;
-					border-radius: 5px;
-					bottom: 30px;
-					box-shadow: 0 0 2px rgba(0,0,0,0.6);
+			
+				.pp_header .pp_close {
+					background: green;
+					border-radius: 10px;
 					color: #fff;
-					display: none;
-					left: 50%;
-					margin-left: -37%;
-					position: absolute;
-					width: 75%;
+					display: block;
+					float: left;
+					margin: 0 5px 0 0;
+					padding: 2px;
+					text-decoration: none;
 				}
-				
+
+			.pp_nav {
+				background: rgba(0,0,0,0.3) -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,0.7)), to(rgba(34,34,34,0.7))) left 15px;
+				border: 1px rgba(34,34,34,0.7) solid;
+				border-radius: 5px;
+				bottom: 30px;
+				box-shadow: 0 0 2px rgba(0,0,0,0.6);
+				color: #fff;
+				left: 50%;
+				margin-left: -37%;
+				position: absolute;
+				width: 75%;
+			}
+		
 				.pp_nav p {
 					float: left;
 					font-size: 14px;
@@ -109,7 +103,7 @@
 					max-width: 70%;
 					white-space: nowrap;
 				}
-				
+		
 				.pp_nav .pp_next,
 				.pp_nav .pp_previous {
 					color: #fff;
@@ -118,7 +112,7 @@
 					position: relative;
 					width: 10%;
 				}
-				
+		
 				.pp_nav .pp_next { border-left: 1px #000 solid; float: right; }
 				.pp_nav .pp_next span {
 					border-top: 5px solid transparent;
@@ -133,7 +127,7 @@
 					top: 50%;
 					width: 0;
 				}
-				
+		
 				.pp_nav .pp_previous { border-right: 1px #000 solid; }
 				.pp_nav .pp_previous span {
 					border-top: 5px solid transparent;
@@ -148,110 +142,139 @@
 					top: 50%;
 					width: 0;
 				}
+				
+				.pp_nav .pp_play {
+					border-top: 8px solid transparent;
+			        border-bottom: 8px solid transparent;
+			        border-left: 8px solid #fff;
+					display: none;
+					left: 50%;
+					height: 0;
+					position: absolute;
+					text-indent: -10000px;
+					width: 0;
+				}
+				
+				.pp_nav .pp_pause {
+			        border-left: 2px solid #fff;
+					border-bottom: 0;
+					border-right: 2px solid #fff;
+					border-top: 0;
+					height: 15px;
+					width: 5px;
+				}
+				
+				.pp_nav .pp_paging {
+					left: 50%;
+					position: absolute;
+					top: 18px;
+				}
+				
+					.pp_nav .pp_paging li {
+						float: left;
+						margin: 0 5px 0 0;
+					}
+				
+					.pp_nav .pp_paging a {
+						background: #fff;
+						display: block;
+						font-size: 0;
+						height: 7px;
+						position: relative;
+						width: 7px;
+						
+						border-radius: 7px;
+					}
+					
+					.pp_nav .pp_paging li.selected a {
+						background: black;
+					}
+					
+				.pp_nav .pp_progress {
+					border: 1px #fff solid;
+					height: 5px;
+					left: 50%;
+					overflow: hidden;
+					position: absolute;
+					top: 0;
+					width: 50%;
+				}
+				
+				.pp_nav .pp_progress_done {
+					background: red;
+					display: block;
+					height: 5px;
+					left: 0;
+					position: absolute;
+					top: 0;
+					width: 0%;
+				}
 		
-		.pp_gallery {
-			display: none;
-			left: 50%;
-			margin-top: -50px;
-			position: absolute;
-			z-index: 10000;
-		}
-		
-			.pp_gallery div {
-				float: left;
-				overflow: hidden;
-				position: relative;
-			}
-			
-			.pp_gallery ul {
-				float: left;
-				height: 35px;
-				margin: 0 0 0 5px;
-				padding: 0;
-				position: relative;
-				white-space: nowrap;
-			}
-			
-			.pp_gallery ul a {
-				border: 1px #000 solid;
-				border: 1px rgba(0,0,0,0.5) solid;
-				display: block;
-				float: left;
-				height: 33px;
-				overflow: hidden;
-			}
-			
-			.pp_gallery ul a:hover,
-			.pp_gallery li.selected a { border-color: #fff; }
-			
-			.pp_gallery ul a img { border: 0; }
-			
-			.pp_gallery li {
-				display: block;
-				float: left;
-				margin: 0 5px 0 0;
-				padding: 0;
-			}
-			
-			.pp_gallery li.default a {
-				background: url(../images/prettyPhoto/facebook/default_thumbnail.gif) 0 0 no-repeat;
-				display: block;
-				height: 33px;
-				width: 50px;
-			}
-			
-			.pp_gallery li.default a img { display: none; }
-			
-			.pp_gallery .pp_arrow_previous,
-			.pp_gallery .pp_arrow_next {
-				margin-top: 7px !important;
-			}
-		
-		a.pp_expand,
-		a.pp_contract {
-			cursor: pointer;
-			display: none;
-			height: 20px;	
-			position: absolute;
-			right: 30px;
-			text-indent: -10000px;
-			top: 10px;
-			width: 20px;
-			z-index: 20000;
-		}
-			
-		a.pp_close {
-			position: absolute; right: 0; top: 0; 
-			display: block;
-			line-height:22px;
-			text-indent: -10000px;
-		}
-		
-		.pp_loaderIcon {
-			display: block;
-			height: 24px;
-			left: 50%;
-			margin: -12px 0 0 -12px;
-			position: absolute;
-			top: 50%;
-			width: 24px;
-		}
-		
-		#pp_full_res {
-			overflow: hidden;
-/*			line-height: 1 !important;*/
-		}
-		
-			#pp_full_res .pp_inline {
-				text-align: left;
-			}
-			
-				#pp_full_res .pp_inline p { margin: 0 0 15px 0; }
+	.pp_loader {
+		display: block;
+		height: 24px;
+		left: 50%;
+		margin: -12px 0 0 -12px;
+		position: absolute;
+		top: 50%;
+		width: 24px;
+	}
 	
-		div.ppt {
-			color: #fff;
-			display: none;
-			font-size: 17px;
-			margin: 0 0 5px 15px;
-			z-index: 9999;
+	.pp_tooltip	{
+		display: block;
+		height: 40px;
+		left: -20px;
+		position: absolute;
+		top: -50px;
+		width: 40px;
+	}
+	
+		.pp_tooltip img {
+			height: 100%;
+			width: 100%;
 		}
+	
+	.pp_social {
+		background: white;
+		display: block;
+		float: left;
+		height: 10px;
+		width: 10px;
+	}
+
+/* ------------------------------------------------------------------------
+	Rich media object positioning
+------------------------------------------------------------------------- */
+
+	.youtube .pp_nav,
+	.vimeo .pp_nav,
+	.iframe .pp_nav,
+	.quicktime .pp_nav,
+	.flash .pp_nav {
+		bottom: -35px;
+	}
+	
+	.youtube .pp_header,
+	.vimeo .pp_header,
+	.iframe .pp_header,
+	.quicktime .pp_header,
+	.flash .pp_header {
+		top: -40px;
+	}
+	
+	/* iPads (landscape) ----------- */
+	@media only screen
+	and (min-device-width : 768px)
+	and (max-device-width : 1024px)
+	and (orientation : landscape) {
+
+		
+	}
+
+	/* iPads (portrait) ----------- */
+	@media only screen
+	and (min-device-width : 768px)
+	and (max-device-width : 1024px)
+	and (orientation : portrait) {
+	/* Styles */
+	}

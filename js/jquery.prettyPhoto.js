@@ -2,10 +2,10 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 3.1.3
+	Version: 3.1.4
 ------------------------------------------------------------------------- */
 (function($) {
-	$.prettyPhoto = {version: '3.1.3'};
+	$.prettyPhoto = {version: '3.1.4'};
 	
 	$.fn.prettyPhoto = function(pp_settings) {
 		pp_settings = jQuery.extend({
@@ -888,7 +888,8 @@
 	
 	function getHashtag(){
 		url = location.href;
-		hashtag = (url.indexOf('#') !== -1) ? decodeURI(url.substring(url.indexOf('#')+2,url.length)) : false;
+		hashtag = (url.indexOf('#prettyPhoto') !== -1) ? decodeURI(url.substring(url.indexOf('#prettyPhoto')+1,url.length)) : false;
+
 		return hashtag;
 	};
 	

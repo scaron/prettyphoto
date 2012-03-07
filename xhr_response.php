@@ -1,3 +1,4 @@
+<?php sleep(2); ?>
 <h1>This is an XHR Response</h1>
 <div id="my_content">
 	<p>This is sample content brought in.</p>

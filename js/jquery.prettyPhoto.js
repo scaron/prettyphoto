@@ -10,6 +10,7 @@
 	$.fn.prettyPhoto = function(pp_settings) {
 		pp_settings = jQuery.extend({
 			animation_speed: 'fast', /* fast/slow/normal */
+			ajaxcallback: function() {},
 			slideshow: 5000, /* false OR interval time in ms */
 			autoplay_slideshow: false, /* true/false */
 			opacity: 0.80, /* Value between 0 and 1 */
@@ -538,6 +539,7 @@
 			});
 			
 			_insert_gallery();
+			pp_settings.ajaxcallback();
 		};
 		
 		/**

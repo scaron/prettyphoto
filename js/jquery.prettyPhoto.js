@@ -186,7 +186,7 @@
 				pp_titles = (arguments[1]) ? $.makeArray(arguments[1]) : $.makeArray("");
 				pp_descriptions = (arguments[2]) ? $.makeArray(arguments[2]) : $.makeArray("");
 				isSet = (pp_images.length > 1) ? true : false;
-				set_position = 0;
+				set_position = (arguments[3])? arguments[3]: 0;
 				_build_overlay(event.target); // Build the overlay {this} being the caller
 			}
 

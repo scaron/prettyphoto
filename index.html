@@ -72,6 +72,13 @@
 				<li><a href="images/fullscreen/1.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_1.jpg" width="60" height="60" alt="" /></a></li>
 				<li><a href="images/fullscreen/2.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="" /></a></li>
 			</ul>
+			
+			<h2>Gallery 3</h2>
+			<ul class="gallery clearfix">
+				<li><a href="images/fullscreen/3.jpg" rel="prettyPhoto[gallery3]" data-description="How is the description on that one? How is the description on that one? How is the description on that one? "><img src="images/thumbnails/t_3.jpg" width="60" height="60" alt="This is a pretty long title" /></a></li>
+				<li><a href="images/fullscreen/4.jpg" rel="prettyPhoto[gallery3]" data-description="Description on a single line."><img src="images/thumbnails/t_4.jpg" width="60" height="60" alt="" /></a></li>
+				<li><a href="images/fullscreen/2.jpg" rel="prettyPhoto[gallery3]" data-description="&lt;a href=&#x27;http://www.google.ca&#x27; target=&#x27;_blank&#x27; &gt;This will open Google.com in a new window&lt;/a&gt;"><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="" /></a></li>
+			</ul>
 
 			<h2>API Call</h2>
 			<script type="text/javascript" charset="utf-8">
@@ -185,7 +192,8 @@
 				
 				$(".gallery:first a[rel^='prettyPhoto']").prettyPhoto({animation_speed:'normal',theme:'light_square',slideshow:3000, autoplay_slideshow: true});
 				$(".gallery:gt(0) a[rel^='prettyPhoto']").prettyPhoto({animation_speed:'fast',slideshow:10000, hideflash: true});
-		
+				$(".gallery:eq(2) a[rel^='prettyPhoto']").prettyPhoto({description_src:'data-description'});
+				
 				$("#custom_content a[rel^='prettyPhoto']:first").prettyPhoto({
 					custom_markup: '<div id="map_canvas" style="width:260px; height:265px"></div>',
 					changepicturecallback: function(){ initialize(); }

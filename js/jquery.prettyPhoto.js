@@ -913,4 +913,3 @@
 })(jQuery);
 
 var pp_alreadyInitialized = false; // Used for the deep linking to make sure not to call the same function several times.
-var test = "";

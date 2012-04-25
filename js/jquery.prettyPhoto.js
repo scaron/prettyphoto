@@ -203,7 +203,7 @@
 		
 			// Rebuild Facebook Like Button with updated href
 			if(settings.social_tools){
-				facebook_like_link = settings.social_tools.replace('{location_href}', encodeURIComponent(location.href)); 
+				facebook_like_link = settings.social_tools.replace(/{location_href}/g, encodeURIComponent(location.href)); 
 				$pp_pic_holder.find('.pp_social').html(facebook_like_link);
 			}
 			
@@ -751,7 +751,7 @@
 		function _build_overlay(caller){
 			// Inject Social Tool markup into General markup
 			if(settings.social_tools)
-				facebook_like_link = settings.social_tools.replace('{location_href}', encodeURIComponent(location.href)); 
+				facebook_like_link = settings.social_tools.replace(/{location_href}/g, encodeURIComponent(location.href)); 
 
 			settings.markup = settings.markup.replace('{pp_social}',''); 
 			

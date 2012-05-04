@@ -456,7 +456,7 @@
 			});
 			clearInterval(pp_slideshow);
 			pp_slideshow=undefined;
-		}
+		};
 
 
 		/**

@@ -143,7 +143,7 @@
 			settings = pp_settings;
 			
 			if(settings.theme == 'pp_default') settings.horizontal_padding = 16;
-			if(settings.ie6_fallback && $.browser.msie && parseInt($.browser.version) == 6) settings.theme = "light_square"; // Fallback to a supported theme for IE6
+			if(settings.ie6_fallback && $.browser.msie && parseInt($.browser.version, 10) == 6) settings.theme = "light_square"; // Fallback to a supported theme for IE6
 			
 			// Find out if the picture is part of a set
 			theRel = $(this).attr(settings.hook);
@@ -711,7 +711,7 @@
 		};
 	
 		function _insert_gallery(){
-			if(isSet && settings.overlay_gallery && _getFileType(pp_images[set_position])=="image" && (settings.ie6_fallback && !($.browser.msie && parseInt($.browser.version) == 6))) {
+			if(isSet && settings.overlay_gallery && _getFileType(pp_images[set_position])=="image" && (settings.ie6_fallback && !($.browser.msie && parseInt($.browser.version,10) == 6))) {
 				itemWidth = 52+5; // 52 beign the thumb width, 5 being the right margin.
 				navWidth = (settings.theme == "facebook" || settings.theme == "pp_default") ? 50 : 30; // Define the arrow width depending on the theme
 				

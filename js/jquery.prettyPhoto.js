@@ -249,7 +249,7 @@
 						prevImage = new Image();
 						if(isSet && pp_images[set_position - 1]) prevImage.src = pp_images[set_position - 1];
 
-						$pp_pic_holder.find('#pp_full_res')[0].innerHTML = settings.image_markup.replace(/{path}/g,pp_images[set_position]);
+						$pp_pic_holder.find('#pp_full_res')[0].innerHTML = settings.image_markup.replace(/\{path\}/g,pp_images[set_position]);
 
 						imgPreloader.onload = function(){
 							// Fit item to viewport
@@ -288,7 +288,7 @@
 							
 						if(settings.autoplay) movie += "&autoplay=1";
 					
-						toInject = settings.iframe_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,movie);
+						toInject = settings.iframe_markup.replace(/\{width\}/g,pp_dimensions['width']).replace(/\{height\}/g,pp_dimensions['height']).replace(/\{wmode\}/g,settings.wmode).replace(/\{path\}/g,movie);
 					break;
 				
 					case 'vimeo':
@@ -303,14 +303,14 @@
 				
 						vimeo_width = pp_dimensions['width'] + '/embed/?moog_width='+ pp_dimensions['width'];
 				
-						toInject = settings.iframe_markup.replace(/{width}/g,vimeo_width).replace(/{height}/g,pp_dimensions['height']).replace(/{path}/g,movie);
+						toInject = settings.iframe_markup.replace(/\{width\}/g,vimeo_width).replace(/\{height\}/g,pp_dimensions['height']).replace(/\{path\}/g,movie);
 					break;
 				
 					case 'quicktime':
 						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 						pp_dimensions['height']+=15; pp_dimensions['contentHeight']+=15; pp_dimensions['containerHeight']+=15; // Add space for the control bar
 				
-						toInject = settings.quicktime_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,pp_images[set_position]).replace(/{autoplay}/g,settings.autoplay);
+						toInject = settings.quicktime_markup.replace(/\{width\}/g,pp_dimensions['width']).replace(/\{height\}/g,pp_dimensions['height']).replace(/\{wmode\}/g,settings.wmode).replace(/\{path\}/g,pp_images[set_position]).replace(/\{autoplay\}/g,settings.autoplay);
 					break;
 				
 					case 'flash':
@@ -322,7 +322,7 @@
 						filename = pp_images[set_position];
 						filename = filename.substring(0,filename.indexOf('?'));
 					
-						toInject =  settings.flash_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,filename+'?'+flash_vars);
+						toInject =  settings.flash_markup.replace(/\{width\}/g,pp_dimensions['width']).replace(/\{height\}/g,pp_dimensions['height']).replace(/\{wmode\}/g,settings.wmode).replace(/\{path\}/g,filename+'?'+flash_vars);
 					break;
 				
 					case 'iframe':
@@ -331,7 +331,7 @@
 						frame_url = pp_images[set_position];
 						frame_url = frame_url.substr(0,frame_url.indexOf('iframe')-1);
 
-						toInject = settings.iframe_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{path}/g,frame_url);
+						toInject = settings.iframe_markup.replace(/\{width\}/g,pp_dimensions['width']).replace(/\{height\}/g,pp_dimensions['height']).replace(/\{path\}/g,frame_url);
 					break;
 					
 					case 'ajax':
@@ -341,7 +341,7 @@
 					
 						skipInjection = true;
 						$.get(pp_images[set_position],function(responseHTML){
-							toInject = settings.inline_markup.replace(/{content}/g,responseHTML);
+							toInject = settings.inline_markup.replace(/\{content\}/g,responseHTML);
 							$pp_pic_holder.find('#pp_full_res')[0].innerHTML = toInject;
 							_showContent();
 						});
@@ -361,7 +361,7 @@
 						pp_dimensions = _fitToViewport($(myClone).width(),$(myClone).height());
 						doresize = true; // Reset the dimensions
 						$(myClone).remove();
-						toInject = settings.inline_markup.replace(/{content}/g,$(pp_images[set_position]).html());
+						toInject = settings.inline_markup.replace(/\{content\}/g,$(pp_images[set_position]).html());
 					break;
 				};
 
@@ -774,7 +774,7 @@
 					toInject += "<li class='"+classname+"'><a href='#'><img src='" + img_src + "' width='50' alt='' /></a></li>";
 				};
 				
-				toInject = settings.gallery_markup.replace(/{gallery}/g,toInject);
+				toInject = settings.gallery_markup.replace(/\{gallery\}/g,toInject);
 				
 				$pp_pic_holder.find('#pp_full_res').after(toInject);
 				

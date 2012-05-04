@@ -103,7 +103,7 @@
 		windowHeight = $(window).height(), windowWidth = $(window).width(),
 
 		// Global elements
-		pp_slideshow;
+		pp_slideshow,
 		
 		doresize = true, scroll_pos = _get_scroll();
 	
@@ -128,12 +128,12 @@
 								$.prettyPhoto.close();
 								e.preventDefault();
 								break;
-						};
+						}
 						// return false;
-					};
-				};
+					}
+				}
 			});
-		};
+		}
 		
 		/**
 		* Initialize prettyPhoto.
@@ -143,7 +143,7 @@
 			settings = pp_settings;
 			
 			if(settings.theme == 'pp_default') settings.horizontal_padding = 16;
-			if(settings.ie6_fallback && $.browser.msie && parseInt($.browser.version) == 6) settings.theme = "light_square"; // Fallback to a supported theme for IE6
+			if(settings.ie6_fallback && $.browser.msie && parseInt($.browser.version, 10) == 6) settings.theme = "light_square"; // Fallback to a supported theme for IE6
 			
 			// Find out if the picture is part of a set
 			theRel = $(this).attr(settings.hook);
@@ -169,7 +169,7 @@
 			$.prettyPhoto.open();
 			
 			return false;
-		}
+		};
 
 
 		/**
@@ -249,7 +249,7 @@
 						prevImage = new Image();
 						if(isSet && pp_images[set_position - 1]) prevImage.src = pp_images[set_position - 1];
 
-						$pp_pic_holder.find('#pp_full_res')[0].innerHTML = settings.image_markup.replace(/{path}/g,pp_images[set_position]);
+						$pp_pic_holder.find('#pp_full_res')[0].innerHTML = settings.image_markup.replace(/\{path\}/g,pp_images[set_position]);
 
 						imgPreloader.onload = function(){
 							// Fit item to viewport
@@ -288,7 +288,7 @@
 							
 						if(settings.autoplay) movie += "&autoplay=1";
 					
-						toInject = settings.iframe_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,movie);
+						toInject = settings.iframe_markup.replace(/\{width\}/g,pp_dimensions['width']).replace(/\{height\}/g,pp_dimensions['height']).replace(/\{wmode\}/g,settings.wmode).replace(/\{path\}/g,movie);
 					break;
 				
 					case 'vimeo':
@@ -303,14 +303,14 @@
 				
 						vimeo_width = pp_dimensions['width'] + '/embed/?moog_width='+ pp_dimensions['width'];
 				
-						toInject = settings.iframe_markup.replace(/{width}/g,vimeo_width).replace(/{height}/g,pp_dimensions['height']).replace(/{path}/g,movie);
+						toInject = settings.iframe_markup.replace(/\{width\}/g,vimeo_width).replace(/\{height\}/g,pp_dimensions['height']).replace(/\{path\}/g,movie);
 					break;
 				
 					case 'quicktime':
 						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 						pp_dimensions['height']+=15; pp_dimensions['contentHeight']+=15; pp_dimensions['containerHeight']+=15; // Add space for the control bar
 				
-						toInject = settings.quicktime_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,pp_images[set_position]).replace(/{autoplay}/g,settings.autoplay);
+						toInject = settings.quicktime_markup.replace(/\{width\}/g,pp_dimensions['width']).replace(/\{height\}/g,pp_dimensions['height']).replace(/\{wmode\}/g,settings.wmode).replace(/\{path\}/g,pp_images[set_position]).replace(/\{autoplay\}/g,settings.autoplay);
 					break;
 				
 					case 'flash':
@@ -322,7 +322,7 @@
 						filename = pp_images[set_position];
 						filename = filename.substring(0,filename.indexOf('?'));
 					
-						toInject =  settings.flash_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,filename+'?'+flash_vars);
+						toInject =  settings.flash_markup.replace(/\{width\}/g,pp_dimensions['width']).replace(/\{height\}/g,pp_dimensions['height']).replace(/\{wmode\}/g,settings.wmode).replace(/\{path\}/g,filename+'?'+flash_vars);
 					break;
 				
 					case 'iframe':
@@ -331,7 +331,7 @@
 						frame_url = pp_images[set_position];
 						frame_url = frame_url.substr(0,frame_url.indexOf('iframe')-1);
 
-						toInject = settings.iframe_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{path}/g,frame_url);
+						toInject = settings.iframe_markup.replace(/\{width\}/g,pp_dimensions['width']).replace(/\{height\}/g,pp_dimensions['height']).replace(/\{path\}/g,frame_url);
 					break;
 					
 					case 'ajax':
@@ -341,7 +341,7 @@
 					
 						skipInjection = true;
 						$.get(pp_images[set_position],function(responseHTML){
-							toInject = settings.inline_markup.replace(/{content}/g,responseHTML);
+							toInject = settings.inline_markup.replace(/\{content\}/g,responseHTML);
 							$pp_pic_holder.find('#pp_full_res')[0].innerHTML = toInject;
 							_showContent();
 						});
@@ -361,16 +361,16 @@
 						pp_dimensions = _fitToViewport($(myClone).width(),$(myClone).height());
 						doresize = true; // Reset the dimensions
 						$(myClone).remove();
-						toInject = settings.inline_markup.replace(/{content}/g,$(pp_images[set_position]).html());
+						toInject = settings.inline_markup.replace(/\{content\}/g,$(pp_images[set_position]).html());
 					break;
-				};
+				}
 
 				if(!imgPreloader && !skipInjection){
 					$pp_pic_holder.find('#pp_full_res')[0].innerHTML = toInject;
 				
 					// Show content
 					_showContent();
-				};
+				}
 			});
 
 			return false;
@@ -392,7 +392,7 @@
 				if(set_position > $(pp_images).size()-1) set_position = 0;
 			}else{
 				set_position=direction;
-			};
+			}
 			
 			rel_index = set_position;
 
@@ -420,7 +420,7 @@
 				if(currentGalleryPage < 0) currentGalleryPage = totalPage;
 			}else{
 				currentGalleryPage = direction;
-			};
+			}
 			
 			slide_speed = (direction == 'next' || direction == 'previous') ? settings.animation_speed : 0;
 
@@ -442,8 +442,8 @@
 				pp_slideshow = setInterval($.prettyPhoto.startSlideshow,settings.slideshow);
 			}else{
 				$.prettyPhoto.changePage('next');	
-			};
-		}
+			}
+		};
 
 
 		/**
@@ -456,7 +456,7 @@
 			});
 			clearInterval(pp_slideshow);
 			pp_slideshow=undefined;
-		}
+		};
 
 
 		/**
@@ -541,7 +541,7 @@
 			
 			_insert_gallery();
 			pp_settings.ajaxcallback();
-		};
+		}
 		
 		/**
 		* Hide the content...DUH!
@@ -554,7 +554,7 @@
 				
 				callback();
 			});
-		};
+		}
 	
 		/**
 		* Check the item position in the gallery array, hide or show the navigation links
@@ -562,7 +562,7 @@
 		*/
 		function _checkPosition(setCount){
 			(setCount > 1) ? $('.pp_nav').show() : $('.pp_nav').hide(); // Hide the bottom nav if it's not a set.
-		};
+		}
 	
 		/**
 		* Resize the item dimensions if it's bigger than the viewport
@@ -590,17 +590,17 @@
 						imageWidth = (width/height) * imageHeight;
 					}else{
 						fitting = true;
-					};
+					}
 
 					pp_containerHeight = imageHeight, pp_containerWidth = imageWidth;
-				};
+				}
 			
 				_getDimensions(imageWidth,imageHeight);
 				
 				if((pp_containerWidth > windowWidth) || (pp_containerHeight > windowHeight)){
-					_fitToViewport(pp_containerWidth,pp_containerHeight)
-				};
-			};
+					_fitToViewport(pp_containerWidth,pp_containerHeight);
+				}
+			}
 			
 			return {
 				width:Math.floor(imageWidth),
@@ -611,7 +611,7 @@
 				contentWidth:Math.floor(pp_contentWidth),
 				resized:resized
 			};
-		};
+		}
 		
 		/**
 		* Get the containers dimensions according to the item size
@@ -673,8 +673,8 @@
 				return 'inline';
 			}else{
 				return 'image';
-			};
-		};
+			}
+		}
 	
 		function _center_overlay(){
 			if(doresize && typeof $pp_pic_holder != 'undefined') {
@@ -691,8 +691,8 @@
 					'top': projectedTop,
 					'left': (windowWidth/2) + scroll_pos['scrollLeft'] - (contentwidth/2)
 				});
-			};
-		};
+			}
+		}
 	
 		function _get_scroll(){
 			if (self.pageYOffset) {
@@ -701,17 +701,17 @@
 				return {scrollTop:document.documentElement.scrollTop,scrollLeft:document.documentElement.scrollLeft};
 			} else if (document.body) {// all other Explorers
 				return {scrollTop:document.body.scrollTop,scrollLeft:document.body.scrollLeft};
-			};
-		};
+			}
+		}
 	
 		function _resize_overlay() {
 			windowHeight = $(window).height(), windowWidth = $(window).width();
 			
 			if(typeof $pp_overlay != "undefined") $pp_overlay.height($(document).height()).width(windowWidth);
-		};
+		}
 	
 		function _insert_gallery(){
-			if(isSet && settings.overlay_gallery && _getFileType(pp_images[set_position])=="image" && (settings.ie6_fallback && !($.browser.msie && parseInt($.browser.version) == 6))) {
+			if(isSet && settings.overlay_gallery && _getFileType(pp_images[set_position])=="image" && (settings.ie6_fallback && !($.browser.msie && parseInt($.browser.version,10) == 6))) {
 				itemWidth = 52+5; // 52 beign the thumb width, 5 being the right margin.
 				navWidth = (settings.theme == "facebook" || settings.theme == "pp_default") ? 50 : 30; // Define the arrow width depending on the theme
 				
@@ -725,7 +725,7 @@
 					$pp_gallery.find('.pp_arrow_next,.pp_arrow_previous').hide();
 				}else{
 					$pp_gallery.find('.pp_arrow_next,.pp_arrow_previous').show();
-				};
+				}
 
 				galleryWidth = itemsPerPage * itemWidth;
 				fullGalleryWidth = pp_images.length * itemWidth;
@@ -772,9 +772,9 @@
 						img_src = pp_images[i];
 					}
 					toInject += "<li class='"+classname+"'><a href='#'><img src='" + img_src + "' width='50' alt='' /></a></li>";
-				};
+				}
 				
-				toInject = settings.gallery_markup.replace(/{gallery}/g,toInject);
+				toInject = settings.gallery_markup.replace(/\{gallery\}/g,toInject);
 				
 				$pp_pic_holder.find('#pp_full_res').after(toInject);
 				
@@ -810,12 +810,12 @@
 							return false;
 						});
 				});
-			};
+			}
 			
 			
 			// Inject the play/pause if it's a slideshow
 			if(settings.slideshow){
-				$pp_pic_holder.find('.pp_nav').prepend('<a href="#" class="pp_play">Play</a>')
+				$pp_pic_holder.find('.pp_nav').prepend('<a href="#" class="pp_play">Play</a>');
 				$pp_pic_holder.find('.pp_nav .pp_play').click(function(){
 					$.prettyPhoto.startSlideshow();
 					return false;
@@ -846,7 +846,7 @@
 					}else{
 						$(this).removeClass('pp_contract').addClass('pp_expand');
 						doresize = true;
-					};
+					}
 				
 					_hideContent(function(){ $.prettyPhoto.open(); });
 			
@@ -867,7 +867,7 @@
 			});
 			
 			_center_overlay(); // Center it
-		};
+		}
 
 		if(!pp_alreadyInitialized && getHashtag()){
 			pp_alreadyInitialized = true;
@@ -891,12 +891,12 @@
 		hashtag = (url.indexOf('#prettyPhoto') !== -1) ? decodeURI(url.substring(url.indexOf('#prettyPhoto')+1,url.length)) : false;
 
 		return hashtag;
-	};
+	}
 	
 	function setHashtag(){
 		if(typeof theRel == 'undefined') return; // theRel is set on normal calls, it's impossible to deeplink using the API
 		location.hash = theRel + '/'+rel_index+'/';
-	};
+	}
 	
 	function clearHashtag(){
 		if ( location.href.indexOf('#prettyPhoto') !== -1 ) location.hash = "prettyPhoto";

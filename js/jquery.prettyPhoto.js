@@ -443,7 +443,7 @@
 			}else{
 				$.prettyPhoto.changePage('next');	
 			};
-		}
+		};
 
 
 		/**
@@ -598,7 +598,7 @@
 				_getDimensions(imageWidth,imageHeight);
 				
 				if((pp_containerWidth > windowWidth) || (pp_containerHeight > windowHeight)){
-					_fitToViewport(pp_containerWidth,pp_containerHeight)
+					_fitToViewport(pp_containerWidth,pp_containerHeight);
 				};
 			};
 			
@@ -815,7 +815,7 @@
 			
 			// Inject the play/pause if it's a slideshow
 			if(settings.slideshow){
-				$pp_pic_holder.find('.pp_nav').prepend('<a href="#" class="pp_play">Play</a>')
+				$pp_pic_holder.find('.pp_nav').prepend('<a href="#" class="pp_play">Play</a>');
 				$pp_pic_holder.find('.pp_nav .pp_play').click(function(){
 					$.prettyPhoto.startSlideshow();
 					return false;

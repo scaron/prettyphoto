@@ -169,7 +169,7 @@
 			$.prettyPhoto.open();
 			
 			return false;
-		}
+		};
 
 
 		/**

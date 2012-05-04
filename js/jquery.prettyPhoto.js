@@ -103,7 +103,7 @@
 		windowHeight = $(window).height(), windowWidth = $(window).width(),
 
 		// Global elements
-		pp_slideshow;
+		pp_slideshow,
 		
 		doresize = true, scroll_pos = _get_scroll();
 	

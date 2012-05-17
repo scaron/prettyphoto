@@ -12,6 +12,7 @@
 			hook: 'rel', /* the attribute tag to use for prettyPhoto hooks. default: 'rel'. For HTML5, use "data-rel" or similar. */
 			animation_speed: 'fast', /* fast/slow/normal */
 			ajaxcallback: function() {},
+			beforeClose: function(doClose) { doClose(); }, /* use this callback if you need to do anything before prettyPhoto closes, make sure to call the doClose callback when finished */
 			slideshow: 5000, /* false OR interval time in ms */
 			autoplay_slideshow: false, /* true/false */
 			opacity: 0.80, /* Value between 0 and 1 */
@@ -465,31 +466,34 @@
 		$.prettyPhoto.close = function(){
 			if($pp_overlay.is(":animated")) return;
 			
-			$.prettyPhoto.stopSlideshow();
+       			settings.beforeClose(function () {
+	
+				$.prettyPhoto.stopSlideshow();
 			
-			$pp_pic_holder.stop().find('object,embed').css('visibility','hidden');
+				$pp_pic_holder.stop().find('object,embed').css('visibility','hidden');
 			
-			$('div.pp_pic_holder,div.ppt,.pp_fade').fadeOut(settings.animation_speed,function(){ $(this).remove(); });
+				$('div.pp_pic_holder,div.ppt,.pp_fade').fadeOut(settings.animation_speed,function(){ $(this).remove(); });
 			
-			$pp_overlay.fadeOut(settings.animation_speed, function(){
-				if($.browser.msie && $.browser.version == 6) $('select').css('visibility','visible'); // To fix the bug with IE select boxes
+				$pp_overlay.fadeOut(settings.animation_speed, function(){
+					if($.browser.msie && $.browser.version == 6) $('select').css('visibility','visible'); // To fix the bug with IE select boxes
 				
-				if(settings.hideflash) $('object,embed,iframe[src*=youtube],iframe[src*=vimeo]').css('visibility','visible'); // Show the flash
+					if(settings.hideflash) $('object,embed,iframe[src*=youtube],iframe[src*=vimeo]').css('visibility','visible'); // Show the flash
 				
-				$(this).remove(); // No more need for the prettyPhoto markup
+					$(this).remove(); // No more need for the prettyPhoto markup
 				
-				$(window).unbind('scroll.prettyphoto');
+					$(window).unbind('scroll.prettyphoto');
 				
-				clearHashtag();
+					clearHashtag();
 				
-				settings.callback();
+					settings.callback();
 				
-				doresize = true;
+					doresize = true;
 				
-				pp_open = false;
+					pp_open = false;
 				
-				delete settings;
-			});
+					delete settings;
+				});
+			};
 		};
 	
 		/**

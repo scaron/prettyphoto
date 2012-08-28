@@ -595,11 +595,13 @@
 					pp_containerHeight = imageHeight, pp_containerWidth = imageWidth;
 				};
 			
-				_getDimensions(imageWidth,imageHeight);
+
 				
 				if((pp_containerWidth > windowWidth) || (pp_containerHeight > windowHeight)){
 					_fitToViewport(pp_containerWidth,pp_containerHeight)
 				};
+				
+				_getDimensions(imageWidth,imageHeight);
 			};
 			
 			return {

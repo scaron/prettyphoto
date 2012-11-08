@@ -10,6 +10,7 @@
 	$.fn.prettyPhoto = function(pp_settings) {
 		pp_settings = jQuery.extend({
 			hook: 'rel', /* the attribute tag to use for prettyPhoto hooks. default: 'rel'. For HTML5, use "data-rel" or similar. */
+			type: 'auto', /* Force link type. Leave 'auto' for auto detection or set to one of 'youtube', 'vimeo', 'quicktime', 'flash', 'iframe', 'ajax', 'custom', 'inline', 'image' */
 			animation_speed: 'fast', /* fast/slow/normal */
 			ajaxcallback: function() {},
 			slideshow: 5000, /* false OR interval time in ms */
@@ -657,7 +658,9 @@
 		}
 	
 		function _getFileType(itemSrc){
-			if (itemSrc.match(/youtube\.com\/watch/i) || itemSrc.match(/youtu\.be/i)) {
+			if (settings.type != 'auto') {
+				return settings.type;
+			}else if (itemSrc.match(/youtube\.com\/watch/i) || itemSrc.match(/youtu\.be/i)) {
 				return 'youtube';
 			}else if (itemSrc.match(/vimeo\.com/i)) {
 				return 'vimeo';

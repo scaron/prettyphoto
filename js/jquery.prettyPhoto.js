@@ -90,7 +90,7 @@
 			iframe_markup: '<iframe src ="{path}" width="{width}" height="{height}" frameborder="no"></iframe>',
 			inline_markup: '<div class="pp_inline">{content}</div>',
 			custom_markup: '',
-			social_tools: '<div class="twitter"><a href="http://twitter.com/share" class="twitter-share-button" data-count="none">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script></div><div class="facebook"><iframe src="//www.facebook.com/plugins/like.php?locale=en_US&href={location_href}&amp;layout=button_count&amp;show_faces=true&amp;width=500&amp;action=like&amp;font&amp;colorscheme=light&amp;height=23" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:500px; height:23px;" allowTransparency="true"></iframe></div>' /* html or false to disable */
+			social_tools: '<div class="twitter"><a href="http://twitter.com/share" class="twitter-share-button" data-count="none">Tweet</a><script type="text/javascript" src="//platform.twitter.com/widgets.js"></script></div><div class="facebook"><iframe src="//www.facebook.com/plugins/like.php?locale=en_US&href={location_href}&amp;layout=button_count&amp;show_faces=true&amp;width=500&amp;action=like&amp;font&amp;colorscheme=light&amp;height=23" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:500px; height:23px;" allowTransparency="true"></iframe></div>' /* html or false to disable */
 		}, pp_settings);
 		
 		// Global variables accessible only by prettyPhoto
@@ -283,7 +283,7 @@
 								movie_id = movie_id.substr(0,movie_id.indexOf('&')); // Strip anything after the &
 						}
 
-						movie = 'http://www.youtube.com/embed/'+movie_id;
+						movie = '//www.youtube.com/embed/'+movie_id;
 						(getParam('rel',pp_images[set_position])) ? movie+="?rel="+getParam('rel',pp_images[set_position]) : movie+="?rel=1";
 							
 						if(settings.autoplay) movie += "&autoplay=1";
@@ -298,7 +298,7 @@
 						var regExp = /http(s?):\/\/(www\.)?vimeo.com\/(\d+)/;
 						var match = movie_id.match(regExp);
 						
-						movie = 'http://player.vimeo.com/video/'+ match[3] +'?title=0&amp;byline=0&amp;portrait=0';
+						movie = '//player.vimeo.com/video/'+ match[3] +'?title=0&amp;byline=0&amp;portrait=0';
 						if(settings.autoplay) movie += "&autoplay=1;";
 				
 						vimeo_width = pp_dimensions['width'] + '/embed/?moog_width='+ pp_dimensions['width'];

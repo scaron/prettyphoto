@@ -291,10 +291,10 @@
 						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 					
 						movie_id = pp_images[set_position];
-						var regExp = /http:\/\/(www\.)?vimeo.com\/(\d+)/;
+						var regExp = /http(s?):\/\/(www\.)?vimeo.com\/(\d+)/;
 						var match = movie_id.match(regExp);
 						
-						movie = 'http://player.vimeo.com/video/'+ match[2] +'?title=0&amp;byline=0&amp;portrait=0';
+						movie = 'http://player.vimeo.com/video/'+ match[3] +'?title=0&amp;byline=0&amp;portrait=0';
 						if(settings.autoplay) movie += "&autoplay=1;";
 				
 						vimeo_width = pp_dimensions['width'] + '/embed/?moog_width='+ pp_dimensions['width'];
@@ -590,11 +590,13 @@
 					pp_containerHeight = imageHeight, pp_containerWidth = imageWidth;
 				};
 			
-				_getDimensions(imageWidth,imageHeight);
+
 				
 				if((pp_containerWidth > windowWidth) || (pp_containerHeight > windowHeight)){
 					_fitToViewport(pp_containerWidth,pp_containerHeight)
 				};
+				
+				_getDimensions(imageWidth,imageHeight);
 			};
 			
 			return {
@@ -881,7 +883,7 @@
 	};
 	
 	function getHashtag(){
-		url = location.href;
+		var url = location.href;
 		hashtag = (url.indexOf('#prettyPhoto') !== -1) ? decodeURI(url.substring(url.indexOf('#prettyPhoto')+1,url.length)) : false;
 
 		return hashtag;

@@ -9,6 +9,8 @@
 	
 	$.fn.prettyPhoto = function(pp_settings) {
 		pp_settings = jQuery.extend({
+			horizontal_margin: 150, /* default 150, min 25*/
+		    	vertical_margin: 150, /** default 150, min 50*/
 			hook: 'rel', /* the attribute tag to use for prettyPhoto hooks. default: 'rel'. For HTML5, use "data-rel" or similar. */
 			animation_speed: 'fast', /* fast/slow/normal */
 			ajaxcallback: function() {},
@@ -223,8 +225,8 @@
 			
 			// If the size is % based, calculate according to window dimensions
 			percentBased=false;
-			if(movie_height.indexOf('%') != -1) { movie_height = parseFloat(($(window).height() * parseFloat(movie_height) / 100) - 150); percentBased = true; }
-			if(movie_width.indexOf('%') != -1) { movie_width = parseFloat(($(window).width() * parseFloat(movie_width) / 100) - 150); percentBased = true; }
+			if(movie_height.indexOf('%') != -1) { movie_height = parseFloat(($(window).height() * parseFloat(movie_height) / 100) - (pp_settings.vertical_margin<50?50:pp_settings.vertical_margin)); percentBased = true; }
+			if(movie_width.indexOf('%') != -1) { movie_width = parseFloat(($(window).width() * parseFloat(movie_width) / 100) - (pp_settings.horizontal_margin<25?25:pp_settings.horizontal_margin)); percentBased = true; }
 			
 			// Fade the holder
 			$pp_pic_holder.fadeIn(function(){

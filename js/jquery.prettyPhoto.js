@@ -9,6 +9,8 @@
 	
 	$.fn.prettyPhoto = function(pp_settings) {
 		pp_settings = jQuery.extend({
+		    horizontal_margin: 150, /* default 150, min 25 */
+		    vertical_margin: 150, /* default 150, min 50 */
 			hook: 'rel', /* the attribute tag to use for prettyPhoto hooks. default: 'rel'. For HTML5, use "data-rel" or similar. */
 			animation_speed: 'fast', /* fast/slow/normal */
 			ajaxcallback: function() {},
@@ -223,9 +225,9 @@
 			
 			// If the size is % based, calculate according to window dimensions
 			percentBased=false;
-			if(movie_height.indexOf('%') != -1) { movie_height = parseFloat(($(window).height() * parseFloat(movie_height) / 100) - 150); percentBased = true; }
-			if(movie_width.indexOf('%') != -1) { movie_width = parseFloat(($(window).width() * parseFloat(movie_width) / 100) - 150); percentBased = true; }
-			
+			if(movie_height.indexOf('%') != -1) { movie_height = parseFloat(($(window).height() * parseFloat(movie_height) / 100) - (pp_settings.vertical_margin<50?50:pp_settings.vertical_margin)); percentBased = true; }
+			if(movie_width.indexOf('%') != -1) { movie_width = parseFloat(($(window).width() * parseFloat(movie_width) / 100) - (pp_settings.horizontal_margin<25?25:pp_settings.horizontal_margin)); percentBased = true; }
+				     
 			// Fade the holder
 			$pp_pic_holder.fadeIn(function(){
 				// Set the title
@@ -320,7 +322,15 @@
 					
 						toInject =  settings.flash_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,filename+'?'+flash_vars);
 					break;
-				
+					
+					case 'pdf':
+						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
+						
+						frame_url = pp_images[set_position];
+						
+						toInject = settings.iframe_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{path}/g,frame_url);	
+					break;
+					
 					case 'iframe':
 						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 				
@@ -567,7 +577,7 @@
 		*/
 		function _fitToViewport(width,height){
 			resized = false;
-
+					
 			_getDimensions(width,height);
 			
 			// Define them in case there's no resize needed
@@ -598,7 +608,7 @@
 				
 				_getDimensions(imageWidth,imageHeight);
 			};
-			
+	
 			return {
 				width:Math.floor(imageWidth),
 				height:Math.floor(imageHeight),
@@ -667,6 +677,8 @@
 				return 'custom';
 			}else if(itemSrc.substr(0,1) == '#'){
 				return 'inline';
+			}else if(itemSrc.match(/\b.pdf\b/i)){
+				return 'pdf';
 			}else{
 				return 'image';
 			};

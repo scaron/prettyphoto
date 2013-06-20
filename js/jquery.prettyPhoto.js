@@ -18,8 +18,8 @@
 			show_title: true, /* true/false */
 			allow_resize: true, /* Resize the photos bigger than viewport. true/false */
 			allow_expand: true, /* Allow the user to expand a resized image. true/false */
-			default_width: 500,
-			default_height: 344,
+			default_width: 500, /* Default image width */
+			default_height: 344, /* Default image height */
 			counter_separator_label: '/', /* The separator for the gallery counter 1 "of" 2 */
 			theme: 'pp_default', /* light_rounded / dark_rounded / light_square / dark_square / facebook */
 			horizontal_padding: 20, /* The padding on each side of the picture */
@@ -34,6 +34,8 @@
 			changepicturecallback: function(){}, /* Called everytime an item is shown/changed */
 			callback: function(){}, /* Called when prettyPhoto is closed */
 			ie6_fallback: true,
+            default_resize: 200,
+            default_multiplier: 1,
 			markup: '<div class="pp_pic_holder"> \
 						<div class="ppt">&nbsp;</div> \
 						<div class="pp_top"> \
@@ -249,7 +251,7 @@
 
 						imgPreloader.onload = function(){
 							// Fit item to viewport
-							pp_dimensions = _fitToViewport(imgPreloader.width,imgPreloader.height);
+							pp_dimensions = _fitToViewport(imgPreloader.width * settings.default_multiplier,imgPreloader.height * settings.default_multiplier);
 
 							_showContent();
 						};
@@ -578,10 +580,10 @@
 			
 				while (!fitting){
 					if((pp_containerWidth > windowWidth)){
-						imageWidth = (windowWidth - 200);
+						imageWidth = (windowWidth - settings.default_resize);
 						imageHeight = (height/width) * imageWidth;
 					}else if((pp_containerHeight > windowHeight)){
-						imageHeight = (windowHeight - 200);
+						imageHeight = (windowHeight - settings.default_resize);
 						imageWidth = (width/height) * imageHeight;
 					}else{
 						fitting = true;

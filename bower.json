@@ -1,0 +1,11 @@
+{
+  "name": "prettyPhoto",
+  "version": "3.1.4",
+  "main": "./js/jquery.prettyPhoto.js",
+  "ignore": [
+    "**/.*"
+  ],
+  "dependencies": {
+    "jquery": ">= 1.6.1"
+  }
+}

@@ -189,6 +189,10 @@
 				_build_overlay(event.target); // Build the overlay {this} being the caller
 			}
 			
+			// make array unique
+			if ( settings.skip_duplicates )
+				pp_images = $.grep(pp_images, function(v, k) { return $.inArray(v ,pp_images) === k; });
+				
 			if(settings.hideflash) $('object,embed,iframe[src*=youtube],iframe[src*=vimeo]').css('visibility','hidden'); // Hide the flash
 
 			_checkPosition($(pp_images).size()); // Hide the next/previous links if on first or last images.

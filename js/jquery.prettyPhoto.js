@@ -279,7 +279,7 @@
 								movie_id = movie_id.substr(0,movie_id.indexOf('&')); // Strip anything after the &
 						}
 
-						movie = 'http://www.youtube.com/embed/'+movie_id;
+						movie = '//www.youtube.com/embed/'+movie_id;
 						(getParam('rel',pp_images[set_position])) ? movie+="?rel="+getParam('rel',pp_images[set_position]) : movie+="?rel=1";
 							
 						if(settings.autoplay) movie += "&autoplay=1";

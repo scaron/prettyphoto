@@ -133,6 +133,8 @@
 					};
 				};
 			});
+		} else {
+			$(document).unbind('keydown.prettyphoto')
 		};
 		
 		/**

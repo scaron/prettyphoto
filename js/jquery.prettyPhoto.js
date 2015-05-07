@@ -885,7 +885,7 @@
 	function getHashtag(){
 		var url = location.href;
 		hashtag = (url.indexOf('#prettyPhoto') !== -1) ? decodeURI(url.substring(url.indexOf('#prettyPhoto')+1,url.length)) : false;
-		hashtag = hashtag.replace(/<|>/g,'');
+		if(hashtag){  hashtag = hashtag.replace(/<|>/g,''); }
 		return hashtag;
 	};
 	

@@ -873,7 +873,11 @@
 			hashRel = hashIndex;
 			hashIndex = hashIndex.substring(hashIndex.indexOf('/')+1,hashIndex.length-1);
 			hashRel = hashRel.substring(0,hashRel.indexOf('/'));
-
+			
+			// xss prevention
+			hashIndex = parseInt(hashIndex);
+			hashRel = hashRel.replace(/([ #;&,.+*~\':"!^$[\]()=>|\/])/g,'\\$1');
+			
 			// Little timeout to make sure all the prettyPhoto initialize scripts has been run.
 			// Useful in the event the page contain several init scripts.
 			setTimeout(function(){ $("a["+pp_settings.hook+"^='"+hashRel+"']:eq("+hashIndex+")").trigger('click'); },50);

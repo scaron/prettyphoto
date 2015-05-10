@@ -362,7 +362,7 @@
 				};
 
 				if(!imgPreloader && !skipInjection){
-					$pp_pic_holder.find('#pp_full_res')[0].innerHTML = toInject;
+					$pp_pic_holder.find('#pp_full_res').last().html(toInject);
 				
 					// Show content
 					_showContent();

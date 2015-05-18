@@ -34,6 +34,7 @@
 			changepicturecallback: function(){}, /* Called everytime an item is shown/changed */
 			callback: function(){}, /* Called when prettyPhoto is closed */
 			ie6_fallback: true,
+			skip_duplicates:true,
 			markup: '<div class="pp_pic_holder"> \
 						<div class="ppt">&nbsp;</div> \
 						<div class="pp_top"> \
@@ -188,6 +189,10 @@
 				_build_overlay(event.target); // Build the overlay {this} being the caller
 			}
 			
+			// make array unique
+			if ( settings.skip_duplicates )
+				pp_images = $.grep(pp_images, function(v, k) { return $.inArray(v ,pp_images) === k; });
+				
 			if(settings.hideflash) $('object,embed,iframe[src*=youtube],iframe[src*=vimeo]').css('visibility','hidden'); // Hide the flash
 
 			_checkPosition($(pp_images).size()); // Hide the next/previous links if on first or last images.
@@ -759,6 +764,9 @@
 			if(isSet && settings.overlay_gallery) {
 				currentGalleryPage = 0;
 				toInject = "";
+				if ( settings.skip_duplicates ) {
+					var image_sources = [];
+				}
 				for (var i=0; i < pp_images.length; i++) {
 					if(!pp_images[i].match(/\b(jpg|jpeg|png|gif)\b/gi)){
 						classname = 'default';
@@ -767,7 +775,12 @@
 						classname = '';
 						img_src = pp_images[i];
 					}
-					toInject += "<li class='"+classname+"'><a href='#'><img src='" + img_src + "' width='50' alt='' /></a></li>";
+					if ( !settings.skip_duplicates || image_sources.indexOf(img_src) == -1 ) {
+						toInject += "<li class='"+classname+"'><a href='#'><img src='" + img_src + "' width='50' alt='' /></a></li>";
+						if ( settings.skip_duplicates ) {
+							image_sources.push(img_src);
+						}
+					}
 				};
 				
 				toInject = settings.gallery_markup.replace(/{gallery}/g,toInject);

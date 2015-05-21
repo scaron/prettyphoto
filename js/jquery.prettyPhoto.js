@@ -535,7 +535,7 @@
 			});
 			
 			_insert_gallery();
-			pp_settings.ajaxcallback();
+            settings.ajaxcallback();
 		};
 		
 		/**

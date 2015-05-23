@@ -100,7 +100,7 @@
 		pp_contentHeight, pp_contentWidth, pp_containerHeight, pp_containerWidth,
 		
 		// Window size
-		windowHeight = $(window).height(), windowWidth = $(window).width(),
+		windowHeight = $(window).height(), windowWidth = ($(window).width() || window.innerWidth || document.documentElement.clientWidth || document.body.offsetWidth),
 
 		// Global elements
 		pp_slideshow;
@@ -224,7 +224,7 @@
 			// If the size is % based, calculate according to window dimensions
 			percentBased=false;
 			if(movie_height.indexOf('%') != -1) { movie_height = parseFloat(($(window).height() * parseFloat(movie_height) / 100) - 150); percentBased = true; }
-			if(movie_width.indexOf('%') != -1) { movie_width = parseFloat(($(window).width() * parseFloat(movie_width) / 100) - 150); percentBased = true; }
+			if(movie_width.indexOf('%') != -1) { movie_width = parseFloat((($(window).width() || window.innerWidth || document.documentElement.clientWidth || document.body.offsetWidth) * parseFloat(movie_width) / 100) - 150); percentBased = true; }
 			
 			// Fade the holder
 			$pp_pic_holder.fadeIn(function(){
@@ -701,7 +701,7 @@
 		};
 	
 		function _resize_overlay() {
-			windowHeight = $(window).height(), windowWidth = $(window).width();
+			windowHeight = $(window).height(), windowWidth = ($(window).width() || window.innerWidth || document.documentElement.clientWidth || document.body.offsetWidth);
 			
 			if(typeof $pp_overlay != "undefined") $pp_overlay.height($(document).height()).width(windowWidth);
 		};
@@ -824,7 +824,7 @@
 				.css({
 					'opacity':0,
 					'height':$(document).height(),
-					'width':$(window).width()
+					'width':($(window).width() || window.innerWidth || document.documentElement.clientWidth || document.body.offsetWidth)
 					})
 				.bind('click',function(){
 					if(!settings.modal) $.prettyPhoto.close();

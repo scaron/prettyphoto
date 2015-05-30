@@ -558,6 +558,11 @@
 		function _checkPosition(setCount){
 			(setCount > 1) ? $('.pp_nav').show() : $('.pp_nav').hide(); // Hide the bottom nav if it's not a set.
 		};
+		
+		/**
+		* Anti-recursion counter for _fitToViewport
+		*/
+		var recursionCounter = 0;
 	
 		/**
 		* Resize the item dimensions if it's bigger than the viewport
@@ -593,11 +598,16 @@
 
 				
 				if((pp_containerWidth > windowWidth) || (pp_containerHeight > windowHeight)){
-					_fitToViewport(pp_containerWidth,pp_containerHeight)
+					//I think, that 20 iterations is more than enough for correct calculation
+					if( ++recursionCounter < 20 ){
+						_fitToViewport(pp_containerWidth,pp_containerHeight)
+					}
 				};
 				
 				_getDimensions(imageWidth,imageHeight);
 			};
+
+			recursionCounter = 0;
 			
 			return {
 				width:Math.floor(imageWidth),

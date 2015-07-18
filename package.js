@@ -6,7 +6,7 @@ var where = 'client';  // where to install: 'client', 'server', or ['client', 's
 Package.describe({
   name: packageName,
   summary: 'Prettyphoto is a full blown media lightbox. Supports images, videos, flash, YouTube and iFrames.',
-  version: '4',
+  version: '3.1.7',
   git: 'https://github.com/juliomac/prettyphoto.git',
   documentation: 'README.md'
 });

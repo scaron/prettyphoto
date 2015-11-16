@@ -1,9 +1,9 @@
 /* ------------------------------------------------------------------------
-	Class: prettyPhoto
-	Use: Lightbox clone for jQuery
-	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 3.1.6
-------------------------------------------------------------------------- */
+ Class: prettyPhoto
+ Use: Lightbox clone for jQuery
+ Author: Stephane Caron (http://www.no-margin-for-errors.com)
+ Version: 3.1.6
+ ------------------------------------------------------------------------- */
 (function($) {
 	$.prettyPhoto = {version: '3.1.6'};
 
@@ -34,6 +34,7 @@
 			changepicturecallback: function(){}, /* Called everytime an item is shown/changed */
 			callback: function(){}, /* Called when prettyPhoto is closed */
 			ie6_fallback: true,
+			allowfullscreen: false,
 			markup: '<div class="pp_pic_holder"> \
 						<div class="ppt">&nbsp;</div> \
 						<div class="pp_top"> \
@@ -87,7 +88,7 @@
 			image_markup: '<img id="fullResImage" src="{path}" />',
 			flash_markup: '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="{width}" height="{height}"><param name="wmode" value="{wmode}" /><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="{path}" /><embed src="{path}" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="{width}" height="{height}" wmode="{wmode}"></embed></object>',
 			quicktime_markup: '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab" height="{height}" width="{width}"><param name="src" value="{path}"><param name="autoplay" value="{autoplay}"><param name="type" value="video/quicktime"><embed src="{path}" height="{height}" width="{width}" autoplay="{autoplay}" type="video/quicktime" pluginspage="http://www.apple.com/quicktime/download/"></embed></object>',
-			iframe_markup: '<iframe src ="{path}" width="{width}" height="{height}" frameborder="no"></iframe>',
+			iframe_markup: '<iframe src ="{path}" width="{width}" height="{height}" frameborder="no" {allowfullscreen}></iframe>',
 			inline_markup: '<div class="pp_inline">{content}</div>',
 			custom_markup: '',
 			social_tools: '<div class="twitter"><a href="http://twitter.com/share" class="twitter-share-button" data-count="none">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script></div><div class="facebook"><iframe src="//www.facebook.com/plugins/like.php?locale=en_US&href={location_href}&amp;layout=button_count&amp;show_faces=true&amp;width=500&amp;action=like&amp;font&amp;colorscheme=light&amp;height=23" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:500px; height:23px;" allowTransparency="true"></iframe></div>' /* html or false to disable */
@@ -97,13 +98,13 @@
 		var matchedObjects = this, percentBased = false, pp_dimensions, pp_open,
 
 		// prettyPhoto container specific
-		pp_contentHeight, pp_contentWidth, pp_containerHeight, pp_containerWidth,
+				pp_contentHeight, pp_contentWidth, pp_containerHeight, pp_containerWidth,
 
 		// Window size
-		windowHeight = $(window).height(), windowWidth = $(window).width(),
+				windowHeight = $(window).height(), windowWidth = $(window).width(),
 
 		// Global elements
-		pp_slideshow;
+				pp_slideshow;
 
 		doresize = true, scroll_pos = _get_scroll();
 
@@ -125,7 +126,7 @@
 								break;
 							case 27:
 								if(!settings.modal)
-								$.prettyPhoto.close();
+									$.prettyPhoto.close();
 								e.preventDefault();
 								break;
 						};
@@ -136,8 +137,8 @@
 		};
 
 		/**
-		* Initialize prettyPhoto.
-		*/
+		 * Initialize prettyPhoto.
+		 */
 		$.prettyPhoto.initialize = function() {
 
 			settings = pp_settings;
@@ -172,11 +173,11 @@
 
 
 		/**
-		* Opens the prettyPhoto modal box.
-		* @param image {String,Array} Full path to the image to be open, can also be an array containing full images paths.
-		* @param title {String,Array} The title to be displayed with the picture, can also be an array containing all the titles.
-		* @param description {String,Array} The description to be displayed with the picture, can also be an array containing all the descriptions.
-		*/
+		 * Opens the prettyPhoto modal box.
+		 * @param image {String,Array} Full path to the image to be open, can also be an array containing full images paths.
+		 * @param title {String,Array} The title to be displayed with the picture, can also be an array containing all the titles.
+		 * @param description {String,Array} The description to be displayed with the picture, can also be an array containing all the descriptions.
+		 */
 		$.prettyPhoto.open = function(event) {
 			if(typeof settings == "undefined"){ // Means it's an API call, need to manually get the settings and set the variables
 				settings = pp_settings;
@@ -260,7 +261,7 @@
 						};
 
 						imgPreloader.src = pp_images[set_position];
-					break;
+						break;
 
 					case 'youtube':
 						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
@@ -285,8 +286,13 @@
 
 						if(settings.autoplay) movie += "&autoplay=1";
 
-						toInject = settings.iframe_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,movie);
-					break;
+						toInject = settings.iframe_markup
+								.replace(/{width}/g,pp_dimensions['width'])
+								.replace(/{height}/g,pp_dimensions['height'])
+								.replace(/{wmode}/g,settings.wmode)
+								.replace(/{path}/g,movie)
+								.replace(/{allowfullscreen}/g, settings.allowfullscreen === true ? 'allowfullscreen' : '');
+						break;
 
 					case 'vimeo':
 						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
@@ -301,15 +307,19 @@
 
 						vimeo_width = pp_dimensions['width'] + '/embed/?moog_width='+ pp_dimensions['width'];
 
-						toInject = settings.iframe_markup.replace(/{width}/g,vimeo_width).replace(/{height}/g,pp_dimensions['height']).replace(/{path}/g,movie);
-					break;
+						toInject = settings.iframe_markup
+								.replace(/{width}/g,vimeo_width)
+								.replace(/{height}/g,pp_dimensions['height'])
+								.replace(/{path}/g,movie)
+								.replace(/{allowfullscreen}/g, settings.allowfullscreen === true ? 'allowfullscreen' : '');
+						break;
 
 					case 'quicktime':
 						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 						pp_dimensions['height']+=15; pp_dimensions['contentHeight']+=15; pp_dimensions['containerHeight']+=15; // Add space for the control bar
 
 						toInject = settings.quicktime_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,pp_images[set_position]).replace(/{autoplay}/g,settings.autoplay);
-					break;
+						break;
 
 					case 'flash':
 						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
@@ -321,7 +331,7 @@
 						filename = filename.substring(0,filename.indexOf('?'));
 
 						toInject =  settings.flash_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{wmode}/g,settings.wmode).replace(/{path}/g,filename+'?'+flash_vars);
-					break;
+						break;
 
 					case 'iframe':
 						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
@@ -329,8 +339,8 @@
 						frame_url = pp_images[set_position];
 						frame_url = frame_url.substr(0,frame_url.indexOf('iframe')-1);
 
-						toInject = settings.iframe_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{path}/g,frame_url);
-					break;
+						toInject = settings.iframe_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{path}/g,frame_url).replace('{allowfullscreen}/g', settings.allowfullscreen);
+						break;
 
 					case 'ajax':
 						doresize = false; // Make sure the dimensions are not resized.
@@ -344,13 +354,13 @@
 							_showContent();
 						});
 
-					break;
+						break;
 
 					case 'custom':
 						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 
 						toInject = settings.custom_markup;
-					break;
+						break;
 
 					case 'inline':
 						// to get the item height clone it, apply default width, wrap it in the prettyPhoto containers , then delete
@@ -360,7 +370,7 @@
 						doresize = true; // Reset the dimensions
 						$(myClone).remove();
 						toInject = settings.inline_markup.replace(/{content}/g,$(pp_images[set_position]).html());
-					break;
+						break;
 				};
 
 				if(!imgPreloader && !skipInjection){
@@ -376,9 +386,9 @@
 
 
 		/**
-		* Change page in the prettyPhoto modal box
-		* @param direction {String} Direction of the paging, previous or next.
-		*/
+		 * Change page in the prettyPhoto modal box
+		 * @param direction {String} Direction of the paging, previous or next.
+		 */
 		$.prettyPhoto.changePage = function(direction){
 			currentGalleryPage = 0;
 
@@ -404,9 +414,9 @@
 
 
 		/**
-		* Change gallery page in the prettyPhoto modal box
-		* @param direction {String} Direction of the paging, previous or next.
-		*/
+		 * Change gallery page in the prettyPhoto modal box
+		 * @param direction {String} Direction of the paging, previous or next.
+		 */
 		$.prettyPhoto.changeGalleryPage = function(direction){
 			if(direction=='next'){
 				currentGalleryPage ++;
@@ -429,8 +439,8 @@
 
 
 		/**
-		* Start the slideshow...
-		*/
+		 * Start the slideshow...
+		 */
 		$.prettyPhoto.startSlideshow = function(){
 			if(typeof pp_slideshow == 'undefined'){
 				$pp_pic_holder.find('.pp_play').unbind('click').removeClass('pp_play').addClass('pp_pause').click(function(){
@@ -445,8 +455,8 @@
 
 
 		/**
-		* Stop the slideshow...
-		*/
+		 * Stop the slideshow...
+		 */
 		$.prettyPhoto.stopSlideshow = function(){
 			$pp_pic_holder.find('.pp_pause').unbind('click').removeClass('pp_pause').addClass('pp_play').click(function(){
 				$.prettyPhoto.startSlideshow();
@@ -458,8 +468,8 @@
 
 
 		/**
-		* Closes prettyPhoto.
-		*/
+		 * Closes prettyPhoto.
+		 */
 		$.prettyPhoto.close = function(){
 			if($pp_overlay.is(":animated")) return;
 
@@ -490,8 +500,8 @@
 		};
 
 		/**
-		* Set the proper sizes on the containers and animate the content in.
-		*/
+		 * Set the proper sizes on the containers and animate the content in.
+		 */
 		function _showContent(){
 			$('.pp_loaderIcon').hide();
 
@@ -503,10 +513,10 @@
 
 			// Resize the content holder
 			$pp_pic_holder.find('.pp_content')
-				.animate({
-					height:pp_dimensions['contentHeight'],
-					width:pp_dimensions['contentWidth']
-				},settings.animation_speed);
+					.animate({
+						height:pp_dimensions['contentHeight'],
+						width:pp_dimensions['contentWidth']
+					},settings.animation_speed);
 
 			// Resize picture the holder
 			$pp_pic_holder.animate({
@@ -541,8 +551,8 @@
 		};
 
 		/**
-		* Hide the content...DUH!
-		*/
+		 * Hide the content...DUH!
+		 */
 		function _hideContent(callback){
 			// Fade out the current picture
 			$pp_pic_holder.find('#pp_full_res object,#pp_full_res embed').css('visibility','hidden');
@@ -554,19 +564,19 @@
 		};
 
 		/**
-		* Check the item position in the gallery array, hide or show the navigation links
-		* @param setCount {integer} The total number of items in the set
-		*/
+		 * Check the item position in the gallery array, hide or show the navigation links
+		 * @param setCount {integer} The total number of items in the set
+		 */
 		function _checkPosition(setCount){
 			(setCount > 1) ? $('.pp_nav').show() : $('.pp_nav').hide(); // Hide the bottom nav if it's not a set.
 		};
 
 		/**
-		* Resize the item dimensions if it's bigger than the viewport
-		* @param width {integer} Width of the item to be opened
-		* @param height {integer} Height of the item to be opened
-		* @return An array containin the "fitted" dimensions
-		*/
+		 * Resize the item dimensions if it's bigger than the viewport
+		 * @param width {integer} Width of the item to be opened
+		 * @param height {integer} Height of the item to be opened
+		 * @return An array containin the "fitted" dimensions
+		 */
 		function _fitToViewport(width,height){
 			resized = false;
 
@@ -613,10 +623,10 @@
 		};
 
 		/**
-		* Get the containers dimensions according to the item size
-		* @param width {integer} Width of the item to be opened
-		* @param height {integer} Height of the item to be opened
-		*/
+		 * Get the containers dimensions according to the item size
+		 * @param width {integer} Width of the item to be opened
+		 * @param height {integer} Height of the item to be opened
+		 */
 		function _getDimensions(width,height){
 			width = parseFloat(width);
 			height = parseFloat(height);
@@ -730,10 +740,10 @@
 
 				// Set the proper width to the gallery items
 				$pp_gallery
-					.css('margin-left',-((galleryWidth/2) + (navWidth/2)))
-					.find('div:first').width(galleryWidth+5)
-					.find('ul').width(fullGalleryWidth)
-					.find('li.selected').removeClass('selected');
+						.css('margin-left',-((galleryWidth/2) + (navWidth/2)))
+						.find('div:first').width(galleryWidth+5)
+						.find('ul').width(fullGalleryWidth)
+						.find('li.selected').removeClass('selected');
 
 				goToPage = (Math.floor(set_position/itemsPerPage) < totalPage) ? Math.floor(set_position/itemsPerPage) : totalPage;
 
@@ -791,22 +801,22 @@
 				});
 
 				$pp_pic_holder.find('.pp_content').hover(
-					function(){
-						$pp_pic_holder.find('.pp_gallery:not(.disabled)').fadeIn();
-					},
-					function(){
-						$pp_pic_holder.find('.pp_gallery:not(.disabled)').fadeOut();
-					});
+						function(){
+							$pp_pic_holder.find('.pp_gallery:not(.disabled)').fadeIn();
+						},
+						function(){
+							$pp_pic_holder.find('.pp_gallery:not(.disabled)').fadeOut();
+						});
 
 				itemWidth = 52+5; // 52 beign the thumb width, 5 being the right margin.
 				$pp_gallery_li.each(function(i){
 					$(this)
-						.find('a')
-						.click(function(){
-							$.prettyPhoto.changePage(i);
-							$.prettyPhoto.stopSlideshow();
-							return false;
-						});
+							.find('a')
+							.click(function(){
+								$.prettyPhoto.changePage(i);
+								$.prettyPhoto.stopSlideshow();
+								return false;
+							});
 				});
 			};
 
@@ -823,14 +833,14 @@
 			$pp_pic_holder.attr('class','pp_pic_holder ' + settings.theme); // Set the proper theme
 
 			$pp_overlay
-				.css({
-					'opacity':0,
-					'height':$(document).height(),
-					'width':$(window).width()
+					.css({
+						'opacity':0,
+						'height':$(document).height(),
+						'width':$(window).width()
 					})
-				.bind('click',function(){
-					if(!settings.modal) $.prettyPhoto.close();
-				});
+					.bind('click',function(){
+						if(!settings.modal) $.prettyPhoto.close();
+					});
 
 			$('a.pp_close').bind('click',function(){ $.prettyPhoto.close(); return false; });
 
@@ -901,11 +911,11 @@
 	}
 
 	function getParam(name,url){
-	  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-	  var regexS = "[\\?&]"+name+"=([^&#]*)";
-	  var regex = new RegExp( regexS );
-	  var results = regex.exec( url );
-	  return ( results == null ) ? "" : results[1];
+		name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+		var regexS = "[\\?&]"+name+"=([^&#]*)";
+		var regex = new RegExp( regexS );
+		var results = regex.exec( url );
+		return ( results == null ) ? "" : results[1];
 	}
 
 })(jQuery);

@@ -279,7 +279,7 @@
 								movie_id = movie_id.substr(0,movie_id.indexOf('&')); // Strip anything after the &
 						}
 
-						movie = 'http://www.youtube.com/embed/'+movie_id;
+						movie = '//www.youtube.com/embed/'+movie_id;
 						(getParam('rel',pp_images[set_position])) ? movie+="?rel="+getParam('rel',pp_images[set_position]) : movie+="?rel=1";
 							
 						if(settings.autoplay) movie += "&autoplay=1";
@@ -294,7 +294,7 @@
 						var regExp = /http(s?):\/\/(www\.)?vimeo.com\/(\d+)/;
 						var match = movie_id.match(regExp);
 						
-						movie = 'http://player.vimeo.com/video/'+ match[3] +'?title=0&amp;byline=0&amp;portrait=0';
+						movie = '//player.vimeo.com/video/'+ match[3] +'?title=0&amp;byline=0&amp;portrait=0';
 						if(settings.autoplay) movie += "&autoplay=1;";
 				
 						vimeo_width = pp_dimensions['width'] + '/embed/?moog_width='+ pp_dimensions['width'];

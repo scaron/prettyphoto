@@ -314,7 +314,7 @@
 						pp_dimensions = _fitToViewport(movie_width,movie_height); // Fit item to viewport
 						pp_dimensions['height']+=15; pp_dimensions['contentHeight']+=15; pp_dimensions['containerHeight']+=15; // Add space for the control bar
 				
-						toInject = settings.quicktime_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{path}/g,pp_images[set_position]).replace(/{autoplay}/g,settings.autoplay);
+						toInject = settings.html5video_markup.replace(/{width}/g,pp_dimensions['width']).replace(/{height}/g,pp_dimensions['height']).replace(/{path}/g,pp_images[set_position]).replace(/{autoplay}/g,settings.autoplay);
 					break;
 				
 					case 'flash':

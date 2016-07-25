@@ -1,0 +1,11 @@
+{
+  "name": "prettyPhoto",
+  "version": "3.1.6",
+  "description": "prettyPhoto is a jQuery based lightbox clone",
+  "author": "Stephane Caron",
+  "license": "(CC-BY-2.5 or GPL-2.0)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fredriks/prettyphoto.git"
+  }
+}

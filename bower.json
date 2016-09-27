@@ -1,0 +1,18 @@
+{
+    "name": "pretty-photo",
+    "version": "3.1.6",
+    "homepage": "http://www.no-margin-for-errors.com/projects/prettyPhoto-jquery-lightbox-clone/",
+    "authors": [
+        "Stephane Caron <caronstephane1@gmail.com>"
+    ],
+    "description": "prettyPhoto is a jQuery based lightbox clone. Not only does it support images, it also add support for videos, flash, YouTube, iFrames. It’s a full blown media lightbox. The setup is easy and quick, plus the script is compatible in every major browser.",
+    "keywords": ["prettyphoto"],
+    "license": "MIT",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ]
+}

@@ -2,7 +2,7 @@
 	Class: prettyPhoto
 	Use: Lightbox clone for jQuery
 	Author: Stephane Caron (http://www.no-margin-for-errors.com)
-	Version: 3.1.6
+	Version: 3.1.7
 ------------------------------------------------------------------------- */
 (function($) {
 	$.prettyPhoto = {version: '3.1.6'};
@@ -673,15 +673,15 @@
 		};
 	
 		function _center_overlay(){
-			if(doresize && typeof $pp_pic_holder != 'undefined') {
+			if(typeof $pp_pic_holder != 'undefined') {
 				scroll_pos = _get_scroll();
 				contentHeight = $pp_pic_holder.height(), contentwidth = $pp_pic_holder.width();
 
 				projectedTop = (windowHeight/2) + scroll_pos['scrollTop'] - (contentHeight/2);
 				if(projectedTop < 0) projectedTop = 0;
 				
-				if(contentHeight > windowHeight)
-					return;
+				if(contentHeight > windowHeight && projectedTop > (contentHeight - windowHeight))
+					projectedTop = projectedTop - (contentHeight - windowHeight);
 
 				$pp_pic_holder.css({
 					'top': projectedTop,

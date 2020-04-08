@@ -9,3 +9,7 @@ Starting version when repo was forked.
 ## [3.2.0]
 
 Changes scroll behavior.
+
+## [3.2.1]
+
+Fixes deprecation of `size`.

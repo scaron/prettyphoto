@@ -992,7 +992,7 @@
     }
 
     function clearHashtag(){
-        if ( location.href.indexOf('#prettyPhoto') !== -1 ) location.hash = "prettyPhoto";
+        if ( location.href.indexOf('#prettyPhoto') !== -1 ) location.hash = "";
     }
 
     function getParam(name,url){
